@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho de Compras | Livraria Brasilidade</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brasil: {
+                            verde: '#1B4D3E',
+                            amarelo: '#F4D03F',
+                            terracota: '#C0392B',
+                            madeira: '#8D5524',
+                            creme: '#FDFBF7',
+                            areia: '#F4ECE1',
+                            escuro: '#1A1818'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FDFBF7;
+            color: #1A1818;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4, .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4ECE1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1B4D3E;
+            border-radius: 4px;
+        }
+        .glass-nav {
+            background: rgba(253, 251, 247, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro">
+
+    <!-- Header / Navbar -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full bg-brasil-verde flex items-center justify-center text-brasil-amarelo shadow-lg group-hover:scale-105 transition-transform duration-300">
+                    <i class="fa-solid fa-feather-pointed text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Brasilidade</span>
+                    <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold">Livraria & Cultura</span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
+                <a href="index.html#destaques" class="hover:text-brasil-terracota transition-colors">Acervo</a>
+                <a href="clube.html" class="hover:text-brasil-terracota transition-colors">Clube do Livro</a>
+                <a href="index.html#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
+            </nav>
+
+            <div class="flex items-center gap-3 sm:gap-5">
+                <a href="public/login.html" title="Área do Usuário / Banco de Dados" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
+                    <i class="fa-regular fa-user text-sm"></i>
+                </a>
+                <a href="clube.html" title="Clube" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
+                    <i class="fa-solid fa-crown text-brasil-terracota"></i>
+                    <span>Clube</span>
+                </a>
+                <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md ring-2 ring-brasil-terracota">
+                    <i class="fa-solid fa-bag-shopping text-sm"></i>
+                    <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">2</span>
+                </a>
+                <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
+            <a href="index.html#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Acervo</a>
+            <a href="clube.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Clube do Livro</a>
+            <a href="index.html#manifesto" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Manifesto</a>
+            <a href="public/login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
+        </div>
+    </header>
+
+    <!-- Main Cart Section -->
+    <main class="pt-32 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Page Title -->
+        <div class="mb-10 text-center sm:text-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brasil-verde/10 text-brasil-verde text-xs font-bold uppercase tracking-wider mb-3">
+                <i class="fa-solid fa-cart-shopping"></i> Sua Sacola Literária
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-serif font-extrabold text-brasil-verde tracking-tight">Carrinho de Compras</h1>
+            <p class="text-brasil-escuro/70 mt-2 font-light">Reveja seus exemplares selecionados antes de prosseguir para a entrega.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+            
+            <!-- Items List -->
+            <div class="lg:col-span-8 space-y-6">
+                
+                <!-- Cart Item 1 -->
+                <div id="item-1" class="bg-white rounded-2xl p-4 sm:p-6 shadow-md border border-brasil-areia flex flex-col sm:flex-row items-center gap-6 relative group transition-all">
+                    <div class="w-24 h-32 bg-brasil-areia rounded-xl overflow-hidden flex-shrink-0 shadow-inner">
+                        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=600" alt="Dom Casmurro" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1 text-center sm:text-left space-y-1">
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-brasil-terracota">Machado de Assis</span>
+                        <h3 class="font-serif font-bold text-xl text-brasil-verde">Dom Casmurro</h3>
+                        <p class="text-xs text-brasil-escuro/60">Edição comemorativa de capa dura e notas críticas.</p>
+                        <div class="text-lg font-bold text-brasil-verde pt-2">R$ 49,90</div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center border border-brasil-areia rounded-xl overflow-hidden bg-brasil-creme">
+                            <button onclick="updateQty(1, -1)" class="px-3 py-1 text-brasil-escuro hover:bg-brasil-areia transition-colors font-bold">-</button>
+                            <span id="qty-1" class="px-3 text-sm font-semibold">1</span>
+                            <button onclick="updateQty(1, 1)" class="px-3 py-1 text-brasil-escuro hover:bg-brasil-areia transition-colors font-bold">+</button>
+                        </div>
+                        <button onclick="removeItem(1)" class="p-2 text-brasil-terracota hover:bg-brasil-terracota/10 rounded-xl transition-colors" title="Remover item">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cart Item 2 -->
+                <div id="item-2" class="bg-white rounded-2xl p-4 sm:p-6 shadow-md border border-brasil-areia flex flex-col sm:flex-row items-center gap-6 relative group transition-all">
+                    <div class="w-24 h-32 bg-brasil-areia rounded-xl overflow-hidden flex-shrink-0 shadow-inner">
+                        <img src="https://images.unsplash.com/photo-1524578271613-d550eacf6090?auto=format&fit=crop&q=80&w=600" alt="Quarto de Despejo" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1 text-center sm:text-left space-y-1">
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-brasil-terracota">Carolina Maria de Jesus</span>
+                        <h3 class="font-serif font-bold text-xl text-brasil-verde">Quarto de Despejo</h3>
+                        <p class="text-xs text-brasil-escuro/60">Diário de uma favelada. Edição especial crítica.</p>
+                        <div class="text-lg font-bold text-brasil-verde pt-2">R$ 54,90</div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center border border-brasil-areia rounded-xl overflow-hidden bg-brasil-creme">
+                            <button onclick="updateQty(2, -1)" class="px-3 py-1 text-brasil-escuro hover:bg-brasil-areia transition-colors font-bold">-</button>
+                            <span id="qty-2" class="px-3 text-sm font-semibold">1</span>
+                            <button onclick="updateQty(2, 1)" class="px-3 py-1 text-brasil-escuro hover:bg-brasil-areia transition-colors font-bold">+</button>
+                        </div>
+                        <button onclick="removeItem(2)" class="p-2 text-brasil-terracota hover:bg-brasil-terracota/10 rounded-xl transition-colors" title="Remover item">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Empty Cart Notice (hidden by default) -->
+                <div id="empty-cart-msg" class="hidden bg-white rounded-2xl p-12 text-center space-y-4 border border-brasil-areia shadow-sm">
+                    <div class="w-16 h-16 rounded-full bg-brasil-areia text-brasil-verde flex items-center justify-center mx-auto text-2xl">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-2xl text-brasil-verde">Sua sacola está vazia</h3>
+                    <p class="text-brasil-escuro/70 text-sm max-w-sm mx-auto">Parece que você ainda não adicionou nenhuma obra prima brasileira ao seu carrinho.</p>
+                    <a href="index.html#destaques" class="inline-block px-6 py-3 bg-brasil-verde text-brasil-amarelo font-bold rounded-xl text-xs hover:bg-brasil-terracota hover:text-white transition-colors">
+                        Explorar Acervo Literário
+                    </a>
+                </div>
+
+                <!-- Continue Shopping Link -->
+                <div class="pt-2 flex items-center justify-between">
+                    <a href="index.html#destaques" class="inline-flex items-center gap-2 text-xs font-bold text-brasil-verde hover:text-brasil-terracota transition-colors">
+                        <i class="fa-solid fa-arrow-left"></i> Continuar Comprando
+                    </a>
+                    <button onclick="clearCart()" class="text-xs text-brasil-escuro/50 hover:text-brasil-terracota transition-colors">
+                        Esvaziar Carrinho
+                    </button>
+                </div>
+            </div>
+
+            <!-- Order Summary / Checkout Box -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-brasil-areia space-y-6 sticky top-28">
+                    <h3 class="font-serif font-bold text-2xl text-brasil-verde border-b border-brasil-areia pb-4">Resumo do Pedido</h3>
+                    
+                    <!-- CEP Calculator -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">Calcular Frete e Prazo</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="cep-input" placeholder="00000-000" maxlength="9" class="w-full px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde">
+                            <button onclick="calcFreight()" class="px-4 py-2.5 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota transition-colors">
+                                OK
+                            </button>
+                        </div>
+                        <p id="freight-result" class="text-xs text-brasil-verde font-medium pt-1 hidden">Frete fixo para o Brasil: <span class="font-bold">R$ 15,00</span> (5 dias úteis)</p>
+                    </div>
+
+                    <!-- Cupom Code -->
+                    <div class="space-y-2 pt-2">
+                        <label class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">Cupom de Desconto</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="coupon-input" placeholder="Ex: BRASILIDADE10" class="w-full px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm uppercase focus:outline-none focus:border-brasil-verde">
+                            <button onclick="applyCoupon()" class="px-4 py-2.5 bg-brasil-areia text-brasil-verde rounded-xl text-xs font-bold hover:bg-brasil-amarelo transition-colors">
+                                Aplicar
+                            </button>
+                        </div>
+                        <p id="coupon-msg" class="text-xs text-brasil-terracota font-medium pt-1 hidden"></p>
+                    </div>
+
+                    <!-- Price Breakdowns -->
+                    <div class="space-y-3 pt-4 border-t border-brasil-areia text-sm">
+                        <div class="flex justify-between text-brasil-escuro/70">
+                            <span>Subtotal</span>
+                            <span id="subtotal-val" class="font-semibold text-brasil-escuro">R$ 104,80</span>
+                        </div>
+                        <div id="discount-row" class="flex justify-between text-brasil-terracota hidden">
+                            <span>Desconto</span>
+                            <span id="discount-val" class="font-semibold">- R$ 10,48</span>
+                        </div>
+                        <div class="flex justify-between text-brasil-escuro/70">
+                            <span>Frete</span>
+                            <span id="freight-val" class="font-semibold text-brasil-escuro">R$ 0,00</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-bold text-brasil-verde pt-3 border-t border-brasil-areia">
+                            <span>Total</span>
+                            <span id="total-val">R$ 104,80</span>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Button -->
+                    <button onclick="proceedCheckout()" class="w-full py-4 rounded-xl bg-brasil-amarelo text-brasil-escuro font-bold hover:bg-brasil-verde hover:text-brasil-amarelo transition-all duration-300 shadow-lg text-center flex items-center justify-center gap-2">
+                        <span>Finalizar Compra</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                    <div class="flex items-center justify-center gap-2 text-[11px] text-brasil-escuro/50 text-center pt-2">
+                        <i class="fa-solid fa-lock text-brasil-terracota"></i> Ambiente 100% seguro e criptografado
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-brasil-escuro text-brasil-creme pt-16 pb-12 border-t border-brasil-areia/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-brasil-amarelo flex items-center justify-center text-brasil-escuro font-bold">
+                            <i class="fa-solid fa-feather-pointed"></i>
+                        </div>
+                        <span class="text-xl font-serif font-bold text-white">Brasilidade</span>
+                    </div>
+                    <p class="text-xs text-brasil-creme/70 leading-relaxed">
+                        Muito mais que uma livraria, um santuário de preservação e celebração da nossa diversidade cultural e literária.
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <h4 class="font-serif font-bold text-brasil-amarelo text-sm tracking-wider uppercase">Navegação</h4>
+                    <ul class="space-y-2 text-xs text-brasil-creme/70">
+                        <li><a href="index.html#destaques" class="hover:text-brasil-amarelo transition-colors">Acervo de Livros</a></li>
+                        <li><a href="clube.html" class="hover:text-brasil-amarelo transition-colors">Clube de Leitura</a></li>
+                        <li><a href="carrinho.html" class="hover:text-brasil-amarelo transition-colors text-brasil-amarelo font-bold">Meu Carrinho</a></li>
+                        <li><a href="public/login.html" class="hover:text-brasil-amarelo transition-colors">Área do Cliente</a></li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3 lg:col-span-2 bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brasil-amarelo to-brasil-terracota flex items-center justify-center text-brasil-escuro font-extrabold text-sm shadow-md tracking-tighter">
+                            MFS
+                        </div>
+                        <div>
+                            <h4 class="font-serif font-bold text-white text-base">Mutti Full Stack</h4>
+                            <span class="text-[10px] uppercase tracking-widest text-brasil-amarelo">Engenharia de Software & Inovação</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-brasil-creme/80 leading-relaxed font-light">
+                        A <strong>Mutti Full Stack</strong> é uma empresa de software focada em desenvolver arquiteturas digitais modernas e de alto desempenho para o comércio eletrônico e cultura.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-brasil-creme/50 gap-4">
+                <p>&copy; 2026 Livraria Brasilidade. Todos os direitos reservados.</p>
+                <p class="flex items-center gap-1">
+                    Desenvolvido com <i class="fa-solid fa-heart text-brasil-terracota"></i> por <span class="text-brasil-amarelo font-semibold">Mutti Full Stack (MFS)</span>.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for general actions / messages -->
+    <div id="info-modal" class="fixed inset-0 z-50 bg-brasil-escuro/70 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-brasil-creme rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-4 shadow-2xl relative border border-brasil-areia animate-scaleIn">
+            <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-brasil-areia flex items-center justify-center text-brasil-escuro hover:bg-brasil-terracota hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="modal-icon" class="w-12 h-12 rounded-2xl bg-brasil-verde text-brasil-amarelo flex items-center justify-center text-xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="modal-title" class="text-2xl font-serif font-bold text-brasil-verde">Sucesso</h3>
+            <p id="modal-desc" class="text-brasil-escuro/70 text-sm leading-relaxed">
+                Mensagem informativa do carrinho.
+            </p>
+            <div class="pt-4 flex justify-end">
+                <button onclick="closeModal()" class="px-6 py-2.5 bg-brasil-verde text-brasil-amarelo font-bold rounded-xl text-xs hover:bg-brasil-terracota hover:text-white transition-colors">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para manipulação dinâmica do carrinho -->
+    <script>
+        let cartData = {
+            item1: { price: 49.90, qty: 1 },
+            item2: { price: 54.90, qty: 1 }
+        };
+        let freightCost = 0.00;
+        let discountPercentage = 0;
+
+        function updateQty(id, change) {
+            let qtyEl = document.getElementById(`qty-${id}`);
+            let currentQty = cartData[`item${id}`].qty + change;
+            if (currentQty < 1) return;
+            
+            cartData[`item${id}`].qty = currentQty;
+            qtyEl.innerText = currentQty;
+            calculateTotals();
+        }
+
+        function removeItem(id) {
+            let itemEl = document.getElementById(`item-${id}`);
+            itemEl.style.opacity = '0';
+            setTimeout(() => {
+                itemEl.remove();
+                delete cartData[`item${id}`];
+                calculateTotals();
+                checkEmptyCart();
+            }, 300);
+        }
+
+        function clearCart() {
+            document.getElementById('item-1')?.remove();
+            document.getElementById('item-2')?.remove();
+            cartData = {};
+            calculateTotals();
+            checkEmptyCart();
+        }
+
+        function checkEmptyCart() {
+            const hasItems = Object.keys(cartData).length > 0;
+            if (!hasItems) {
+                document.getElementById('empty-cart-msg').classList.remove('hidden');
+                document.getElementById('badge-count').innerText = '0';
+            }
+        }
+
+        function calcFreight() {
+            const cep = document.getElementById('cep-input').value;
+            if (cep.length < 8) {
+                showModal('Aviso de CEP', 'Por favor, digite um CEP válido com 8 dígitos.', 'fa-solid fa-triangle-exclamation');
+                return;
+            }
+            freightCost = 15.00;
+            document.getElementById('freight-result').classList.remove('hidden');
+            document.getElementById('freight-val').innerText = 'R$ 15,00';
+            calculateTotals();
+            showModal('Frete Calculado', 'CEP localizado com sucesso! Adicionado frete fixo de R$ 15,00.', 'fa-solid fa-truck-fast');
+        }
+
+        function applyCoupon() {
+            const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+            const msgEl = document.getElementById('coupon-msg');
+            const discountRow = document.getElementById('discount-row');
+
+            if (code === 'BRASILIDADE10') {
+                discountPercentage = 0.10;
+                msgEl.innerText = 'Cupom aplicado com sucesso (-10%)!';
+                msgEl.classList.remove('hidden', 'text-brasil-terracota');
+                msgEl.classList.add('text-brasil-verde');
+                discountRow.classList.remove('hidden');
+                calculateTotals();
+            } else {
+                msgEl.innerText = 'Cupom inválido ou expirado.';
+                msgEl.classList.remove('hidden', 'text-brasil-verde');
+                msgEl.classList.add('text-brasil-terracota');
+                discountPercentage = 0;
+                discountRow.classList.add('hidden');
+                calculateTotals();
+            }
+        }
+
+        function calculateTotals() {
+            let subtotal = 0;
+            let totalItemsCount = 0;
+            for (let key in cartData) {
+                subtotal += cartData[key].price * cartData[key].qty;
+                totalItemsCount += cartData[key].qty;
+            }
+
+            document.getElementById('badge-count').innerText = totalItemsCount;
+            document.getElementById('subtotal-val').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+
+            let discountVal = subtotal * discountPercentage;
+            if (discountPercentage > 0) {
+                document.getElementById('discount-val').innerText = `- R$ ${discountVal.toFixed(2).replace('.', ',')}`;
+            }
+
+            let grandTotal = subtotal - discountVal + freightCost;
+            document.getElementById('total-val').innerText = `R$ ${grandTotal.toFixed(2).replace('.', ',')}`;
+        }
+
+        function proceedCheckout() {
+            if (Object.keys(cartData).length === 0) {
+                showModal('Sacola Vazia', 'Adicione itens ao carrinho antes de prosseguir com o pagamento.', 'fa-solid fa-triangle-exclamation');
+                return;
+            }
+            showModal('Checkout Seguro (MFS)', 'Redirecionando para o ambiente seguro de pagamento integrado pela Mutti Full Stack...', 'fa-solid fa-shield-halved');
+        }
+
+        // Modal Control
+        const modal = document.getElementById('info-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDesc = document.getElementById('modal-desc');
+        const modalIcon = document.getElementById('modal-icon');
+
+        function showModal(title, desc, iconClass = 'fa-solid fa-circle-check') {
+            modalTitle.innerText = title;
+            modalDesc.innerText = desc;
+            modalIcon.innerHTML = `<i class="${iconClass}"></i>`;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

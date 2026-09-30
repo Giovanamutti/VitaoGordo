@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livraria Brasilidade | Poesia e Cultura em Cada Página</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display for headers and Plus Jakarta Sans for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brasil: {
+                            verde: '#1B4D3E',
+                            amarelo: '#F4D03F',
+                            terracota: '#C0392B',
+                            madeira: '#8D5524',
+                            creme: '#FDFBF7',
+                            areia: '#F4ECE1',
+                            escuro: '#1A1818'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FDFBF7;
+            color: #1A1818;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4, .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4ECE1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1B4D3E;
+            border-radius: 4px;
+        }
+        .glass-nav {
+            background: rgba(253, 251, 247, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .hero-pattern {
+            background-image: radial-gradient(#C0392B 0.75px, transparent 0.75px), radial-gradient(#1B4D3E 0.75px, #FDFBF7 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+        }
+        .floating-card {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro">
+
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full bg-brasil-verde flex items-center justify-center text-brasil-amarelo shadow-lg group-hover:scale-105 transition-transform duration-300">
+                    <i class="fa-solid fa-feather-pointed text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Brasilidade</span>
+                    <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold">Livraria & Cultura</span>
+                </div>
+            </a>
+
+            <!-- Navigation Menu -->
+            <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
+                <a href="#destaques" class="hover:text-brasil-terracota transition-colors">Acervo</a>
+                <a href="clube.html" class="hover:text-brasil-terracota transition-colors">Clube do Livro</a>
+                <a href="#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
+            </nav>
+
+            <!-- Action Links -->
+            <div class="flex items-center gap-3 sm:gap-5">
+                <a href="login.html" title="Área do Usuário / Banco de Dados" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
+                    <i class="fa-regular fa-user text-sm"></i>
+                </a>
+                <a href="clube.html" title="Clube" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
+                    <i class="fa-solid fa-crown text-brasil-terracota"></i>
+                    <span>Clube</span>
+                </a>
+                <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo hover:bg-brasil-terracota hover:text-white transition-all flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-bag-shopping text-sm"></i>
+                    <span class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">2</span>
+                </a>
+                <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
+            <a href="#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Acervo</a>
+            <a href="clube.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Clube do Livro</a>
+            <a href="login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
+            <div class="pt-3 border-t border-brasil-areia flex gap-4">
+                <a href="carrinho.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-verde text-brasil-amarelo text-xs font-bold">Carrinho (2)</a>
+                <a href="clube.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-amarelo/30 text-brasil-verde text-xs font-bold">Clube</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative pt-32 pb-20 md:pt-40 md:pb-32 hero-pattern overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brasil-terracota/10 text-brasil-terracota text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-earth-americas"></i> Celebrando a Nossa Literatura
+                    </div>
+                    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-serif font-extrabold text-brasil-verde tracking-tight leading-[1.1]">
+                        Onde a <span class="italic text-brasil-terracota">alma brasileira</span> encontra suas histórias.
+                    </h1>
+                    <p class="text-lg sm:text-xl text-brasil-escuro/80 max-w-2xl mx-auto lg:mx-0 font-light leading-relaxed">
+                        Mergulhe na riqueza da cultura nacional. De clássicos imortais à vibrante prosa contemporânea, conectamos você à essência literária do Brasil.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                        <a href="#destaques" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brasil-verde text-brasil-creme font-semibold hover:bg-brasil-terracota transition-all duration-300 shadow-xl flex items-center justify-center gap-3 group">
+                            <span>Explorar Catálogo</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                        <a href="clube.html" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brasil-areia border border-brasil-madeira/20 text-brasil-verde font-semibold hover:bg-brasil-amarelo/30 transition-all duration-300 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-gift text-brasil-terracota"></i>
+                            <span>Conhecer o Clube</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative w-full max-w-md">
+                        <div class="absolute -inset-4 bg-gradient-to-r from-brasil-amarelo to-brasil-terracota rounded-3xl blur-2xl opacity-25 -z-10 animate-pulse"></div>
+                        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-2xl border border-brasil-areia floating-card relative">
+                            <div class="absolute top-4 right-4 bg-brasil-amarelo text-brasil-escuro text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                                Destaque do Mês
+                            </div>
+                            <div class="overflow-hidden rounded-2xl mb-6 shadow-inner aspect-[3/4] bg-brasil-areia">
+                                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=800" alt="Grande Sertão: Veredas" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
+                            </div>
+                            <div class="space-y-2">
+                                <span class="text-xs uppercase tracking-widest text-brasil-terracota font-bold">Romance Regionalista</span>
+                                <h3 class="text-2xl font-serif font-bold text-brasil-verde">Grande Sertão: Veredas</h3>
+                                <p class="text-sm text-brasil-escuro/70">João Guimarães Rosa</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="destaques" class="py-20 bg-brasil-areia/50 border-t border-b border-brasil-areia">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <span class="text-xs uppercase tracking-widest text-brasil-terracota font-bold">Vitrine Literária</span>
+                <h2 class="text-3xl sm:text-5xl font-serif font-bold text-brasil-verde">Obras Primas da Nossa Terra</h2>
+                <p class="text-brasil-escuro/70 font-light">Uma seleção curada para celebrar a diversidade, o folclore e a profundidade da escrita brasileira.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia">
+                    <div>
+                        <div class="relative overflow-hidden aspect-[3/4] bg-brasil-areia">
+                            <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=600" alt="Dom Casmurro" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute top-3 left-3 bg-brasil-verde text-brasil-amarelo text-[10px] font-bold px-2.5 py-1 rounded-md uppercase">Clássico</div>
+                        </div>
+                        <div class="p-6 space-y-2">
+                            <span class="text-xs text-brasil-terracota font-semibold uppercase tracking-wider">Machado de Assis</span>
+                            <h3 class="text-xl font-serif font-bold text-brasil-verde group-hover:text-brasil-terracota transition-colors">Dom Casmurro</h3>
+                            <p class="text-xs text-brasil-escuro/60 line-clamp-2">A enigmática obsessão de Bento Santiago por Capitu e a eterna dúvida de Trajano.</p>
+                        </div>
+                    </div>
+                    <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
+                        <span class="text-lg font-bold text-brasil-verde">R$ 49,90</span>
+                        <a href="carrinho.html" class="px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
+                            <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia">
+                    <div>
+                        <div class="relative overflow-hidden aspect-[3/4] bg-brasil-areia">
+                            <img src="https://images.unsplash.com/photo-1495640388908-05fa85288e61?auto=format&fit=crop&q=80&w=600" alt="Macunaíma" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute top-3 left-3 bg-brasil-terracota text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase">Modernismo</div>
+                        </div>
+                        <div class="p-6 space-y-2">
+                            <span class="text-xs text-brasil-terracota font-semibold uppercase tracking-wider">Mário de Andrade</span>
+                            <h3 class="text-xl font-serif font-bold text-brasil-verde group-hover:text-brasil-terracota transition-colors">Macunaíma</h3>
+                            <p class="text-xs text-brasil-escuro/60 line-clamp-2">As hilárias e míticas peripécias do herói sem nenhum caráter pela floresta e metrópole.</p>
+                        </div>
+                    </div>
+                    <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
+                        <span class="text-lg font-bold text-brasil-verde">R$ 39,90</span>
+                        <a href="carrinho.html" class="px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
+                            <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia">
+                    <div>
+                        <div class="relative overflow-hidden aspect-[3/4] bg-brasil-areia">
+                            <img src="https://images.unsplash.com/photo-1524578271613-d550eacf6090?auto=format&fit=crop&q=80&w=600" alt="Quarto de Despejo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute top-3 left-3 bg-brasil-amarelo text-brasil-escuro text-[10px] font-bold px-2.5 py-1 rounded-md uppercase">Memórias</div>
+                        </div>
+                        <div class="p-6 space-y-2">
+                            <span class="text-xs text-brasil-terracota font-semibold uppercase tracking-wider">Carolina Maria de Jesus</span>
+                            <h3 class="text-xl font-serif font-bold text-brasil-verde group-hover:text-brasil-terracota transition-colors">Quarto de Despejo</h3>
+                            <p class="text-xs text-brasil-escuro/60 line-clamp-2">O cotidiano pungente e poético na favela do Canindé narrado por uma mulher extraordinária.</p>
+                        </div>
+                    </div>
+                    <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
+                        <span class="text-lg font-bold text-brasil-verde">R$ 54,90</span>
+                        <a href="carrinho.html" class="px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
+                            <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia">
+                    <div>
+                        <div class="relative overflow-hidden aspect-[3/4] bg-brasil-areia">
+                            <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=600" alt="Vidas Secas" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute top-3 left-3 bg-brasil-verde text-brasil-amarelo text-[10px] font-bold px-2.5 py-1 rounded-md uppercase">Realismo</div>
+                        </div>
+                        <div class="p-6 space-y-2">
+                            <span class="text-xs text-brasil-terracota font-semibold uppercase tracking-wider">Graciliano Ramos</span>
+                            <h3 class="text-xl font-serif font-bold text-brasil-verde group-hover:text-brasil-terracota transition-colors">Vidas Secas</h3>
+                            <p class="text-xs text-brasil-escuro/60 line-clamp-2">A dura jornada de Fabiano e sua família fugindo da seca implacável no sertão nordestino.</p>
+                        </div>
+                    </div>
+                    <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
+                        <span class="text-lg font-bold text-brasil-verde">R$ 44,90</span>
+                        <a href="carrinho.html" class="px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
+                            <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="manifesto" class="bg-brasil-escuro text-brasil-creme pt-16 pb-12 border-t border-brasil-areia/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-brasil-amarelo flex items-center justify-center text-brasil-escuro font-bold">
+                            <i class="fa-solid fa-feather-pointed"></i>
+                        </div>
+                        <span class="text-xl font-serif font-bold text-white">Brasilidade</span>
+                    </div>
+                    <p class="text-xs text-brasil-creme/70 leading-relaxed">
+                        Muito mais que uma livraria, um santuário de preservação e celebração da nossa diversidade cultural e literária.
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <h4 class="font-serif font-bold text-brasil-amarelo text-sm tracking-wider uppercase">Navegação</h4>
+                    <ul class="space-y-2 text-xs text-brasil-creme/70">
+                        <li><a href="#destaques" class="hover:text-brasil-amarelo transition-colors">Acervo de Livros</a></li>
+                        <li><a href="clube.html" class="hover:text-brasil-amarelo transition-colors">Clube de Leitura</a></li>
+                        <li><a href="carrinho.html" class="hover:text-brasil-amarelo transition-colors">Meu Carrinho</a></li>
+                        <li><a href="login.html
+                            
+                        " class="hover:text-brasil-amarelo transition-colors">Área do Cliente</a></li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3 lg:col-span-2 bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brasil-amarelo to-brasil-terracota flex items-center justify-center text-brasil-escuro font-extrabold text-sm shadow-md tracking-tighter">
+                            MFS
+                        </div>
+                        <div>
+                            <h4 class="font-serif font-bold text-white text-base">Mutti Full Stack</h4>
+                            <span class="text-[10px] uppercase tracking-widest text-brasil-amarelo">Engenharia de Software & Inovação</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-brasil-creme/80 leading-relaxed font-light">
+                        A <strong>Mutti Full Stack</strong> é uma empresa de software focada em desenvolver arquiteturas digitais modernas, inovadoras e de alto desempenho.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-brasil-creme/50 gap-4">
+                <p>&copy; 2026 Livraria Brasilidade. Todos os direitos reservados.</p>
+                <p class="flex items-center gap-1">
+                    Desenvolvido com <i class="fa-solid fa-heart text-brasil-terracota"></i> por <span class="text-brasil-amarelo font-semibold">Mutti Full Stack (MFS)</span>.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
