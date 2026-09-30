@@ -1,0 +1,12 @@
+{
+  "name": "livraria-multicultural",
+  "version": "1.0.0",
+  "description": "Sistema de Livraria com SQLite",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  }
+}
