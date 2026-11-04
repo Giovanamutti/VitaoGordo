@@ -1,12 +1,12 @@
 {
-  "name": "livraria-multicultural",
+  "name": "cadastro-cliente",
   "version": "1.0.0",
-  "description": "Sistema de Livraria com SQLite",
-  "main": "server.js",
+  "description": "Sistema de cadastro de clientes",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "dependencies": {
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^6.0.1"
   }
 }
