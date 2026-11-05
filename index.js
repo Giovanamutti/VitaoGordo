@@ -1,7 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 var path = require('path');
-var db = require('./bd');
+var db = require('./db');
 
 var PORTA = 7600;
 
@@ -110,9 +110,9 @@ var servidor = http.createServer(function (req, res) {
     return;
   }
 
-  // ---- Arquivos estáticos (Redireciona a raiz para login.html) ----
+  // ---- Arquivos estáticos (Entregando login.html como padrão) ----
   if (req.method === 'GET') {
-    return servirArquivo(res, caminho === '/' ? 'login.html' : caminho);
+    return servirArquivo(res, caminho === '/' ? 'index.html' : caminho);
   }
 
   responderJson(res, 404, { erro: 'Nao encontrado.' });

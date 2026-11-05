@@ -2,173 +2,77 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login / Identificação - Cliente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Livraria Multicultural - Cadastro</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-    }
-
-    .login-container {
-      width: 100%;
-      max-width: 450px;
-      padding: 2rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #fff;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .login-container h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      color: #333;
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .form-group label {
-      margin-bottom: 0.3rem;
-      font-weight: bold;
-      color: #555;
-    }
-
-    .form-group input {
-      padding: 0.65rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 0.95rem;
-    }
-
-    .btn-login {
-      width: 100%;
-      padding: 0.75rem;
-      margin-top: 1rem;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 4px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-    }
-
-    .btn-login:hover {
-      background-color: #0056b3;
-    }
-
-    #aviso {
-      margin-top: 1rem;
-      text-align: center;
-      font-size: 0.9rem;
-      font-weight: bold;
-    }
-
-    .erro {
-      color: red;
-    }
-
-    .sucesso {
-      color: green;
-    }
-  </style>
 </head>
 <body>
 
-  <div class="login-container">
-    <h2>Validação do Cliente</h2>
+  <header class="header-livraria">
+    <h1>Livraria Multicultural</h1>
+    <p>Gestão e Cadastro de Clientes</p>
+  </header>
 
-    <div id="aviso"></div>
+  <div class="pagina-container">
+    <main class="container-card">
+      <form id="formCliente">
+        <fieldset>
+          <legend>Novo Cliente</legend>
 
-    <form id="formLogin">
-      <div class="form-group">
-        <label for="nome">Nome Completo</label>
-        <input type="text" id="nome" name="nome" placeholder="Ex: Vitor" required>
+          <div class="linha">
+            <label class="campo-nome">
+              <span>Nome Completo *</span>
+              <input type="text" name="nome" placeholder="Digite o nome completo" required>
+            </label>
+            <label class="campo-cep">
+              <span>CEP *</span>
+              <input type="text" name="cep" placeholder="85860-000" required>
+            </label>
+          </div>
+
+          <div class="linha">
+            <label class="campo-cpf">
+              <span>CPF *</span>
+              <input type="text" name="cpf" placeholder="000.000.000-00" required>
+            </label>
+            <label class="campo-telefone">
+              <span>Telefone</span>
+              <input type="text" name="telefone" placeholder="(00) 00000-0000">
+            </label>
+            <label class="campo-data">
+              <span>Data de Nascimento</span>
+              <input type="date" name="nascimento" id="data">
+            </label>
+          </div>
+
+          <button type="submit">Salvar Cliente</button>
+          <p id="aviso"></p>
+        </fieldset>
+      </form>
+    </main>
+
+    <section class="secao-tabela">
+      <h2>Clientes Cadastrados</h2>
+      <div class="tabela-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>CEP</th>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>CPF</th>
+              <th>Data Nasc.</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="corpoTabela"></tbody>
+        </table>
       </div>
-
-      <div class="form-group">
-        <label for="cpf">CPF</label>
-        <input type="text" id="cpf" name="cpf" placeholder="Ex: 096.096.709-75" required>
-      </div>
-
-      <div class="form-group">
-        <label for="telefone">Telefone</label>
-        <input type="text" id="telefone" name="telefone" placeholder="Ex: +55 45 9999-9999" required>
-      </div>
-
-      <div class="form-group">
-        <label for="nascimento">Data de Nascimento</label>
-        <input type="text" id="nascimento" name="nascimento" placeholder="Ex: 22/03/2010" required>
-      </div>
-
-      <div class="form-group">
-        <label for="cep">CEP</label>
-        <input type="text" id="cep" name="cep" placeholder="Ex: 87855997" required>
-      </div>
-
-      <button type="submit" class="btn-login">Validar e Entrar</button>
-    </form>
+    </section>
   </div>
 
-  <script>
-    const formLogin = document.getElementById('formLogin');
-    const aviso = document.getElementById('aviso');
+  <script src="script.js"></script>
 
-    function mostrarAviso(texto, ehErro) {
-      aviso.textContent = texto;
-      aviso.className = ehErro ? 'erro' : 'sucesso';
-    }
-
-    formLogin.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const dados = {
-        nome: document.getElementById('nome').value.trim(),
-        cpf: document.getElementById('cpf').value.trim(),
-        telefone: document.getElementById('telefone').value.trim(),
-        nascimento: document.getElementById('nascimento').value.trim(),
-        cep: document.getElementById('cep').value.trim()
-      };
-
-      fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dados)
-      })
-      .then(function (resposta) {
-        return resposta.json().then(function (corpo) {
-          return { ok: resposta.ok, corpo: corpo };
-        });
-      })
-      .then(function (resultado) {
-        if (!resultado.ok) {
-          mostrarAviso(resultado.corpo.erro, true);
-          return;
-        }
-
-        mostrarAviso('Dados validados com sucesso! Redirecionando...', false);
-
-        localStorage.setItem('clienteLogado', JSON.stringify(resultado.corpo.cliente));
-
-        setTimeout(function () {
-          window.location.href = '/';
-        }, 1200);
-      })
-      .catch(function (erro) {
-        mostrarAviso('Erro de conexão com o servidor: ' + erro.message, true);
-      });
-    });
-  </script>
 </body>
 </html>
