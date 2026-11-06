@@ -333,56 +333,133 @@
 
     <!-- Script para manipulação dinâmica do carrinho -->
     <script>
-        let cartData = {
-            item1: { price: 49.90, qty: 1 },
-            item2: { price: 54.90, qty: 1 }
+        // ============================================================
+        // Estado do carrinho (persistido em localStorage)
+        // ============================================================
+        const STORAGE_KEY = 'brasilidade_carrinho';
+
+        const PRODUTOS = {
+            1: { nome: 'Dom Casmurro', preco: 49.90 },
+            2: { nome: 'Quarto de Despejo', preco: 54.90 }
         };
+
+        let cartData = carregarCarrinho();
         let freightCost = 0.00;
         let discountPercentage = 0;
 
+        function carregarCarrinho() {
+            try {
+                const salvo = localStorage.getItem(STORAGE_KEY);
+                if (salvo) {
+                    const dados = JSON.parse(salvo);
+                    if (dados && typeof dados === 'object') return dados;
+                }
+            } catch (e) {
+                console.warn('Falha ao carregar carrinho do localStorage:', e);
+            }
+            // Padrão: os dois itens iniciais
+            return {
+                1: { price: PRODUTOS[1].preco, qty: 1 },
+                2: { price: PRODUTOS[2].preco, qty: 1 }
+            };
+        }
+
+        function salvarCarrinho() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(cartData));
+            } catch (e) {
+                console.warn('Falha ao salvar carrinho:', e);
+            }
+        }
+
+        // ============================================================
+        // Quantidade / remoção
+        // ============================================================
         function updateQty(id, change) {
-            let qtyEl = document.getElementById(`qty-${id}`);
-            let currentQty = cartData[`item${id}`].qty + change;
-            if (currentQty < 1) return;
-            
-            cartData[`item${id}`].qty = currentQty;
-            qtyEl.innerText = currentQty;
+            const chave = String(id);
+            if (!cartData[chave]) return; // item já removido, ignora
+
+            const novaQty = cartData[chave].qty + change;
+            if (novaQty < 1) return; // não permite zero (use o botão excluir)
+
+            cartData[chave].qty = novaQty;
+            document.getElementById(`qty-${id}`).innerText = novaQty;
+
+            salvarCarrinho();
             calculateTotals();
         }
 
         function removeItem(id) {
-            let itemEl = document.getElementById(`item-${id}`);
-            itemEl.style.opacity = '0';
+            const chave = String(id);
+            const itemEl = document.getElementById(`item-${id}`);
+
+            if (itemEl) {
+                itemEl.style.opacity = '0';
+                itemEl.style.transform = 'scale(0.95)';
+            }
+
             setTimeout(() => {
-                itemEl.remove();
-                delete cartData[`item${id}`];
+                if (itemEl) itemEl.remove();
+                delete cartData[chave];
+                salvarCarrinho();
                 calculateTotals();
                 checkEmptyCart();
             }, 300);
         }
 
         function clearCart() {
-            document.getElementById('item-1')?.remove();
-            document.getElementById('item-2')?.remove();
+            if (Object.keys(cartData).length === 0) return;
+
+            if (!confirm('Deseja realmente esvaziar o carrinho?')) return;
+
+            document.querySelectorAll('[id^="item-"]').forEach(el => el.remove());
             cartData = {};
+            freightCost = 0.00;
+            discountPercentage = 0;
+
+            // Reseta campos
+            const cepInput = document.getElementById('cep-input');
+            if (cepInput) cepInput.value = '';
+            const couponInput = document.getElementById('coupon-input');
+            if (couponInput) couponInput.value = '';
+            const freightResult = document.getElementById('freight-result');
+            if (freightResult) freightResult.classList.add('hidden');
+            const couponMsg = document.getElementById('coupon-msg');
+            if (couponMsg) couponMsg.classList.add('hidden');
+            const discountRow = document.getElementById('discount-row');
+            if (discountRow) discountRow.classList.add('hidden');
+
+            salvarCarrinho();
             calculateTotals();
             checkEmptyCart();
         }
 
         function checkEmptyCart() {
             const hasItems = Object.keys(cartData).length > 0;
+            const emptyMsg = document.getElementById('empty-cart-msg');
             if (!hasItems) {
-                document.getElementById('empty-cart-msg').classList.remove('hidden');
+                if (emptyMsg) emptyMsg.classList.remove('hidden');
                 document.getElementById('badge-count').innerText = '0';
+            } else {
+                if (emptyMsg) emptyMsg.classList.add('hidden');
             }
         }
 
+        // ============================================================
+        // Frete / Cupom
+        // ============================================================
         function calcFreight() {
-            const cep = document.getElementById('cep-input').value;
-            if (cep.length < 8) {
+            const input = document.getElementById('cep-input');
+            const cep = (input.value || '').replace(/\D/g, ''); // só dígitos
+
+            if (cep.length !== 8) {
                 showModal('Aviso de CEP', 'Por favor, digite um CEP válido com 8 dígitos.', 'fa-solid fa-triangle-exclamation');
                 return;
             }
+
+            // Máscara visual
+            input.value = cep.replace(/^(\d{5})(\d{3})$/, '$1-$2');
+
             freightCost = 15.00;
             document.getElementById('freight-result').classList.remove('hidden');
             document.getElementById('freight-val').innerText = 'R$ 15,00';
@@ -391,7 +468,7 @@
         }
 
         function applyCoupon() {
-            const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+            const code = (document.getElementById('coupon-input').value || '').trim().toUpperCase();
             const msgEl = document.getElementById('coupon-msg');
             const discountRow = document.getElementById('discount-row');
 
@@ -401,46 +478,72 @@
                 msgEl.classList.remove('hidden', 'text-brasil-terracota');
                 msgEl.classList.add('text-brasil-verde');
                 discountRow.classList.remove('hidden');
-                calculateTotals();
             } else {
                 msgEl.innerText = 'Cupom inválido ou expirado.';
                 msgEl.classList.remove('hidden', 'text-brasil-verde');
                 msgEl.classList.add('text-brasil-terracota');
                 discountPercentage = 0;
                 discountRow.classList.add('hidden');
-                calculateTotals();
             }
+
+            calculateTotals();
+        }
+
+        // ============================================================
+        // Totais
+        // ============================================================
+        function calcularSubtotal() {
+            let subtotal = 0;
+            let totalItens = 0;
+            for (const chave in cartData) {
+                subtotal += cartData[chave].price * cartData[chave].qty;
+                totalItens += cartData[chave].qty;
+            }
+            return { subtotal, totalItens };
         }
 
         function calculateTotals() {
-            let subtotal = 0;
-            let totalItemsCount = 0;
-            for (let key in cartData) {
-                subtotal += cartData[key].price * cartData[key].qty;
-                totalItemsCount += cartData[key].qty;
-            }
+            const { subtotal, totalItens } = calcularSubtotal();
 
-            document.getElementById('badge-count').innerText = totalItemsCount;
-            document.getElementById('subtotal-val').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('badge-count').innerText = totalItens;
+            document.getElementById('subtotal-val').innerText =
+                `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
 
-            let discountVal = subtotal * discountPercentage;
+            const discountVal = subtotal * discountPercentage;
             if (discountPercentage > 0) {
-                document.getElementById('discount-val').innerText = `- R$ ${discountVal.toFixed(2).replace('.', ',')}`;
+                document.getElementById('discount-val').innerText =
+                    `- R$ ${discountVal.toFixed(2).replace('.', ',')}`;
             }
 
-            let grandTotal = subtotal - discountVal + freightCost;
-            document.getElementById('total-val').innerText = `R$ ${grandTotal.toFixed(2).replace('.', ',')}`;
+            const grandTotal = subtotal - discountVal + freightCost;
+            document.getElementById('total-val').innerText =
+                `R$ ${grandTotal.toFixed(2).replace('.', ',')}`;
         }
 
+        // ============================================================
+        // Checkout
+        // ============================================================
         function proceedCheckout() {
             if (Object.keys(cartData).length === 0) {
                 showModal('Sacola Vazia', 'Adicione itens ao carrinho antes de prosseguir com o pagamento.', 'fa-solid fa-triangle-exclamation');
                 return;
             }
-            showModal('Checkout Seguro (MFS)', 'Redirecionando para o ambiente seguro de pagamento integrado pela Mutti Full Stack...', 'fa-solid fa-shield-halved');
+            if (freightCost === 0) {
+                showModal('Calcule o Frete', 'Informe seu CEP e clique em "OK" para calcular o frete antes de finalizar.', 'fa-solid fa-truck-fast');
+                return;
+            }
+            const { subtotal } = calcularSubtotal();
+            const total = subtotal - (subtotal * discountPercentage) + freightCost;
+            showModal(
+                'Checkout Seguro (MFS)',
+                `Total a pagar: R$ ${total.toFixed(2).replace('.', ',')}. Redirecionando para o ambiente seguro de pagamento integrado pela Mutti Full Stack...`,
+                'fa-solid fa-shield-halved'
+            );
         }
 
-        // Modal Control
+        // ============================================================
+        // Modal
+        // ============================================================
         const modal = document.getElementById('info-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalDesc = document.getElementById('modal-desc');
@@ -459,11 +562,32 @@
             modal.classList.add('hidden');
         }
 
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
+        window.addEventListener('click', function (event) {
+            if (event.target === modal) closeModal();
+        });
+
+        // ============================================================
+        // Inicialização
+        // ============================================================
+        (function init() {
+            // Reconstrói a UI a partir do estado salvo
+            [1, 2].forEach(id => {
+                const chave = String(id);
+                const el = document.getElementById(`item-${id}`);
+                const qtyEl = document.getElementById(`qty-${id}`);
+                if (!el) return;
+
+                if (cartData[chave]) {
+                    qtyEl.innerText = cartData[chave].qty;
+                } else {
+                    el.remove(); // item foi removido em sessão anterior
+                }
+            });
+
+            // Ajusta badge e totais
+            calculateTotals();
+            checkEmptyCart();
+        })();
     </script>
 </body>
 </html>
