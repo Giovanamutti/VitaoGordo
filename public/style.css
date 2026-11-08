@@ -9,11 +9,7 @@
   --cor-sucesso: #2f855a;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -23,6 +19,9 @@ body {
   padding: 2rem 1rem;
 }
 
+/* =======================================================================
+   HEADER (login.html e add_livros.html)
+   ======================================================================= */
 .header-livraria {
   text-align: center;
   margin-bottom: 2rem;
@@ -44,10 +43,24 @@ body {
   font-size: 0.95rem;
 }
 
-.pagina-container {
-  max-width: 900px;
-  margin: 0 auto;
+.header-livraria .header-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
 }
+
+.header-livraria .header-logo-row img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+/* =======================================================================
+   LAYOUT
+   ======================================================================= */
+.pagina-container { max-width: 1100px; margin: 0 auto; }
 
 .container-card {
   background: var(--cor-card);
@@ -59,10 +72,7 @@ body {
   width: 100%;
 }
 
-fieldset {
-  border: none;
-  width: 100%;
-}
+fieldset { border: none; width: 100%; }
 
 legend {
   font-size: 1.2rem;
@@ -83,10 +93,7 @@ legend {
   margin-bottom: 0.5rem;
 }
 
-.linha label {
-  display: block;
-  margin-bottom: 1rem;
-}
+.linha label { display: block; margin-bottom: 1rem; }
 
 .campo-nome { flex: 2 1 280px; }
 .campo-cep { flex: 1 1 140px; }
@@ -103,19 +110,59 @@ label span {
   text-transform: uppercase;
 }
 
-input {
+input, select {
   width: 100%;
   padding: 0.6rem 0.8rem;
   border: 1px solid var(--cor-borda);
   border-radius: 5px;
   font-size: 0.95rem;
   background-color: #fafafa;
+  font-family: inherit;
 }
 
-input:focus {
+input:focus, select:focus {
   outline: none;
   border-color: var(--cor-primaria);
   background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.12);
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 4px;
+  background: #e2d7cd;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+input[type="range"]:focus {
+  box-shadow: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #8b4513;
+  cursor: pointer;
+  border: 3px solid #F4D03F;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #8b4513;
+  cursor: pointer;
+  border: 3px solid #F4D03F;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 button[type="submit"] {
@@ -128,15 +175,15 @@ button[type="submit"] {
   border-radius: 5px;
   cursor: pointer;
   margin-top: 0.5rem;
+  transition: background-color 0.2s;
 }
 
-button[type="submit"]:hover {
-  background-color: var(--cor-primaria-hover);
-}
+button[type="submit"]:hover { background-color: var(--cor-primaria-hover); }
 
-.secao-tabela {
-  width: 100%;
-}
+/* =======================================================================
+   TABELAS
+   ======================================================================= */
+.secao-tabela { width: 100%; }
 
 .secao-tabela h2 {
   font-size: 1.3rem;
@@ -153,11 +200,7 @@ button[type="submit"]:hover {
   width: 100%;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
+table { width: 100%; border-collapse: collapse; text-align: left; }
 
 th {
   background-color: #f1ebd9;
@@ -167,12 +210,14 @@ th {
   font-size: 0.85rem;
   text-transform: uppercase;
   border-bottom: 1px solid var(--cor-borda);
+  white-space: nowrap;
 }
 
 td {
   padding: 0.8rem 1rem;
   border-bottom: 1px solid var(--cor-borda);
   font-size: 0.9rem;
+  vertical-align: middle;
 }
 
 td button {
@@ -183,20 +228,30 @@ td button {
   border-radius: 4px;
   font-size: 0.8rem;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-td button:hover {
-  background-color: var(--cor-erro);
-  color: white;
-}
+td button:hover { background-color: var(--cor-erro); color: white; }
 
-#aviso {
+#aviso, #avisoLivro {
   margin-top: 1rem;
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--cor-sucesso);
 }
 
-#aviso.erro {
-  color: var(--cor-erro);
+#aviso.erro, #avisoLivro.erro { color: var(--cor-erro); }
+
+/* =======================================================================
+   RESPONSIVO
+   ======================================================================= */
+@media (max-width: 640px) {
+  .header-livraria .header-logo-row img {
+    width: 64px !important;
+    height: 64px !important;
+  }
+
+  .header-livraria h1 { font-size: 1.6rem; }
+
+  .container-card { padding: 1.25rem; }
 }

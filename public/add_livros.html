@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Livraria Multicultural - Cadastro de Livros</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="header-livraria">
+    <div class="header-logo-row">
+      <a href="index.html"><img src="logo/logo.png" alt="Multicultural"></a>
+      <h1 style="margin:0;">Livraria Multicultural</h1>
+    </div>
+    <p>Gestão e Cadastro de Livros</p>
+    <p style="margin-top:.5rem;">
+      <a href="login.html" style="color:#8b4513; font-weight:600; text-decoration:none;">← Cadastro de Clientes</a>
+    </p>
+  </header>
+
+  <div class="pagina-container">
+    <main class="container-card">
+      <form id="formLivro">
+        <fieldset>
+          <legend>Novo Livro</legend>
+
+          <div class="linha">
+            <label class="campo-nome">
+              <span>Título *</span>
+              <input type="text" name="titulo" placeholder="Digite o título do livro" required>
+            </label>
+            <label class="campo-cep">
+              <span>ISBN</span>
+              <input type="text" name="isbn" placeholder="978-85-0000-000-0">
+            </label>
+          </div>
+
+          <div class="linha">
+            <label class="campo-nome">
+              <span>Autor *</span>
+              <input type="text" name="autor" placeholder="Nome do autor" required>
+            </label>
+            <label class="campo-telefone">
+              <span>Gênero</span>
+              <input type="text" name="genero" placeholder="Ex: Romance, Poesia...">
+            </label>
+          </div>
+
+          <div class="linha">
+            <label class="campo-cpf">
+              <span>Preço (R$) *</span>
+              <input type="number" name="preco" placeholder="49.90" step="0.01" min="0.01" required>
+            </label>
+            <label class="campo-data">
+              <span>Estoque</span>
+              <input type="number" name="estoque" placeholder="0" min="0" step="1" value="0">
+            </label>
+          </div>
+
+          <div class="linha">
+            <label class="campo-nome">
+              <span>Nome da Imagem</span>
+              <input type="text" name="imagem" placeholder="Ex: NoitesBrancas.png">
+              <small style="display:block; font-size:0.7rem; color:#888; margin-top:.25rem;">
+                Salve o arquivo em <code>public/imagens/</code> com exatamente esse nome.
+              </small>
+            </label>
+            <label class="campo-data">
+              <span>Origem *</span>
+              <select name="origem" required>
+                <option value="Nacional">Nacional</option>
+                <option value="Internacional">Internacional</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="linha">
+            <label class="campo-nome">
+              <span>Avaliação (0.1 a 5.0 estrelas)</span>
+              <div style="display:flex; align-items:center; gap:.75rem;">
+                <input
+                  type="range"
+                  id="avaliacaoRange"
+                  name="avaliacao"
+                  min="0" max="5" step="0.1" value="0"
+                  oninput="document.getElementById('avaliacaoTexto').textContent = (this.value == 0 ? 'Sem avaliação' : Number(this.value).toFixed(1) + ' ★');">
+                <span id="avaliacaoTexto" style="font-weight:700; color:#8b4513; min-width:110px; text-align:right;">Sem avaliação</span>
+              </div>
+              <small style="display:block; font-size:0.7rem; color:#888; margin-top:.25rem;">
+                Arraste o slider. Nota <strong>0</strong> significa "ainda sem avaliação".
+              </small>
+            </label>
+          </div>
+
+          <button type="submit">Salvar Livro</button>
+          <p id="avisoLivro"></p>
+        </fieldset>
+      </form>
+    </main>
+
+    <section class="secao-tabela">
+      <h2>Livros Cadastrados</h2>
+      <div class="tabela-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Capa</th>
+              <th>Título</th>
+              <th>Autor</th>
+              <th>Origem</th>
+              <th>Gênero</th>
+              <th>Preço</th>
+              <th>Estoque</th>
+              <th>ISBN</th>
+              <th>Avaliação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="corpoTabelaLivros"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Livraria Brasilidade | Poesia e Cultura em Cada Página</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Livraria Multicultural | Poesia e Cultura em Cada Página</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Playfair Display for headers and Plus Jakarta Sans for body -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
@@ -25,7 +22,8 @@
                             creme: '#FDFBF7',
                             areia: '#F4ECE1',
                             escuro: '#1A1818'
-                        }
+                        },
+                        mfs: '#80c0d8'
                     },
                     fontFamily: {
                         serif: ['"Playfair Display"', 'serif'],
@@ -36,67 +34,35 @@
         }
     </script>
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #FDFBF7;
-            color: #1A1818;
-            overflow-x: hidden;
-        }
-        h1, h2, h3, h4, .font-serif {
-            font-family: 'Playfair Display', serif;
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #F4ECE1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1B4D3E;
-            border-radius: 4px;
-        }
-        .glass-nav {
-            background: rgba(253, 251, 247, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-        .hero-pattern {
-            background-image: radial-gradient(#C0392B 0.75px, transparent 0.75px), radial-gradient(#1B4D3E 0.75px, #FDFBF7 0.75px);
-            background-size: 30px 30px;
-            background-position: 0 0, 15px 15px;
-        }
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(1deg); }
-        }
-        .floating-card {
-            animation: floatSlow 6s ease-in-out infinite;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FDFBF7; color: #1A1818; overflow-x: hidden; }
+        h1, h2, h3, h4, .font-serif { font-family: 'Playfair Display', serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F4ECE1; }
+        ::-webkit-scrollbar-thumb { background: #1B4D3E; border-radius: 4px; }
+        .glass-nav { background: rgba(253, 251, 247, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .hero-pattern { background-image: radial-gradient(#C0392B 0.75px, transparent 0.75px), radial-gradient(#1B4D3E 0.75px, #FDFBF7 0.75px); background-size: 30px 30px; background-position: 0 0, 15px 15px; }
+        @keyframes floatSlow { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
+        .floating-card { animation: floatSlow 6s ease-in-out infinite; }
     </style>
 </head>
 <body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro">
 
     <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <!-- Logo -->
             <a href="index.html" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-full bg-brasil-verde flex items-center justify-center text-brasil-amarelo shadow-lg group-hover:scale-105 transition-transform duration-300">
-                    <i class="fa-solid fa-feather-pointed text-lg"></i>
-                </div>
-                <div>
-                    <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Brasilidade</span>
-                    <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold">Livraria & Cultura</span>
-                </div>
-            </a>
+             <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
+        <div class="flex flex-col justify-center leading-tight">
+            <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
+            <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold mt-1">Livraria & Cultura</span>
+        </div>
+    </a>
 
-            <!-- Navigation Menu -->
             <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
                 <a href="#destaques" class="hover:text-brasil-terracota transition-colors">Acervo</a>
                 <a href="clube.html" class="hover:text-brasil-terracota transition-colors">Clube do Livro</a>
                 <a href="#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
             </nav>
 
-            <!-- Action Links -->
             <div class="flex items-center gap-3 sm:gap-5">
                 <a href="login.html" title="Área do Usuário / Banco de Dados" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
                     <i class="fa-regular fa-user text-sm"></i>
@@ -107,7 +73,7 @@
                 </a>
                 <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo hover:bg-brasil-terracota hover:text-white transition-all flex items-center justify-center shadow-md">
                     <i class="fa-solid fa-bag-shopping text-sm"></i>
-                    <span class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">2</span>
+                    <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
                 </a>
                 <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
                     <i class="fa-solid fa-bars text-lg"></i>
@@ -115,13 +81,12 @@
             </div>
         </div>
 
-        <!-- Mobile Nav Dropdown -->
         <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
             <a href="#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Acervo</a>
             <a href="clube.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Clube do Livro</a>
             <a href="login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
             <div class="pt-3 border-t border-brasil-areia flex gap-4">
-                <a href="carrinho.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-verde text-brasil-amarelo text-xs font-bold">Carrinho (2)</a>
+                <a href="carrinho.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-verde text-brasil-amarelo text-xs font-bold">Carrinho</a>
                 <a href="clube.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-amarelo/30 text-brasil-verde text-xs font-bold">Clube</a>
             </div>
         </div>
@@ -135,7 +100,7 @@
                         <i class="fa-solid fa-earth-americas"></i> Celebrando a Nossa Literatura
                     </div>
                     <h1 class="text-4xl sm:text-6xl lg:text-7xl font-serif font-extrabold text-brasil-verde tracking-tight leading-[1.1]">
-                        Onde a <span class="italic text-brasil-terracota">alma brasileira</span> encontra suas histórias.
+                        Onde a <span class="italic text-brasil-terracota">alma Brasileira</span> encontra suas histórias.
                     </h1>
                     <p class="text-lg sm:text-xl text-brasil-escuro/80 max-w-2xl mx-auto lg:mx-0 font-light leading-relaxed">
                         Mergulhe na riqueza da cultura nacional. De clássicos imortais à vibrante prosa contemporânea, conectamos você à essência literária do Brasil.
@@ -182,7 +147,8 @@
                 <p class="text-brasil-escuro/70 font-light">Uma seleção curada para celebrar a diversidade, o folclore e a profundidade da escrita brasileira.</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div id="grade-livros" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
                 <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia">
                     <div>
                         <div class="relative overflow-hidden aspect-[3/4] bg-brasil-areia">
@@ -197,9 +163,9 @@
                     </div>
                     <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
                         <span class="text-lg font-bold text-brasil-verde">R$ 49,90</span>
-                        <a href="carrinho.html" class="px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
+                        <button data-id="1" data-nome="Dom Casmurro" data-preco="49.90" class="comprar-btn px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
                             <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
-                        </a>
+                        </button>
                     </div>
                 </div>
 
@@ -217,9 +183,9 @@
                     </div>
                     <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
                         <span class="text-lg font-bold text-brasil-verde">R$ 39,90</span>
-                        <a href="carrinho.html" class="px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
+                        <button data-id="2" data-nome="Macunaíma" data-preco="39.90" class="comprar-btn px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
                             <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
-                        </a>
+                        </button>
                     </div>
                 </div>
 
@@ -237,9 +203,9 @@
                     </div>
                     <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
                         <span class="text-lg font-bold text-brasil-verde">R$ 54,90</span>
-                        <a href="carrinho.html" class="px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
+                        <button data-id="3" data-nome="Quarto de Despejo" data-preco="54.90" class="comprar-btn px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
                             <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
-                        </a>
+                        </button>
                     </div>
                 </div>
 
@@ -257,11 +223,12 @@
                     </div>
                     <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
                         <span class="text-lg font-bold text-brasil-verde">R$ 44,90</span>
-                        <a href="carrinho.html" class="px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
+                        <button data-id="4" data-nome="Vidas Secas" data-preco="44.90" class="comprar-btn px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
                             <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
-                        </a>
+                        </button>
                     </div>
                 </div>
+
             </div>
         </div>
     </section>
@@ -271,10 +238,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
                 <div class="space-y-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-brasil-amarelo flex items-center justify-center text-brasil-escuro font-bold">
-                            <i class="fa-solid fa-feather-pointed"></i>
-                        </div>
-                        <span class="text-xl font-serif font-bold text-white">Brasilidade</span>
+                        <img src="logo/logo.png" alt="Multicultural" class="w-12 h-12 object-contain">
+                        <span class="text-xl font-serif font-bold text-white">Multicultural</span>
                     </div>
                     <p class="text-xs text-brasil-creme/70 leading-relaxed">
                         Muito mais que uma livraria, um santuário de preservação e celebração da nossa diversidade cultural e literária.
@@ -287,32 +252,29 @@
                         <li><a href="#destaques" class="hover:text-brasil-amarelo transition-colors">Acervo de Livros</a></li>
                         <li><a href="clube.html" class="hover:text-brasil-amarelo transition-colors">Clube de Leitura</a></li>
                         <li><a href="carrinho.html" class="hover:text-brasil-amarelo transition-colors">Meu Carrinho</a></li>
-                        <li><a href="login.html
-                            
-                        " class="hover:text-brasil-amarelo transition-colors">Área do Cliente</a></li>
+                        <li><a href="login.html" class="hover:text-brasil-amarelo transition-colors">Área do Cliente</a></li>
                     </ul>
                 </div>
 
                 <div class="space-y-3 lg:col-span-2 bg-white/5 p-6 rounded-2xl border border-white/10">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brasil-amarelo to-brasil-terracota flex items-center justify-center text-brasil-escuro font-extrabold text-sm shadow-md tracking-tighter">
-                            MFS
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br  flex items-center justify-center  font-extrabold  shadow-md tracking-tighter">
+                            <img src="logo/mutti.png" alt="">
                         </div>
                         <div>
                             <h4 class="font-serif font-bold text-white text-base">Mutti Full Stack</h4>
-                            <span class="text-[10px] uppercase tracking-widest text-brasil-amarelo">Engenharia de Software & Inovação</span>
+                            <span class="text-[10px] uppercase tracking-widest font-semibold text-mfs">Engenharia de Software & Inovação</span>
                         </div>
                     </div>
                     <p class="text-xs text-brasil-creme/80 leading-relaxed font-light">
-                        A <strong>Mutti Full Stack</strong> é uma empresa de software focada em desenvolver arquiteturas digitais modernas, inovadoras e de alto desempenho.
-                    </p>
+                         A <strong class="text-mfs">Mutti Full Stack</strong> é uma empresa de software focada em desenvolver arquiteturas digitais modernas, inovadoras e de alto desempenho.
                 </div>
             </div>
 
             <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-brasil-creme/50 gap-4">
-                <p>&copy; 2026 Livraria Brasilidade. Todos os direitos reservados.</p>
-                <p class="flex items-center gap-1">
-                    Desenvolvido com <i class="fa-solid fa-heart text-brasil-terracota"></i> por <span class="text-brasil-amarelo font-semibold">Mutti Full Stack (MFS)</span>.
+                <p>&copy; 2026 Livraria Multicultural. Todos os direitos reservados.</p>
+               <p class="flex items-center gap-1">
+                    Desenvolvido com <i class="fa-solid fa-heart text-brasil-terracota"></i> por <span class="text-mfs font-semibold">Mutti Full Stack (MFS)</span>.
                 </p>
             </div>
         </div>
@@ -321,9 +283,10 @@
     <script>
         const menuBtn = document.getElementById('menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        }
     </script>
+    <script src="script.js"></script>
 </body>
 </html>
