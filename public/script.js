@@ -78,13 +78,14 @@
   // =======================================================================
   // CARRINHO - localStorage
   // =======================================================================
-  function lerCarrinho() {
+    function lerCarrinho() {
     try {
       const salvo = localStorage.getItem(STORAGE_KEY);
       if (!salvo) return {};
       const dados = JSON.parse(salvo);
       if (!dados || typeof dados !== 'object' || Array.isArray(dados)) return {};
 
+      // Sanitiza: garante price/qty válidos E preserva metadados
       const limpo = {};
       Object.keys(dados).forEach(id => {
         const it = dados[id];
@@ -93,7 +94,15 @@
         const qtd = Number(it.qty);
         if (!isFinite(preco) || preco <= 0) return;
         if (!isFinite(qtd) || qtd <= 0) return;
-        limpo[id] = { price: preco, qty: Math.floor(qtd) };
+        limpo[id] = {
+          price: preco,
+          qty: Math.floor(qtd),
+          nome: it.nome || '',
+          autor: it.autor || '',
+          img: it.img || '',
+          genero: it.genero || '',
+          origem: it.origem || ''
+        };
       });
       return limpo;
     } catch (e) {
@@ -118,15 +127,30 @@
     return Object.values(dados).reduce((s, it) => s + (it.price || 0) * (it.qty || 0), 0);
   }
 
-  function adicionarAoCarrinho(id, preco, quantidade = 1) {
+    function adicionarAoCarrinho(id, preco, quantidade = 1, extras = {}) {
     const dados = lerCarrinho();
     const chave = String(id);
+
     if (dados[chave]) {
       dados[chave].qty += quantidade;
       dados[chave].price = preco;
+      if (extras.nome) dados[chave].nome = extras.nome;
+      if (extras.autor) dados[chave].autor = extras.autor;
+      if (extras.img) dados[chave].img = extras.img;
+      if (extras.genero) dados[chave].genero = extras.genero;
+      if (extras.origem) dados[chave].origem = extras.origem;
     } else {
-      dados[chave] = { price: preco, qty: quantidade };
+      dados[chave] = {
+        price: preco,
+        qty: quantidade,
+        nome: extras.nome || '',
+        autor: extras.autor || '',
+        img: extras.img || '',
+        genero: extras.genero || '',
+        origem: extras.origem || ''
+      };
     }
+
     salvarCarrinho(dados);
     atualizarBadgeGlobal();
     return dados;
@@ -266,12 +290,13 @@
 
     chaves.forEach(id => {
       const item = EstadoCarrinho.dados[id];
-      const prod = PRODUTOS[id] || {
-        nome: 'Item #' + id,
-        autor: '',
-        preco: item.price,
-        img: '',
-        desc: ''
+      const prodFixo = PRODUTOS[id] || {};
+      const prod = {
+        nome: item.nome || prodFixo.nome || ('Item #' + id),
+        autor: item.autor || prodFixo.autor || '',
+        preco: Number(item.price) || prodFixo.preco || 0,
+        img: item.img || prodFixo.img || '',
+        desc: prodFixo.desc || ''
       };
 
       const card = document.createElement('div');
@@ -793,4 +818,7 @@
     initCadastroLivros();
   });
 
+    // Expor funções para integração com outras páginas (produtos.html)
+  window.adicionarAoCarrinhoGlobal = adicionarAoCarrinho;
+  window.atualizarBadgeGlobal = atualizarBadgeGlobal;
 })();

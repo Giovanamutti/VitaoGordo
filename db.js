@@ -36,21 +36,21 @@ db.exec(`
 
 // ---- Migração segura para bancos antigos ----
 (function migrar() {
-  var cols = db.prepare("PRAGMA table_info(livro)").all().map(c => c.name);
+  var cols = db.prepare("PRAGMA table_info(livro)").all().map(function (c) { return c.name; });
 
-  if (!cols.includes('isbn')) {
+  if (cols.indexOf('isbn') === -1) {
     db.exec("ALTER TABLE livro ADD COLUMN isbn TEXT");
     console.log('✔ coluna "isbn" adicionada');
   }
-  if (!cols.includes('imagem')) {
+  if (cols.indexOf('imagem') === -1) {
     db.exec("ALTER TABLE livro ADD COLUMN imagem TEXT");
     console.log('✔ coluna "imagem" adicionada');
   }
-  if (!cols.includes('origem')) {
+  if (cols.indexOf('origem') === -1) {
     db.exec("ALTER TABLE livro ADD COLUMN origem TEXT NOT NULL DEFAULT 'Nacional'");
     console.log('✔ coluna "origem" adicionada');
   }
-  if (!cols.includes('avaliacao')) {
+  if (cols.indexOf('avaliacao') === -1) {
     db.exec("ALTER TABLE livro ADD COLUMN avaliacao REAL NOT NULL DEFAULT 0");
     console.log('✔ coluna "avaliacao" adicionada');
   }

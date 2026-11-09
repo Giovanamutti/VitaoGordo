@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acervo Completo | Livraria Multicultural</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brasil: {
+                            verde: '#1B4D3E',
+                            amarelo: '#F4D03F',
+                            terracota: '#C0392B',
+                            madeira: '#8D5524',
+                            creme: '#FDFBF7',
+                            areia: '#F4ECE1',
+                            escuro: '#1A1818'
+                        },
+                        mfs: '#80c0d8'
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FDFBF7; color: #1A1818; overflow-x: hidden; }
+        h1, h2, h3, h4, .font-serif { font-family: 'Playfair Display', serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F4ECE1; }
+        ::-webkit-scrollbar-thumb { background: #1B4D3E; border-radius: 4px; }
+        .glass-nav { background: rgba(253, 251, 247, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .hero-pattern { background-image: radial-gradient(#C0392B 0.75px, transparent 0.75px), radial-gradient(#1B4D3E 0.75px, #FDFBF7 0.75px); background-size: 30px 30px; background-position: 0 0, 15px 15px; }
+    </style>
+</head>
+<body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro">
+
+    <!-- ============== HEADER ============== -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3 group">
+            <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
+            <div class="flex flex-col justify-center leading-tight">
+                <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
+                <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold mt-1">Livraria & Cultura</span>
+            </div>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
+            <a href="index.html#destaques" class="hover:text-brasil-terracota transition-colors">Destaque</a>
+            <a href="produtos.html" class="text-brasil-terracota font-bold transition-colors">Livro</a>
+            <a href="index.html#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
+        </nav>
+
+        <div class="flex items-center gap-3 sm:gap-5">
+            <a href="login.html" title="Área do Usuário" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
+                <i class="fa-regular fa-user text-sm"></i>
+            </a>
+            <a href="clube.html" title="Clube" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
+                <i class="fa-solid fa-crown text-brasil-terracota"></i>
+                <span>Clube</span>
+            </a>
+            <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md">
+                <i class="fa-solid fa-bag-shopping text-sm"></i>
+                <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
+            </a>
+            <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
+        <a href="index.html#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Destaque</a>
+        <a href="produtos.html" class="block font-medium text-brasil-terracota font-bold py-1">Livro</a>
+        <a href="index.html#manifesto" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Manifesto</a>
+        <a href="login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
+    </div>
+</header>
+
+    <!-- ============== HERO ============== -->
+    <section class="relative pt-32 pb-12 md:pt-40 md:pb-16 hero-pattern overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brasil-terracota/10 text-brasil-terracota text-xs font-bold uppercase tracking-wider mb-6">
+                <i class="fa-solid fa-book-open"></i> Biblioteca Multicultural
+            </div>
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-serif font-extrabold text-brasil-verde tracking-tight leading-[1.1] mb-4">
+                Nosso <span class="italic text-brasil-terracota">Acervo</span> Completo
+            </h1>
+            <p class="text-lg sm:text-xl text-brasil-escuro/80 max-w-2xl mx-auto font-light leading-relaxed">
+                Explore toda a nossa coleção de obras nacionais e internacionais, selecionadas para celebrar a diversidade literária.
+            </p>
+        </div>
+    </section>
+
+    <!-- ============== FILTROS + BUSCA ============== -->
+    <section class="pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-3xl shadow-xl border border-brasil-areia p-6 sm:p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+
+                    <!-- Busca -->
+                    <div class="lg:col-span-7">
+                        <label for="busca" class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-2">
+                            <i class="fa-solid fa-magnifying-glass mr-1 text-brasil-terracota"></i>
+                            Buscar livro
+                        </label>
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-brasil-escuro/40"></i>
+                            <input
+                                type="text"
+                                id="busca"
+                                placeholder="Título, autor ou gênero..."
+                                class="w-full pl-11 pr-4 py-3 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde focus:ring-2 focus:ring-brasil-verde/20 transition-all"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Filtro origem -->
+                    <div class="lg:col-span-3">
+                        <label for="filtro-origem" class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-2">
+                            <i class="fa-solid fa-earth-americas mr-1 text-brasil-terracota"></i>
+                            Origem
+                        </label>
+                        <select
+                            id="filtro-origem"
+                            class="w-full px-4 py-3 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde focus:ring-2 focus:ring-brasil-verde/20 transition-all"
+                        >
+                            <option value="">Todas</option>
+                            <option value="Nacional">Nacional</option>
+                            <option value="Internacional">Internacional</option>
+                        </select>
+                    </div>
+
+                    <!-- Ordenar -->
+                    <div class="lg:col-span-2">
+                        <label for="ordenar" class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-2">
+                            <i class="fa-solid fa-arrow-down-wide-short mr-1 text-brasil-terracota"></i>
+                            Ordenar
+                        </label>
+                        <select
+                            id="ordenar"
+                            class="w-full px-4 py-3 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde focus:ring-2 focus:ring-brasil-verde/20 transition-all"
+                        >
+                            <option value="recentes">Mais recentes</option>
+                            <option value="preco-asc">Menor preço</option>
+                            <option value="preco-desc">Maior preço</option>
+                            <option value="avaliacao">Melhor avaliados</option>
+                            <option value="titulo">Título (A-Z)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Contador + limpar -->
+                <div class="flex items-center justify-between mt-6 pt-4 border-t border-brasil-areia">
+                    <p class="text-sm text-brasil-escuro/70">
+                        <span id="contador" class="font-bold text-brasil-verde">0</span>
+                        <span id="contador-label">livros encontrados</span>
+                    </p>
+                    <button
+                        id="btn-limpar-filtros"
+                        class="text-xs text-brasil-escuro/50 hover:text-brasil-terracota transition-colors font-semibold"
+                    >
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Limpar filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============== GRADE DE LIVROS ============== -->
+    <section class="pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Estado de carregamento -->
+            <div id="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-brasil-areia animate-pulse">
+                    <div class="aspect-[3/4] bg-brasil-areia"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-3 bg-brasil-areia rounded w-1/3"></div>
+                        <div class="h-5 bg-brasil-areia rounded w-3/4"></div>
+                        <div class="h-3 bg-brasil-areia rounded w-1/2"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-brasil-areia animate-pulse hidden sm:block">
+                    <div class="aspect-[3/4] bg-brasil-areia"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-3 bg-brasil-areia rounded w-1/3"></div>
+                        <div class="h-5 bg-brasil-areia rounded w-3/4"></div>
+                        <div class="h-3 bg-brasil-areia rounded w-1/2"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-brasil-areia animate-pulse hidden lg:block">
+                    <div class="aspect-[3/4] bg-brasil-areia"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-3 bg-brasil-areia rounded w-1/3"></div>
+                        <div class="h-5 bg-brasil-areia rounded w-3/4"></div>
+                        <div class="h-3 bg-brasil-areia rounded w-1/2"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-brasil-areia animate-pulse hidden xl:block">
+                    <div class="aspect-[3/4] bg-brasil-areia"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-3 bg-brasil-areia rounded w-1/3"></div>
+                        <div class="h-5 bg-brasil-areia rounded w-3/4"></div>
+                        <div class="h-3 bg-brasil-areia rounded w-1/2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grade real (populada via JS) -->
+            <div id="grade-livros" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 hidden"></div>
+
+            <!-- Estado vazio -->
+            <div id="estado-vazio" class="hidden bg-white rounded-2xl p-12 text-center space-y-4 border border-brasil-areia shadow-sm">
+                <div class="w-16 h-16 rounded-full bg-brasil-areia text-brasil-verde flex items-center justify-center mx-auto text-2xl">
+                    <i class="fa-solid fa-book-skull"></i>
+                </div>
+                <h3 class="font-serif font-bold text-2xl text-brasil-verde">Nenhum livro encontrado</h3>
+                <p class="text-brasil-escuro/70 text-sm max-w-sm mx-auto">
+                    Tente ajustar a busca ou os filtros para encontrar o que procura.
+                </p>
+                <button onclick="document.getElementById('btn-limpar-filtros').click()" class="inline-block px-6 py-3 bg-brasil-verde text-brasil-amarelo font-bold rounded-xl text-xs hover:bg-brasil-terracota hover:text-white transition-colors">
+                    Limpar filtros
+                </button>
+            </div>
+
+            <!-- Estado de erro -->
+            <div id="estado-erro" class="hidden bg-white rounded-2xl p-12 text-center space-y-4 border border-brasil-areia shadow-sm">
+                <div class="w-16 h-16 rounded-full bg-brasil-terracota/10 text-brasil-terracota flex items-center justify-center mx-auto text-2xl">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 class="font-serif font-bold text-2xl text-brasil-verde">Não foi possível carregar o acervo</h3>
+                <p id="erro-msg" class="text-brasil-escuro/70 text-sm max-w-md mx-auto">Erro de conexão.</p>
+                <button onclick="location.reload()" class="inline-block px-6 py-3 bg-brasil-verde text-brasil-amarelo font-bold rounded-xl text-xs hover:bg-brasil-terracota hover:text-white transition-colors">
+                    Tentar novamente
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ============== FOOTER ============== -->
+    <footer class="bg-brasil-escuro text-brasil-creme pt-16 pb-12 border-t border-brasil-areia/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <img src="logo/logo.png" alt="Multicultural" class="w-12 h-12 object-contain">
+                        <span class="text-xl font-serif font-bold text-white">Multicultural</span>
+                    </div>
+                    <p class="text-xs text-brasil-creme/70 leading-relaxed">
+                        Muito mais que uma livraria, um santuário de preservação e celebração da nossa diversidade cultural e literária.
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <h4 class="font-serif font-bold text-brasil-amarelo text-sm tracking-wider uppercase">Navegação</h4>
+                    <ul class="space-y-2 text-xs text-brasil-creme/70">
+                        <li><a href="produtos.html" class="hover:text-brasil-amarelo transition-colors">Acervo Completo</a></li>
+                        <li><a href="clube.html" class="hover:text-brasil-amarelo transition-colors">Clube de Leitura</a></li>
+                        <li><a href="carrinho.html" class="hover:text-brasil-amarelo transition-colors">Meu Carrinho</a></li>
+                        <li><a href="login.html" class="hover:text-brasil-amarelo transition-colors">Área do Cliente</a></li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3 lg:col-span-2 bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brasil-amarelo to-brasil-terracota flex items-center justify-center text-brasil-escuro font-extrabold text-sm shadow-md tracking-tighter">
+                            MFS
+                        </div>
+                        <div>
+                            <h4 class="font-serif font-bold text-white text-base">Mutti Full Stack</h4>
+                            <span class="text-[10px] uppercase tracking-widest font-semibold text-mfs">Engenharia de Software & Inovação</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-brasil-creme/80 leading-relaxed font-light">
+                        A <strong class="text-mfs">Mutti Full Stack</strong> é uma empresa de software focada em desenvolver arquiteturas digitais modernas, inovadoras e de alto desempenho.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-brasil-creme/50 gap-4">
+                <p>&copy; 2026 Livraria Multicultural. Todos os direitos reservados.</p>
+                <p class="flex items-center gap-1">
+                    Desenvolvido com <i class="fa-solid fa-heart text-brasil-terracota"></i> por <span class="text-mfs font-semibold">Mutti Full Stack (MFS)</span>.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============== MODAL SIMPLES ============== -->
+    <div id="info-modal" class="fixed inset-0 z-50 bg-brasil-escuro/70 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-brasil-creme rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-4 shadow-2xl relative border border-brasil-areia">
+            <button id="btn-fechar-modal" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-brasil-areia flex items-center justify-center text-brasil-escuro hover:bg-brasil-terracota hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="modal-icon" class="w-12 h-12 rounded-2xl bg-brasil-verde text-brasil-amarelo flex items-center justify-center text-xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="modal-title" class="text-2xl font-serif font-bold text-brasil-verde">Sucesso</h3>
+            <p id="modal-desc" class="text-brasil-escuro/70 text-sm leading-relaxed"></p>
+            <div class="pt-4 flex justify-end">
+                <button onclick="document.getElementById('btn-fechar-modal').click()" class="px-6 py-2.5 bg-brasil-verde text-brasil-amarelo font-bold rounded-xl text-xs hover:bg-brasil-terracota hover:text-white transition-colors">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="produtos.js"></script>
+</body>
+</html>

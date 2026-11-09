@@ -23,16 +23,40 @@ function responderJson(res, status, conteudo) {
   res.end(JSON.stringify(conteudo));
 }
 
-
-  varfunction servirArquivo(res, caminhoRelativo) { alvo = caminhoRelativo.replace(/^\/+/, '');
+// ---------------------------------------------------------------
+// Servir arquivo estático (com fallback case-insensitive em imagens)
+// ---------------------------------------------------------------
+function servirArquivo(res, caminhoRelativo) {
+  var alvo = caminhoRelativo.replace(/^\/+/, '');
   var caminhoPublic = path.join(__dirname, 'public', alvo);
   var caminhoRaiz = path.join(__dirname, alvo);
 
   var caminho = null;
+
   if (fs.existsSync(caminhoPublic) && fs.statSync(caminhoPublic).isFile()) {
     caminho = caminhoPublic;
   } else if (fs.existsSync(caminhoRaiz) && fs.statSync(caminhoRaiz).isFile()) {
     caminho = caminhoRaiz;
+  }
+
+  // Fallback: se for imagem e não achou, procura ignorando maiúsculas
+  if (!caminho && alvo.indexOf('imagens/') === 0) {
+    var pastaImagens = path.join(__dirname, 'public', 'imagens');
+    var nomeBusca = path.basename(alvo).toLowerCase();
+
+    if (fs.existsSync(pastaImagens)) {
+      var arquivos = fs.readdirSync(pastaImagens);
+      var encontrado = null;
+      for (var i = 0; i < arquivos.length; i++) {
+        if (arquivos[i].toLowerCase() === nomeBusca) {
+          encontrado = arquivos[i];
+          break;
+        }
+      }
+      if (encontrado) {
+        caminho = path.join(pastaImagens, encontrado);
+      }
+    }
   }
 
   if (!caminho) {
@@ -45,6 +69,9 @@ function responderJson(res, status, conteudo) {
   res.end(fs.readFileSync(caminho));
 }
 
+// ---------------------------------------------------------------
+// Ler corpo JSON de uma requisição
+// ---------------------------------------------------------------
 function lerCorpoJson(req, callback) {
   var texto = '';
   req.on('data', function (pedaco) { texto += pedaco; });
@@ -59,24 +86,29 @@ function lerCorpoJson(req, callback) {
   });
 }
 
-// ---- Statements de CLIENTES ----
+// ---------------------------------------------------------------
+// Statements preparados (executam uma vez, reutilizam)
+// ---------------------------------------------------------------
 var stmtListarClientes = db.prepare('SELECT * FROM cliente ORDER BY id DESC');
 var stmtInserirCliente = db.prepare(
   'INSERT INTO cliente (nome, telefone, cpf, nascimento, cep) VALUES (?, ?, ?, ?, ?)'
 );
 var stmtExcluirCliente = db.prepare('DELETE FROM cliente WHERE id = ?');
 
-// ---- Statements de LIVROS ----
 var stmtListarLivros = db.prepare('SELECT * FROM livro ORDER BY id DESC');
 var stmtInserirLivro = db.prepare(
   'INSERT INTO livro (titulo, autor, preco, genero, estoque, isbn, imagem, origem, avaliacao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
 );
 var stmtExcluirLivro = db.prepare('DELETE FROM livro WHERE id = ?');
 
+// ---------------------------------------------------------------
+// Servidor HTTP
+// ---------------------------------------------------------------
 var servidor = http.createServer(function (req, res) {
   var caminho = req.url.split('?')[0];
 
   // ============ API CLIENTES ============
+
   if (req.method === 'GET' && caminho === '/api/cliente') {
     try {
       return responderJson(res, 200, stmtListarClientes.all());
@@ -134,6 +166,7 @@ var servidor = http.createServer(function (req, res) {
   }
 
   // ============ API LIVROS ============
+
   if (req.method === 'GET' && caminho === '/api/livro') {
     try {
       return responderJson(res, 200, stmtListarLivros.all());
@@ -146,14 +179,13 @@ var servidor = http.createServer(function (req, res) {
     lerCorpoJson(req, function (erro, novo) {
       if (erro) return responderJson(res, 400, { erro: erro.message });
 
-      // Validações básicas
       if (!novo.titulo || !novo.autor || novo.preco === undefined || novo.preco === '') {
-        return responderJson(res, 400, { erro: 'Título, autor e preço são obrigatórios.' });
+        return responderJson(res, 400, { erro: 'Titulo, autor e preco sao obrigatorios.' });
       }
 
       var precoNum = Number(novo.preco);
       if (!isFinite(precoNum) || precoNum <= 0) {
-        return responderJson(res, 400, { erro: 'Preço deve ser um número positivo.' });
+        return responderJson(res, 400, { erro: 'Preco deve ser um numero positivo.' });
       }
 
       var estoqueNum = Number(novo.estoque);
@@ -161,10 +193,10 @@ var servidor = http.createServer(function (req, res) {
 
       var origem = (novo.origem === 'Internacional') ? 'Internacional' : 'Nacional';
 
-      // Imagem
+      // Imagem: só nome do arquivo, tudo minúsculo, sem barras
       var imagem = (novo.imagem || '').trim();
       if (imagem) {
-        imagem = imagem.replace(/[\\/]/g, '').replace(/\.\./g, '');
+        imagem = imagem.replace(/[\\/]/g, '').replace(/\.\./g, '').toLowerCase();
         if (!/\.(png|jpe?g|webp|gif|svg)$/i.test(imagem)) {
           return responderJson(res, 400, {
             erro: 'Imagem deve terminar em .png, .jpg, .jpeg, .webp, .gif ou .svg'
@@ -174,17 +206,17 @@ var servidor = http.createServer(function (req, res) {
         imagem = null;
       }
 
-      // Avaliação (0 = sem nota; senão 0.1..5.0)
+      // Avaliação: 0 = sem nota; senão 0.1 até 5.0
       var avaliacaoNum;
-      if (novo.avaliacao === undefined || novo.avaliacao === '') {
+      if (novo.avaliacao === undefined || novo.avaliacao === '' || novo.avaliacao === null) {
         avaliacaoNum = 0;
       } else {
         avaliacaoNum = Number(novo.avaliacao);
         if (!isFinite(avaliacaoNum)) {
-          return responderJson(res, 400, { erro: 'Avaliação inválida.' });
+          return responderJson(res, 400, { erro: 'Avaliacao invalida.' });
         }
         if (avaliacaoNum !== 0 && (avaliacaoNum < 0.1 || avaliacaoNum > 5)) {
-          return responderJson(res, 400, { erro: 'Avaliação deve estar entre 0.1 e 5.0 estrelas.' });
+          return responderJson(res, 400, { erro: 'Avaliacao deve estar entre 0.1 e 5.0 estrelas.' });
         }
         avaliacaoNum = Math.round(avaliacaoNum * 10) / 10;
       }
@@ -213,7 +245,7 @@ var servidor = http.createServer(function (req, res) {
         return responderJson(res, 201, novo);
       } catch (err) {
         if (err.message && err.message.indexOf('UNIQUE') !== -1) {
-          return responderJson(res, 400, { erro: 'ISBN já cadastrado no sistema.' });
+          return responderJson(res, 400, { erro: 'ISBN ja cadastrado no sistema.' });
         }
         return responderJson(res, 500, { erro: err.message });
       }
@@ -224,14 +256,14 @@ var servidor = http.createServer(function (req, res) {
   if (req.method === 'DELETE' && caminho.indexOf('/api/livro/') === 0) {
     var idLivro = caminho.split('/')[3];
     if (!idLivro || isNaN(Number(idLivro))) {
-      return responderJson(res, 400, { erro: 'ID inválido.' });
+      return responderJson(res, 400, { erro: 'ID invalido.' });
     }
     try {
       var resDelLivro = stmtExcluirLivro.run(idLivro);
       if (resDelLivro.changes === 0) {
-        return responderJson(res, 404, { erro: 'Livro não encontrado.' });
+        return responderJson(res, 404, { erro: 'Livro nao encontrado.' });
       }
-      console.log('Livro excluído: id ' + idLivro);
+      console.log('Livro excluido: id ' + idLivro);
       return responderJson(res, 200, { removido: Number(idLivro) });
     } catch (erro) {
       return responderJson(res, 500, { erro: erro.message });
@@ -239,11 +271,27 @@ var servidor = http.createServer(function (req, res) {
   }
 
   // ============ ARQUIVOS ESTÁTICOS ============
+
   if (req.method === 'GET') {
     return servirArquivo(res, caminho === '/' ? 'index.html' : caminho);
   }
 
   responderJson(res, 404, { erro: 'Nao encontrado.' });
+});
+
+// ---------------------------------------------------------------
+// Tratamento de erro amigável (porta ocupada etc.)
+// ---------------------------------------------------------------
+servidor.on('error', function (err) {
+  if (err.code === 'EADDRINUSE') {
+    console.error('');
+    console.error('❌ A porta ' + PORTA + ' ja esta em uso.');
+    console.error('   Rode: sudo kill -9 $(sudo lsof -t -i :' + PORTA + ')');
+    console.error('');
+    process.exit(1);
+  }
+  console.error('Erro no servidor:', err);
+  process.exit(1);
 });
 
 servidor.listen(PORTA, function () {

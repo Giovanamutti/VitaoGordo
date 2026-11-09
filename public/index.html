@@ -47,19 +47,20 @@
 </head>
 <body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro">
 
+    <!-- ============== HEADER ============== -->
     <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-3 group">
-             <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
-        <div class="flex flex-col justify-center leading-tight">
-            <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
-            <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold mt-1">Livraria & Cultura</span>
-        </div>
-    </a>
+                <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
+                <div class="flex flex-col justify-center leading-tight">
+                    <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
+                    <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold mt-1">Livraria & Cultura</span>
+                </div>
+            </a>
 
             <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
-                <a href="#destaques" class="hover:text-brasil-terracota transition-colors">Acervo</a>
-                <a href="clube.html" class="hover:text-brasil-terracota transition-colors">Clube do Livro</a>
+                <a href="#destaques" class="hover:text-brasil-terracota transition-colors">Destaque</a>
+                <a href="produtos.html" class="hover:text-brasil-terracota transition-colors">Livro</a>
                 <a href="#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
             </nav>
 
@@ -82,8 +83,9 @@
         </div>
 
         <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
-            <a href="#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Acervo</a>
-            <a href="clube.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Clube do Livro</a>
+            <a href="#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Destaque</a>
+            <a href="produtos.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Livro</a>
+            <a href="#manifesto" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Manifesto</a>
             <a href="login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
             <div class="pt-3 border-t border-brasil-areia flex gap-4">
                 <a href="carrinho.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-verde text-brasil-amarelo text-xs font-bold">Carrinho</a>
@@ -92,6 +94,7 @@
         </div>
     </header>
 
+    <!-- ============== HERO ============== -->
     <section class="relative pt-32 pb-20 md:pt-40 md:pb-32 hero-pattern overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -139,93 +142,49 @@
         </div>
     </section>
 
+    <!-- ============== DESTAQUES DA SEMANA ============== -->
     <section id="destaques" class="py-20 bg-brasil-areia/50 border-t border-b border-brasil-areia">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
-                <span class="text-xs uppercase tracking-widest text-brasil-terracota font-bold">Vitrine Literária</span>
-                <h2 class="text-3xl sm:text-5xl font-serif font-bold text-brasil-verde">Obras Primas da Nossa Terra</h2>
-                <p class="text-brasil-escuro/70 font-light">Uma seleção curada para celebrar a diversidade, o folclore e a profundidade da escrita brasileira.</p>
+                <span class="text-xs uppercase tracking-widest text-brasil-terracota font-bold">Destaques da Semana</span>
+                <h2 class="text-3xl sm:text-5xl font-serif font-bold text-brasil-verde">Seleção Especial da Semana</h2>
+                <p class="text-brasil-escuro/70 font-light">Quatro obras sorteadas do nosso acervo para você descobrir (ou redescobrir) a literatura brasileira.</p>
             </div>
 
+            <!-- Grade preenchida dinamicamente por destaques.js -->
             <div id="grade-livros" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 
-                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia">
-                    <div>
-                        <div class="relative overflow-hidden aspect-[3/4] bg-brasil-areia">
-                            <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=600" alt="Dom Casmurro" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute top-3 left-3 bg-brasil-verde text-brasil-amarelo text-[10px] font-bold px-2.5 py-1 rounded-md uppercase">Clássico</div>
-                        </div>
-                        <div class="p-6 space-y-2">
-                            <span class="text-xs text-brasil-terracota font-semibold uppercase tracking-wider">Machado de Assis</span>
-                            <h3 class="text-xl font-serif font-bold text-brasil-verde group-hover:text-brasil-terracota transition-colors">Dom Casmurro</h3>
-                            <p class="text-xs text-brasil-escuro/60 line-clamp-2">A enigmática obsessão de Bento Santiago por Capitu e a eterna dúvida de Trajano.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
-                        <span class="text-lg font-bold text-brasil-verde">R$ 49,90</span>
-                        <button data-id="1" data-nome="Dom Casmurro" data-preco="49.90" class="comprar-btn px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
-                            <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
-                        </button>
+                <!-- Skeleton de loading (removido pelo JS após carregar) -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-brasil-areia animate-pulse">
+                    <div class="aspect-[3/4] bg-brasil-areia"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-3 bg-brasil-areia rounded w-1/3"></div>
+                        <div class="h-5 bg-brasil-areia rounded w-3/4"></div>
+                        <div class="h-3 bg-brasil-areia rounded w-1/2"></div>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia">
-                    <div>
-                        <div class="relative overflow-hidden aspect-[3/4] bg-brasil-areia">
-                            <img src="https://images.unsplash.com/photo-1495640388908-05fa85288e61?auto=format&fit=crop&q=80&w=600" alt="Macunaíma" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute top-3 left-3 bg-brasil-terracota text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase">Modernismo</div>
-                        </div>
-                        <div class="p-6 space-y-2">
-                            <span class="text-xs text-brasil-terracota font-semibold uppercase tracking-wider">Mário de Andrade</span>
-                            <h3 class="text-xl font-serif font-bold text-brasil-verde group-hover:text-brasil-terracota transition-colors">Macunaíma</h3>
-                            <p class="text-xs text-brasil-escuro/60 line-clamp-2">As hilárias e míticas peripécias do herói sem nenhum caráter pela floresta e metrópole.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
-                        <span class="text-lg font-bold text-brasil-verde">R$ 39,90</span>
-                        <button data-id="2" data-nome="Macunaíma" data-preco="39.90" class="comprar-btn px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
-                            <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
-                        </button>
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-brasil-areia animate-pulse hidden sm:block">
+                    <div class="aspect-[3/4] bg-brasil-areia"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-3 bg-brasil-areia rounded w-1/3"></div>
+                        <div class="h-5 bg-brasil-areia rounded w-3/4"></div>
+                        <div class="h-3 bg-brasil-areia rounded w-1/2"></div>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia">
-                    <div>
-                        <div class="relative overflow-hidden aspect-[3/4] bg-brasil-areia">
-                            <img src="https://images.unsplash.com/photo-1524578271613-d550eacf6090?auto=format&fit=crop&q=80&w=600" alt="Quarto de Despejo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute top-3 left-3 bg-brasil-amarelo text-brasil-escuro text-[10px] font-bold px-2.5 py-1 rounded-md uppercase">Memórias</div>
-                        </div>
-                        <div class="p-6 space-y-2">
-                            <span class="text-xs text-brasil-terracota font-semibold uppercase tracking-wider">Carolina Maria de Jesus</span>
-                            <h3 class="text-xl font-serif font-bold text-brasil-verde group-hover:text-brasil-terracota transition-colors">Quarto de Despejo</h3>
-                            <p class="text-xs text-brasil-escuro/60 line-clamp-2">O cotidiano pungente e poético na favela do Canindé narrado por uma mulher extraordinária.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
-                        <span class="text-lg font-bold text-brasil-verde">R$ 54,90</span>
-                        <button data-id="3" data-nome="Quarto de Despejo" data-preco="54.90" class="comprar-btn px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
-                            <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
-                        </button>
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-brasil-areia animate-pulse hidden lg:block">
+                    <div class="aspect-[3/4] bg-brasil-areia"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-3 bg-brasil-areia rounded w-1/3"></div>
+                        <div class="h-5 bg-brasil-areia rounded w-3/4"></div>
+                        <div class="h-3 bg-brasil-areia rounded w-1/2"></div>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia">
-                    <div>
-                        <div class="relative overflow-hidden aspect-[3/4] bg-brasil-areia">
-                            <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=600" alt="Vidas Secas" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute top-3 left-3 bg-brasil-verde text-brasil-amarelo text-[10px] font-bold px-2.5 py-1 rounded-md uppercase">Realismo</div>
-                        </div>
-                        <div class="p-6 space-y-2">
-                            <span class="text-xs text-brasil-terracota font-semibold uppercase tracking-wider">Graciliano Ramos</span>
-                            <h3 class="text-xl font-serif font-bold text-brasil-verde group-hover:text-brasil-terracota transition-colors">Vidas Secas</h3>
-                            <p class="text-xs text-brasil-escuro/60 line-clamp-2">A dura jornada de Fabiano e sua família fugindo da seca implacável no sertão nordestino.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-4">
-                        <span class="text-lg font-bold text-brasil-verde">R$ 44,90</span>
-                        <button data-id="4" data-nome="Vidas Secas" data-preco="44.90" class="comprar-btn px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center">
-                            <i class="fa-solid fa-cart-plus mr-1"></i> Comprar
-                        </button>
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-brasil-areia animate-pulse hidden lg:block">
+                    <div class="aspect-[3/4] bg-brasil-areia"></div>
+                    <div class="p-6 space-y-3">
+                        <div class="h-3 bg-brasil-areia rounded w-1/3"></div>
+                        <div class="h-5 bg-brasil-areia rounded w-3/4"></div>
+                        <div class="h-3 bg-brasil-areia rounded w-1/2"></div>
                     </div>
                 </div>
 
@@ -233,6 +192,7 @@
         </div>
     </section>
 
+    <!-- ============== FOOTER / MANIFESTO ============== -->
     <footer id="manifesto" class="bg-brasil-escuro text-brasil-creme pt-16 pb-12 border-t border-brasil-areia/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
@@ -249,7 +209,8 @@
                 <div class="space-y-3">
                     <h4 class="font-serif font-bold text-brasil-amarelo text-sm tracking-wider uppercase">Navegação</h4>
                     <ul class="space-y-2 text-xs text-brasil-creme/70">
-                        <li><a href="#destaques" class="hover:text-brasil-amarelo transition-colors">Acervo de Livros</a></li>
+                        <li><a href="#destaques" class="hover:text-brasil-amarelo transition-colors">Destaques da Semana</a></li>
+                        <li><a href="produtos.html" class="hover:text-brasil-amarelo transition-colors">Acervo Completo</a></li>
                         <li><a href="clube.html" class="hover:text-brasil-amarelo transition-colors">Clube de Leitura</a></li>
                         <li><a href="carrinho.html" class="hover:text-brasil-amarelo transition-colors">Meu Carrinho</a></li>
                         <li><a href="login.html" class="hover:text-brasil-amarelo transition-colors">Área do Cliente</a></li>
@@ -258,8 +219,8 @@
 
                 <div class="space-y-3 lg:col-span-2 bg-white/5 p-6 rounded-2xl border border-white/10">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br  flex items-center justify-center  font-extrabold  shadow-md tracking-tighter">
-                            <img src="logo/mutti.png" alt="">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center font-extrabold shadow-md tracking-tighter overflow-hidden">
+                            <img src="logo/mutti.png" alt="Mutti Full Stack">
                         </div>
                         <div>
                             <h4 class="font-serif font-bold text-white text-base">Mutti Full Stack</h4>
@@ -267,26 +228,24 @@
                         </div>
                     </div>
                     <p class="text-xs text-brasil-creme/80 leading-relaxed font-light">
-                         A <strong class="text-mfs">Mutti Full Stack</strong> é uma empresa de software focada em desenvolver arquiteturas digitais modernas, inovadoras e de alto desempenho.
+                        A <strong class="text-mfs">Mutti Full Stack</strong> é uma empresa de software focada em desenvolver arquiteturas digitais modernas, inovadoras e de alto desempenho.
+                    </p>
                 </div>
             </div>
 
             <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-brasil-creme/50 gap-4">
                 <p>&copy; 2026 Livraria Multicultural. Todos os direitos reservados.</p>
-               <p class="flex items-center gap-1">
+                <p class="flex items-center gap-1">
                     Desenvolvido com <i class="fa-solid fa-heart text-brasil-terracota"></i> por <span class="text-mfs font-semibold">Mutti Full Stack (MFS)</span>.
                 </p>
             </div>
         </div>
     </footer>
 
-    <script>
-        const menuBtn = document.getElementById('menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        if (menuBtn && mobileMenu) {
-            menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-        }
-    </script>
+    <!-- ============== SCRIPTS ============== -->
+    <!-- O script.js já cuida do menu mobile (initMenuMobile) e do carrinho. -->
+    <!-- O destaques.js carrega os 4 livros aleatórios do banco na #grade-livros. -->
     <script src="script.js"></script>
+    <script src="destaques.js"></script>
 </body>
 </html>

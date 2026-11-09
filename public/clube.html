@@ -47,50 +47,50 @@
 
     <!-- ============== HEADER ============== -->
     <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3 group">
-                <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
-                <div class="flex flex-col justify-center leading-tight">
-                    <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
-                    <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold mt-1">Livraria & Cultura</span>
-                </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3 group">
+            <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
+            <div class="flex flex-col justify-center leading-tight">
+                <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
+                <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold mt-1">Livraria & Cultura</span>
+            </div>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
+            <a href="index.html#destaques" class="hover:text-brasil-terracota transition-colors">Destaque</a>
+            <a href="produtos.html" class="hover:text-brasil-terracota transition-colors">Livro</a>
+            <a href="index.html#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
+        </nav>
+
+        <div class="flex items-center gap-3 sm:gap-5">
+            <a href="login.html" title="Área do Usuário" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
+                <i class="fa-regular fa-user text-sm"></i>
             </a>
-
-            <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
-                <a href="index.html#destaques" class="hover:text-brasil-terracota transition-colors">Acervo</a>
-                <a href="clube.html" class="text-brasil-terracota font-bold transition-colors">Clube do Livro</a>
-                <a href="index.html#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
-            </nav>
-
-            <div class="flex items-center gap-3 sm:gap-5">
-                <a href="login.html" title="Área do Usuário" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
-                    <i class="fa-regular fa-user text-sm"></i>
-                </a>
-                <a href="clube.html" title="Clube" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
-                    <i class="fa-solid fa-crown text-brasil-terracota"></i>
-                    <span>Clube</span>
-                </a>
-                <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md">
-                    <i class="fa-solid fa-bag-shopping text-sm"></i>
-                    <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
-                </a>
-                <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
-                    <i class="fa-solid fa-bars text-lg"></i>
-                </button>
-            </div>
+            <a href="clube.html" title="Clube" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
+                <i class="fa-solid fa-crown text-brasil-terracota"></i>
+                <span>Clube</span>
+            </a>
+            <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md">
+                <i class="fa-solid fa-bag-shopping text-sm"></i>
+                <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
+            </a>
+            <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
         </div>
+    </div>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
-            <a href="index.html#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Acervo</a>
-            <a href="clube.html" class="block font-medium text-brasil-terracota font-bold py-1">Clube do Livro</a>
-            <a href="index.html#manifesto" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Manifesto</a>
-            <a href="login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
-            <div class="pt-3 border-t border-brasil-areia flex gap-4">
-                <a href="carrinho.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-verde text-brasil-amarelo text-xs font-bold">Carrinho</a>
-                <a href="clube.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-amarelo/30 text-brasil-verde text-xs font-bold">Clube</a>
-            </div>
+    <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
+        <a href="index.html#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Destaque</a>
+        <a href="produtos.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Livro</a>
+        <a href="index.html#manifesto" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Manifesto</a>
+        <a href="login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
+        <div class="pt-3 border-t border-brasil-areia flex gap-4">
+            <a href="carrinho.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-verde text-brasil-amarelo text-xs font-bold">Carrinho</a>
+            <a href="clube.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-amarelo/30 text-brasil-verde text-xs font-bold">Clube</a>
         </div>
-    </header>
+    </div>
+</header>
 
     <!-- ============== HERO DO CLUBE ============== -->
     <section class="relative pt-32 pb-20 md:pt-40 md:pb-24 hero-pattern overflow-hidden">
