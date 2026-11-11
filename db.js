@@ -59,11 +59,11 @@ db.exec(`
   if (cols.indexOf('editora') === -1) {
   db.exec("ALTER TABLE livro ADD COLUMN editora TEXT");
   console.log('✔ coluna "editora" adicionada');
-  }
-  if (cols.indexOf('paginas') === -1) {
-    db.exec("ALTER TABLE livro ADD COLUMN paginas INTEGER");
-    console.log('✔ coluna "paginas" adicionada');
-  }
+}
+if (cols.indexOf('paginas') === -1) {
+  db.exec("ALTER TABLE livro ADD COLUMN paginas INTEGER");
+  console.log('✔ coluna "paginas" adicionada');
+}
   
 })();
 

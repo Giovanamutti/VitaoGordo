@@ -155,7 +155,12 @@
         </button>
       </div>
     `;
-
+    // Torna o card clicável (exceto nos botões)
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      window.location.href = 'livro.html?id=' + livro.id;
+    });
     return card;
   }
 
