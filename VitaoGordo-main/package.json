@@ -1,9 +1,0 @@
-{
-  "name": "cadastro-cliente",
-  "version": "1.0.0",
-  "description": "Sistema de cadastro de clientes - Livraria Brasilidade",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  }
-}
