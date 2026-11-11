@@ -1,10 +1,10 @@
 var path = require('path');
-var { DatabaseSync } = require('node:sqlite');
+var Database = require('better-sqlite3');
 
 var caminho = path.join(__dirname, 'banco.db');
-var db = new DatabaseSync(caminho);
+var db = new Database(caminho);
 
-db.exec('PRAGMA foreign_keys = ON');
+db.pragma('foreign_keys = ON');
 
 // ---- Tabela de clientes ----
 db.exec(`
@@ -57,14 +57,13 @@ db.exec(`
     console.log('✔ coluna "avaliacao" adicionada');
   }
   if (cols.indexOf('editora') === -1) {
-  db.exec("ALTER TABLE livro ADD COLUMN editora TEXT");
-  console.log('✔ coluna "editora" adicionada');
-}
-if (cols.indexOf('paginas') === -1) {
-  db.exec("ALTER TABLE livro ADD COLUMN paginas INTEGER");
-  console.log('✔ coluna "paginas" adicionada');
-}
-  
+    db.exec("ALTER TABLE livro ADD COLUMN editora TEXT");
+    console.log('✔ coluna "editora" adicionada');
+  }
+  if (cols.indexOf('paginas') === -1) {
+    db.exec("ALTER TABLE livro ADD COLUMN paginas INTEGER");
+    console.log('✔ coluna "paginas" adicionada');
+  }
 })();
 
 module.exports = db;

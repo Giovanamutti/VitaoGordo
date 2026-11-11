@@ -1,7 +1,7 @@
 // resetar.js
 var path = require('path');
 var fs = require('fs');
-var { DatabaseSync } = require('node:sqlite');
+var Database = require('better-sqlite3');
 
 var caminhoBanco = path.join(__dirname, 'banco.db');
 
@@ -10,7 +10,7 @@ if (!fs.existsSync(caminhoBanco)) {
   process.exit(0);
 }
 
-var db = new DatabaseSync(caminhoBanco);
+var db = new Database(caminhoBanco);
 
 console.log('📋 Antes do reset:');
 try {
@@ -22,7 +22,6 @@ try {
   console.log('   (tabelas ainda nao existem)');
 }
 
-// Limpa os dados E reseta o AUTOINCREMENT (IDs voltam a 1)
 db.exec('DELETE FROM cliente');
 db.exec('DELETE FROM livro');
 db.exec("DELETE FROM sqlite_sequence WHERE name IN ('cliente','livro')");

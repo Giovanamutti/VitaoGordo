@@ -1,9 +1,16 @@
 {
   "name": "cadastro-cliente",
   "version": "1.0.0",
-  "description": "Sistema de cadastro de clientes - Livraria Brasilidade",
+  "description": "Sistema de cadastro de clientes - Livraria Multicultural",
   "main": "index.js",
+  "engines": {
+    "node": ">=20.0.0 <21.0.0"
+  },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "reset": "node resetar.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0"
   }
 }

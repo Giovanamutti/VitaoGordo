@@ -101,6 +101,8 @@ var stmtInserirLivro = db.prepare(
 );
 var stmtExcluirLivro = db.prepare('DELETE FROM livro WHERE id = ?');
 
+var stmtBuscarLivro = db.prepare('SELECT * FROM livro WHERE id = ?');
+
 // ---------------------------------------------------------------
 // Servidor HTTP
 // ---------------------------------------------------------------
@@ -175,21 +177,22 @@ var servidor = http.createServer(function (req, res) {
     }
   }
     // ---- Buscar um livro específico por ID ----
-  if (req.method === 'GET' && caminho.indexOf('/api/livro/') === 0) {
-    var idBusca = caminho.split('/')[3];
-    if (!idBusca || isNaN(Number(idBusca))) {
-      return responderJson(res, 400, { erro: 'ID invalido.' });
-    }
-    try {
-      var livro = stmtBuscarLivro.get(Number(idBusca));
-      if (!livro) {
-        return responderJson(res, 404, { erro: 'Livro nao encontrado.' });
-      }
-      return responderJson(res, 200, livro);
-    } catch (erro) {
-      return responderJson(res, 500, { erro: erro.message });
-    }
+ if (req.method === 'GET' && caminho.indexOf('/api/livro/') === 0) {
+  var idBusca = caminho.split('/')[3];
+  if (!idBusca || isNaN(Number(idBusca))) {
+    return responderJson(res, 400, { erro: 'ID invalido.' });
   }
+  try {
+    var livro = stmtBuscarLivro.get(Number(idBusca));
+    if (!livro) {
+      return responderJson(res, 404, { erro: 'Livro nao encontrado.' });
+    }
+    return responderJson(res, 200, livro);
+  } catch (erro) {
+    console.error('Erro em GET /api/livro/' + idBusca + ':', erro);
+    return responderJson(res, 500, { erro: 'Erro interno do servidor.' });
+  }
+}
 
   if (req.method === 'POST' && caminho === '/api/livro') {
     lerCorpoJson(req, function (erro, novo) {
