@@ -30,7 +30,9 @@ db.exec(`
     isbn TEXT UNIQUE,
     imagem TEXT,
     origem TEXT NOT NULL DEFAULT 'Nacional',
-    avaliacao REAL NOT NULL DEFAULT 0
+    avaliacao REAL NOT NULL DEFAULT 0,
+    editora TEXT,
+    paginas INTEGER
   )
 `);
 
@@ -54,6 +56,15 @@ db.exec(`
     db.exec("ALTER TABLE livro ADD COLUMN avaliacao REAL NOT NULL DEFAULT 0");
     console.log('✔ coluna "avaliacao" adicionada');
   }
+  if (cols.indexOf('editora') === -1) {
+  db.exec("ALTER TABLE livro ADD COLUMN editora TEXT");
+  console.log('✔ coluna "editora" adicionada');
+  }
+  if (cols.indexOf('paginas') === -1) {
+    db.exec("ALTER TABLE livro ADD COLUMN paginas INTEGER");
+    console.log('✔ coluna "paginas" adicionada');
+  }
+  
 })();
 
 module.exports = db;

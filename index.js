@@ -97,7 +97,7 @@ var stmtExcluirCliente = db.prepare('DELETE FROM cliente WHERE id = ?');
 
 var stmtListarLivros = db.prepare('SELECT * FROM livro ORDER BY id DESC');
 var stmtInserirLivro = db.prepare(
-  'INSERT INTO livro (titulo, autor, preco, genero, estoque, isbn, imagem, origem, avaliacao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+  'INSERT INTO livro (titulo, autor, preco, genero, estoque, isbn, imagem, origem, avaliacao, editora, paginas) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 );
 var stmtExcluirLivro = db.prepare('DELETE FROM livro WHERE id = ?');
 
@@ -174,6 +174,22 @@ var servidor = http.createServer(function (req, res) {
       return responderJson(res, 500, { erro: erro.message });
     }
   }
+    // ---- Buscar um livro específico por ID ----
+  if (req.method === 'GET' && caminho.indexOf('/api/livro/') === 0) {
+    var idBusca = caminho.split('/')[3];
+    if (!idBusca || isNaN(Number(idBusca))) {
+      return responderJson(res, 400, { erro: 'ID invalido.' });
+    }
+    try {
+      var livro = stmtBuscarLivro.get(Number(idBusca));
+      if (!livro) {
+        return responderJson(res, 404, { erro: 'Livro nao encontrado.' });
+      }
+      return responderJson(res, 200, livro);
+    } catch (erro) {
+      return responderJson(res, 500, { erro: erro.message });
+    }
+  }
 
   if (req.method === 'POST' && caminho === '/api/livro') {
     lerCorpoJson(req, function (erro, novo) {
@@ -221,6 +237,19 @@ var servidor = http.createServer(function (req, res) {
         avaliacaoNum = Math.round(avaliacaoNum * 10) / 10;
       }
 
+           // Editora (opcional, texto livre)
+      var editora = (novo.editora || '').trim() || null;
+
+      // Páginas (opcional, inteiro >= 1)
+      var paginasNum = null;
+      if (novo.paginas !== undefined && novo.paginas !== '' && novo.paginas !== null) {
+        paginasNum = Number(novo.paginas);
+        if (!isFinite(paginasNum) || paginasNum < 1) {
+          return responderJson(res, 400, { erro: 'Paginas deve ser um numero inteiro maior que zero.' });
+        }
+        paginasNum = Math.floor(paginasNum);
+      }
+
       var valores = [
         novo.titulo,
         novo.autor,
@@ -230,7 +259,9 @@ var servidor = http.createServer(function (req, res) {
         novo.isbn || null,
         imagem,
         origem,
-        avaliacaoNum
+        avaliacaoNum,
+        editora,
+        paginasNum
       ];
 
       try {
@@ -241,6 +272,8 @@ var servidor = http.createServer(function (req, res) {
         novo.imagem = imagem;
         novo.origem = origem;
         novo.avaliacao = avaliacaoNum;
+        novo.editora = editora;
+        novo.paginas = paginasNum;
         console.log('Livro cadastrado: id ' + novo.id + ' - ' + novo.titulo + ' (' + avaliacaoNum + '★)');
         return responderJson(res, 201, novo);
       } catch (err) {

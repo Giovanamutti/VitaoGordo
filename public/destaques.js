@@ -1,10 +1,11 @@
 /* =========================================================================
    Livraria Multicultural - destaques.js
-   Lógica exclusiva da home (index.html):
+   Home (index.html):
      - Busca os livros via GET /api/livro
      - Embaralha e pega 4 aleatórios
      - Renderiza na #grade-livros
-     - Re-bind dos botões "Comprar" com o carrinho global (script.js)
+     - Card inteiro clicável → livro.html?id=X
+     - Botão "Comprar" → carrinho global (script.js)
    ========================================================================= */
 
 (function () {
@@ -12,6 +13,9 @@
 
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
 
+  // ---------------------------------------------------------------------
+  // Helpers de formatação
+  // ---------------------------------------------------------------------
   function formatarPreco(v) {
     const n = Number(v);
     if (!isFinite(n)) return 'R$ 0,00';
@@ -37,17 +41,24 @@
     return html;
   }
 
-  // Fisher-Yates
-  function embaralhar(arr) {
-    const copia = arr.slice();
-    for (let i = copia.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copia[i], copia[j]] = [copia[j], copia[i]];
-    }
-    return copia;
+  function escaparAtributo(s) {
+    return String(s || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  function criarCardLivro(livro) {
+  // Fisher-Yates
+  function embaralhar(arr) {
+    const c = arr.slice();
+    for (let i = c.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [c[i], c[j]] = [c[j], c[i]];
+    }
+    return c;
+  }
+
+  // ---------------------------------------------------------------------
+  // Criação de um card de livro
+  // ---------------------------------------------------------------------
+  function criarCard(livro) {
     const origem = livro.origem || 'Nacional';
     const badgeOrigemClasses = origem === 'Internacional'
       ? 'bg-[#80c0d8] text-brasil-escuro'
@@ -56,16 +67,19 @@
     const imagemSrc = livro.imagem ? 'imagens/' + livro.imagem : '';
     const temImagem = !!imagemSrc;
     const precoNum = Number(livro.preco) || 0;
-    const semEstoque = livro.estoque !== undefined && Number(livro.estoque) <= 0;
+    const estoqueNum = Number(livro.estoque);
+    const semEstoque = isFinite(estoqueNum) && estoqueNum <= 0;
 
-    const card = document.createElement('div');
-    card.className = 'bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia';
+    const div = document.createElement('div');
+    div.className = 'bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia';
+    div.style.cursor = 'pointer';
 
-    card.innerHTML = `
+    div.innerHTML = `
       <div>
         <div class="relative overflow-hidden aspect-[3/4] bg-brasil-areia">
           ${temImagem
-            ? `<img src="${imagemSrc}" alt="${livro.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            ? `<img src="${imagemSrc}" alt="${livro.titulo}"
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                <div style="display:none;" class="absolute inset-0 items-center justify-center text-brasil-verde/30">
                  <i class="fa-solid fa-book text-5xl"></i>
@@ -76,11 +90,11 @@
           <div class="absolute top-3 left-3 ${badgeOrigemClasses} text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shadow">
             ${origem}
           </div>
-          ${livro.avaliacao > 0 ? `
-          <div class="absolute top-3 right-3 bg-white/95 backdrop-blur text-brasil-escuro text-[10px] font-bold px-2 py-1 rounded-md shadow flex items-center gap-1">
-            <i class="fa-solid fa-star" style="color:#F4D03F;"></i>
-            ${Number(livro.avaliacao).toFixed(1)}
-          </div>` : ''}
+          ${Number(livro.avaliacao) > 0 ? `
+            <div class="absolute top-3 right-3 bg-white/95 backdrop-blur text-brasil-escuro text-[10px] font-bold px-2 py-1 rounded-md shadow flex items-center gap-1">
+              <i class="fa-solid fa-star" style="color:#F4D03F;"></i>
+              ${Number(livro.avaliacao).toFixed(1)}
+            </div>` : ''}
         </div>
         <div class="p-5 space-y-2">
           ${livro.genero ? `<span class="inline-block text-[10px] uppercase font-bold tracking-wider text-brasil-terracota">${livro.genero}</span>` : ''}
@@ -98,11 +112,11 @@
         <span class="text-lg font-bold text-brasil-verde">${formatarPreco(precoNum)}</span>
         <button
           data-id="${livro.id}"
-          data-nome="${(livro.titulo || '').replace(/"/g, '&quot;')}"
-          data-autor="${(livro.autor || '').replace(/"/g, '&quot;')}"
-          data-img="${livro.imagem ? 'imagens/' + livro.imagem : ''}"
-          data-genero="${(livro.genero || '').replace(/"/g, '&quot;')}"
-          data-origem="${livro.origem || 'Nacional'}"
+          data-nome="${escaparAtributo(livro.titulo)}"
+          data-autor="${escaparAtributo(livro.autor)}"
+          data-img="${imagemSrc}"
+          data-genero="${escaparAtributo(livro.genero)}"
+          data-origem="${escaparAtributo(livro.origem || 'Nacional')}"
           data-preco="${precoNum.toFixed(2)}"
           class="comprar-btn px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center"
           ${semEstoque ? 'disabled title="Sem estoque"' : ''}
@@ -113,13 +127,23 @@
       </div>
     `;
 
-    return card;
+    // Card inteiro leva para a página de detalhe
+    div.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return; // não navega se clicou no botão
+      window.location.href = 'livro.html?id=' + livro.id;
+    });
+
+    return div;
   }
 
+  // ---------------------------------------------------------------------
+  // Bind dos botões "Comprar"
+  // ---------------------------------------------------------------------
   function bindBotoesCompra(container) {
     container.querySelectorAll('.comprar-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.disabled) return;
+
         const id = btn.dataset.id;
         const preco = parseFloat(btn.dataset.preco);
         const extras = {
@@ -167,9 +191,14 @@
     });
   }
 
-  function renderizarDestaques(livros) {
+  // ---------------------------------------------------------------------
+  // Renderização da grade
+  // ---------------------------------------------------------------------
+  function renderizar(livros) {
     const grade = $('#grade-livros');
     if (!grade) return;
+
+    grade.innerHTML = '';
 
     if (!livros.length) {
       grade.innerHTML = `
@@ -189,12 +218,17 @@
       return;
     }
 
-    grade.innerHTML = '';
-    livros.forEach(livro => grade.appendChild(criarCardLivro(livro)));
+    livros.forEach(livro => grade.appendChild(criarCard(livro)));
     bindBotoesCompra(grade);
   }
 
-  function carregarDestaques() {
+  // ---------------------------------------------------------------------
+  // Carregamento
+  // ---------------------------------------------------------------------
+  function carregar() {
+    const grade = $('#grade-livros');
+    if (!grade) return;
+
     fetch('/api/livro')
       .then(r => {
         if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -203,24 +237,21 @@
       .then(lista => {
         const todos = Array.isArray(lista) ? lista : [];
         const sorteio = embaralhar(todos).slice(0, 4);
-        renderizarDestaques(sorteio);
+        renderizar(sorteio);
       })
       .catch(erro => {
         console.error('Falha ao carregar destaques:', erro);
-        const grade = $('#grade-livros');
-        if (grade) {
-          grade.innerHTML = `
-            <div class="col-span-full bg-white rounded-2xl p-12 text-center space-y-4 border border-brasil-areia shadow-sm">
-              <div class="w-16 h-16 rounded-full bg-brasil-terracota/10 text-brasil-terracota flex items-center justify-center mx-auto text-2xl">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-              </div>
-              <h3 class="font-serif font-bold text-2xl text-brasil-verde">Não foi possível carregar os destaques</h3>
-              <p class="text-brasil-escuro/70 text-sm">${erro.message}</p>
+        grade.innerHTML = `
+          <div class="col-span-full bg-white rounded-2xl p-12 text-center space-y-4 border border-brasil-areia shadow-sm">
+            <div class="w-16 h-16 rounded-full bg-brasil-terracota/10 text-brasil-terracota flex items-center justify-center mx-auto text-2xl">
+              <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
-          `;
-        }
+            <h3 class="font-serif font-bold text-2xl text-brasil-verde">Não foi possível carregar os destaques</h3>
+            <p class="text-brasil-escuro/70 text-sm">${erro.message}</p>
+          </div>
+        `;
       });
   }
 
-  document.addEventListener('DOMContentLoaded', carregarDestaques);
+  document.addEventListener('DOMContentLoaded', carregar);
 })();

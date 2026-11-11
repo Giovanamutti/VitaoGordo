@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Livro | Livraria Multicultural</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brasil: {
+                            verde: '#1B4D3E',
+                            amarelo: '#F4D03F',
+                            terracota: '#C0392B',
+                            madeira: '#8D5524',
+                            creme: '#FDFBF7',
+                            areia: '#F4ECE1',
+                            escuro: '#1A1818'
+                        },
+                        mfs: '#80c0d8'
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FDFBF7; color: #1A1818; overflow-x: hidden; }
+        h1, h2, h3, h4, .font-serif { font-family: 'Playfair Display', serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F4ECE1; }
+        ::-webkit-scrollbar-thumb { background: #1B4D3E; border-radius: 4px; }
+        .glass-nav { background: rgba(253, 251, 247, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .hero-pattern { background-image: radial-gradient(#C0392B 0.75px, transparent 0.75px), radial-gradient(#1B4D3E 0.75px, #FDFBF7 0.75px); background-size: 30px 30px; background-position: 0 0, 15px 15px; }
+        @keyframes floatSlow { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
+        .floating-card { animation: floatSlow 6s ease-in-out infinite; }
+        .skeleton { background: linear-gradient(90deg, #F4ECE1 25%, #e8dccd 50%, #F4ECE1 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    </style>
+</head>
+<body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro">
+
+    <!-- ============== HEADER ============== -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
+                <div class="flex flex-col justify-center leading-tight">
+                    <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
+                    <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold mt-1">Livraria & Cultura</span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
+                <a href="index.html#destaques" class="hover:text-brasil-terracota transition-colors">Destaque</a>
+                <a href="produtos.html" class="hover:text-brasil-terracota transition-colors">Livro</a>
+                <a href="index.html#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
+            </nav>
+
+            <div class="flex items-center gap-3 sm:gap-5">
+                <a href="login.html" title="Área do Usuário" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
+                    <i class="fa-regular fa-user text-sm"></i>
+                </a>
+                <a href="clube.html" title="Clube" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
+                    <i class="fa-solid fa-crown text-brasil-terracota"></i>
+                    <span>Clube</span>
+                </a>
+                <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-bag-shopping text-sm"></i>
+                    <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </a>
+                <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
+            <a href="index.html#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Destaque</a>
+            <a href="produtos.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Livro</a>
+            <a href="index.html#manifesto" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Manifesto</a>
+            <a href="login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
+            <div class="pt-3 border-t border-brasil-areia flex gap-4">
+                <a href="carrinho.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-verde text-brasil-amarelo text-xs font-bold">Carrinho</a>
+                <a href="clube.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-amarelo/30 text-brasil-verde text-xs font-bold">Clube</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============== CONTEÚDO ============== -->
+    <main class="pt-32 pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Breadcrumb -->
+            <nav id="breadcrumb" class="mb-8 flex items-center gap-2 text-xs text-brasil-escuro/60 font-medium">
+                <a href="index.html" class="hover:text-brasil-terracota transition-colors">Início</a>
+                <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                <a href="produtos.html" class="hover:text-brasil-terracota transition-colors">Acervo</a>
+                <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                <span id="breadcrumb-titulo" class="text-brasil-verde">Carregando...</span>
+            </nav>
+
+            <!-- Loading skeleton -->
+            <div id="loading" class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                <div class="lg:col-span-5">
+                    <div class="aspect-[3/4] rounded-3xl skeleton"></div>
+                </div>
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="h-3 w-24 rounded skeleton"></div>
+                    <div class="h-10 w-3/4 rounded skeleton"></div>
+                    <div class="h-4 w-1/2 rounded skeleton"></div>
+                    <div class="h-4 w-1/3 rounded skeleton"></div>
+                    <div class="h-24 rounded skeleton mt-6"></div>
+                    <div class="h-12 w-1/3 rounded skeleton"></div>
+                </div>
+            </div>
+
+            <!-- Conteúdo real (preenchido via livro.js) -->
+            <div id="conteudo" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+
+                    <!-- Capa -->
+                    <div class="lg:col-span-5">
+                        <div class="relative w-full max-w-md mx-auto lg:mx-0">
+                            <div class="absolute -inset-3 bg-gradient-to-br from-brasil-amarelo to-brasil-terracota rounded-3xl blur-2xl opacity-20 -z-10"></div>
+                            <div class="bg-white p-4 rounded-3xl shadow-2xl border border-brasil-areia">
+                                <div id="livro-capa" class="overflow-hidden rounded-2xl aspect-[3/4] bg-brasil-areia flex items-center justify-center">
+                                    <i class="fa-solid fa-book text-6xl text-brasil-verde/20"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="lg:col-span-7 space-y-6">
+
+                        <!-- Badges -->
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span id="livro-origem" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-md bg-brasil-verde text-brasil-amarelo"></span>
+                            <span id="livro-genero" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-md bg-brasil-terracota/10 text-brasil-terracota"></span>
+                            <span id="livro-estoque-badge" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-md"></span>
+                        </div>
+
+                        <!-- Título + Autor -->
+                        <div>
+                            <h1 id="livro-titulo" class="text-3xl sm:text-5xl font-serif font-extrabold text-brasil-verde leading-tight mb-3"></h1>
+                            <p class="text-base sm:text-lg text-brasil-escuro/70">
+                                por <span id="livro-autor" class="font-semibold text-brasil-terracota"></span>
+                            </p>
+                        </div>
+
+                        <!-- Avaliação -->
+                        <div id="livro-avaliacao" class="flex items-center gap-2"></div>
+
+                        <!-- Preço -->
+                        <div class="pt-2 pb-4 border-y border-brasil-areia">
+                            <span id="livro-preco" class="text-4xl font-bold text-brasil-verde"></span>
+                        </div>
+
+                        <!-- Grade de informações -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-brasil-areia/50 rounded-xl p-4">
+                                <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                    <i class="fa-solid fa-building mr-1 text-brasil-terracota"></i> Editora
+                                </div>
+                                <div id="livro-editora" class="text-sm font-semibold text-brasil-escuro">—</div>
+                            </div>
+                            <div class="bg-brasil-areia/50 rounded-xl p-4">
+                                <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                    <i class="fa-solid fa-file-lines mr-1 text-brasil-terracota"></i> Páginas
+                                </div>
+                                <div id="livro-paginas" class="text-sm font-semibold text-brasil-escuro">—</div>
+                            </div>
+                            <div class="bg-brasil-areia/50 rounded-xl p-4">
+                                <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                    <i class="fa-solid fa-barcode mr-1 text-brasil-terracota"></i> ISBN
+                                </div>
+                                <div id="livro-isbn" class="text-sm font-semibold text-brasil-escuro break-all">—</div>
+                            </div>
+                            <div class="bg-brasil-areia/50 rounded-xl p-4">
+                                <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                    <i class="fa-solid fa-cubes mr-1 text-brasil-terracota"></i> Estoque
+                                </div>
+                                <div id="livro-estoque" class="text-sm font-semibold text-brasil-escuro">—</div>
+                            </div>
+                        </div>
+
+                        <!-- Ações -->
+                        <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                            <button id="btn-comprar" class="flex-1 px-8 py-4 rounded-xl bg-brasil-verde text-brasil-creme font-bold hover:bg-brasil-terracota transition-all duration-300 shadow-xl flex items-center justify-center gap-3 group">
+                                <i class="fa-solid fa-cart-plus"></i>
+                                <span>Adicionar ao Carrinho</span>
+                            </button>
+                            <a href="carrinho.html" class="px-8 py-4 rounded-xl bg-brasil-amarelo text-brasil-escuro font-bold hover:bg-brasil-amarelo/80 transition-all duration-300 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                                <span>Ver Carrinho</span>
+                            </a>
+                        </div>
+
+                        <!-- Voltar -->
+                        <div class="pt-4">
+                            <a href="produtos.html" class="inline-flex items-center gap-2 text-xs font-bold text-brasil-verde hover:text-brasil-terracota transition-colors">
+                                <i class="fa-solid fa-arrow-left"></i> Voltar para o acervo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Erro -->
+            <div id="erro" class="hidden bg-white rounded-3xl p-12 text-center space-y-4 border border-brasil-areia shadow-sm max-w-2xl mx-auto">
+                <div class="w-16 h-16 rounded-full bg-brasil-terracota/10 text-brasil-terracota flex items-center justify-center mx-auto text-2xl">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h2 class="font-serif font-bold text-2xl text-brasil-verde">Livro não encontrado</h2>
+                <p id="erro-msg" class="text-brasil-escuro/70 text-sm">O livro que você procura não existe ou foi removido.</p>
+                <a href="produtos.html" class="inline-block px-6 py-3 bg-brasil-verde text-brasil-amarelo font-bold rounded-xl text-xs hover:bg-brasil-terracota hover:text-white transition-colors">
+                    Ver acervo completo
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ============== FOOTER ============== -->
+    <footer class="bg-brasil-escuro text-brasil-creme pt-16 pb-12 border-t border-brasil-areia/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <img src="logo/logo.png" alt="Multicultural" class="w-12 h-12 object-contain">
+                        <span class="text-xl font-serif font-bold text-white">Multicultural</span>
+                    </div>
+                    <p class="text-xs text-brasil-creme/70 leading-relaxed">
+                        Muito mais que uma livraria, um santuário de preservação e celebração da nossa diversidade cultural e literária.
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <h4 class="font-serif font-bold text-brasil-amarelo text-sm tracking-wider uppercase">Navegação</h4>
+                    <ul class="space-y-2 text-xs text-brasil-creme/70">
+                        <li><a href="index.html#destaques" class="hover:text-brasil-amarelo transition-colors">Destaques da Semana</a></li>
+                        <li><a href="produtos.html" class="hover:text-brasil-amarelo transition-colors">Acervo Completo</a></li>
+                        <li><a href="clube.html" class="hover:text-brasil-amarelo transition-colors">Clube de Leitura</a></li>
+                        <li><a href="carrinho.html" class="hover:text-brasil-amarelo transition-colors">Meu Carrinho</a></li>
+                        <li><a href="login.html" class="hover:text-brasil-amarelo transition-colors">Área do Cliente</a></li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3 lg:col-span-2 bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center font-extrabold shadow-md tracking-tighter overflow-hidden">
+                            <img src="logo/mutti.png" alt="Mutti Full Stack">
+                        </div>
+                        <div>
+                            <h4 class="font-serif font-bold text-white text-base">Mutti Full Stack</h4>
+                            <span class="text-[10px] uppercase tracking-widest font-semibold text-mfs">Engenharia de Software & Inovação</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-brasil-creme/80 leading-relaxed font-light">
+                        A <strong class="text-mfs">Mutti Full Stack</strong> é uma empresa de software focada em desenvolver arquiteturas digitais modernas, inovadoras e de alto desempenho.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-brasil-creme/50 gap-4">
+                <p>&copy; 2026 Livraria Multicultural. Todos os direitos reservados.</p>
+                <p class="flex items-center gap-1">
+                    Desenvolvido com <i class="fa-solid fa-heart text-brasil-terracota"></i> por <span class="text-mfs font-semibold">Mutti Full Stack (MFS)</span>.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============== SCRIPTS ============== -->
+    <script src="script.js"></script>
+    <script src="livro.js"></script>
+</body>
+</html>

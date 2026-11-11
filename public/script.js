@@ -665,7 +665,7 @@
       if (!Array.isArray(lista) || lista.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = 11;
+        td.colSpan = 13;
         td.textContent = 'Nenhum livro cadastrado ainda.';
         tr.appendChild(td);
         corpoTabela.appendChild(tr);
@@ -699,10 +699,21 @@
         tdTitulo.textContent = livro.titulo;
         tr.appendChild(tdTitulo);
 
-        // Autor
+                // Autor
         const tdAutor = document.createElement('td');
         tdAutor.textContent = livro.autor;
         tr.appendChild(tdAutor);
+
+        // Editora
+        const tdEditora = document.createElement('td');
+        tdEditora.textContent = livro.editora || '—';
+        tr.appendChild(tdEditora);
+
+        // Páginas
+        const tdPaginas = document.createElement('td');
+        tdPaginas.textContent = livro.paginas ? livro.paginas : '—';
+        tr.appendChild(tdPaginas);
+        
 
         // Origem (badge)
         const tdOrigem = document.createElement('td');
