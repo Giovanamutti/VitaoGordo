@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minha Conta | Livraria Multicultural</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .conta-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 720px) {
+      .conta-grid { grid-template-columns: 1fr; }
+    }
+    .avatar-card {
+      background: var(--cor-card);
+      border: 1px solid var(--cor-borda);
+      border-radius: 8px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,.05);
+    }
+    .avatar-wrap {
+      width: 140px; height: 140px; border-radius: 50%;
+      margin: 0 auto 1rem; overflow: hidden;
+      background: linear-gradient(135deg, #8b4513, #c0392b);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 2.5rem; font-weight: 700;
+      border: 4px solid #F4D03F;
+      box-shadow: 0 6px 20px rgba(0,0,0,.15);
+    }
+    .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-nome { font-weight: 700; color: var(--cor-primaria); font-size: 1.1rem; }
+    .avatar-user { color: #888; font-size: .85rem; margin-top: .2rem; }
+    .btn-upload {
+      margin-top: 1rem; display: inline-block;
+      background: var(--cor-primaria); color: #fff;
+      padding: .6rem 1.2rem; border-radius: 5px; font-weight: 600;
+      font-size: .85rem; cursor: pointer; transition: background .2s;
+      border: none;
+    }
+    .btn-upload:hover { background: var(--cor-primaria-hover); }
+    .btn-logout {
+      margin-top: .6rem; display: inline-block;
+      background: transparent; color: var(--cor-erro);
+      padding: .6rem 1.2rem; border: 1px solid var(--cor-erro);
+      border-radius: 5px; font-weight: 600; font-size: .85rem;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-logout:hover { background: var(--cor-erro); color: #fff; }
+    .info-card {
+      background: var(--cor-card);
+      border: 1px solid var(--cor-borda);
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,.05);
+    }
+    .info-card h2 {
+      color: var(--cor-primaria);
+      font-size: 1.3rem;
+      margin-bottom: 1.2rem;
+      padding-bottom: .5rem;
+      border-bottom: 1px solid var(--cor-borda);
+    }
+    .info-linha {
+      display: flex; justify-content: space-between;
+      padding: .7rem 0; border-bottom: 1px dashed var(--cor-borda);
+      font-size: .95rem;
+    }
+    .info-linha:last-child { border-bottom: none; }
+    .info-linha strong { color: var(--cor-primaria); }
+    .info-linha span { color: #555; text-align: right; }
+    #avisoConta {
+      margin-top: 1rem; font-weight: 600; font-size: .9rem;
+      color: var(--cor-sucesso);
+    }
+    #avisoConta.erro { color: var(--cor-erro); }
+  </style>
+</head>
+<body>
+
+  <header class="header-livraria">
+    <div class="header-logo-row">
+      <a href="index.html"><img src="logo/logo.png" alt="Multicultural"></a>
+      <h1 style="margin:0;">Livraria Multicultural</h1>
+    </div>
+    <p>Minha Conta</p>
+  </header>
+
+  <div class="pagina-container">
+    <div id="conteudo" style="display:none;">
+      <div class="conta-grid">
+
+        <!-- Coluna avatar -->
+        <div class="avatar-card">
+          <div class="avatar-wrap" id="avatarWrap">
+            <span id="avatarIniciais"></span>
+          </div>
+          <div class="avatar-nome" id="avatarNome"></div>
+          <div class="avatar-user" id="avatarUser"></div>
+
+          <label class="btn-upload" for="inputFoto">
+            <i class="fa-solid fa-camera"></i> Enviar Foto
+          </label>
+          <input type="file" id="inputFoto" accept="image/png,image/jpeg,image/jpg,image/webp,image/gif" style="display:none;">
+
+          <button class="btn-logout" id="btnLogout">
+            <i class="fa-solid fa-right-from-bracket"></i> Sair da Conta
+          </button>
+
+          <p style="margin-top:1rem;font-size:.75rem;color:#888;">
+            Seu carrinho continua salvo mesmo após sair.
+          </p>
+        </div>
+
+        <!-- Coluna dados -->
+        <div class="info-card">
+          <h2><i class="fa-solid fa-id-card"></i> Dados da Conta</h2>
+          <div class="info-linha"><strong>ID</strong><span id="infoId">—</span></div>
+          <div class="info-linha"><strong>Nome completo</strong><span id="infoNomeCompleto">—</span></div>
+          <div class="info-linha"><strong>Nome de usuário</strong><span id="infoUsuario">—</span></div>
+          <div class="info-linha"><strong>Email</strong><span id="infoEmail">—</span></div>
+          <div class="info-linha"><strong>Telefone</strong><span id="infoTelefone">—</span></div>
+          <div class="info-linha"><strong>CPF</strong><span id="infoCpf">—</span></div>
+          <div class="info-linha"><strong>Nascimento</strong><span id="infoNascimento">—</span></div>
+          <div class="info-linha"><strong>CEP</strong><span id="infoCep">—</span></div>
+          <div class="info-linha"><strong>Conta criada em</strong><span id="infoCriado">—</span></div>
+          <div class="info-linha"><strong>Itens no carrinho</strong><span id="infoCarrinho">—</span></div>
+
+          <p id="avisoConta"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bloqueio se não logado -->
+    <div id="bloqueio" class="container-card" style="text-align:center;">
+      <h2 style="color:var(--cor-primaria);margin-bottom:.5rem;">Você não está logado</h2>
+      <p style="color:#666;margin-bottom:1rem;">Faça login para acessar sua conta.</p>
+      <a href="login.html" style="display:inline-block;background:var(--cor-primaria);color:#fff;padding:.7rem 1.5rem;border-radius:5px;text-decoration:none;font-weight:600;">Ir para o Login</a>
+    </div>
+  </div>
+  <script src="js/mascaras.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      const $ = (s) => document.querySelector(s);
+      const aviso = $('#avisoConta');
+
+      const usuario = window.Auth.obterUsuario();
+      if (!usuario) {
+        $('#conteudo').style.display = 'none';
+        $('#bloqueio').style.display = 'block';
+        return;
+      }
+      $('#bloqueio').style.display = 'none';
+      $('#conteudo').style.display = 'block';
+
+      function mostrarAviso(texto, erro) {
+        aviso.textContent = texto;
+        aviso.className = erro ? 'erro' : '';
+      }
+
+      function iniciais(nome) {
+        if (!nome) return '?';
+        const parts = nome.trim().split(/\s+/);
+        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+
+      function renderizar(u) {
+        // Avatar
+        const wrap = $('#avatarWrap');
+        if (u.foto_perfil) {
+          wrap.innerHTML = `<img src="uploads/${u.foto_perfil}?t=${Date.now()}" alt="Foto de perfil">`;
+        } else {
+          wrap.innerHTML = `<span id="avatarIniciais">${iniciais(u.nome_completo)}</span>`;
+        }
+        $('#avatarNome').textContent = u.nome_completo || '—';
+        $('#avatarUser').textContent = '@' + (u.nome_usuario || '—');
+
+        // Dados
+        $('#infoId').textContent = u.id;
+        $('#infoNomeCompleto').textContent = u.nome_completo || '—';
+        $('#infoUsuario').textContent = u.nome_usuario || '—';
+        $('#infoEmail').textContent = u.email || '—';
+        $('#infoTelefone').textContent = u.telefone || '—';
+        $('#infoCpf').textContent = u.cpf || '—';
+        $('#infoNascimento').textContent = u.data_nascimento || '—';
+        $('#infoCep').textContent = u.cep || '—';
+        $('#infoCriado').textContent = u.criado_em || '—';
+
+        // Atualiza cache local (sessão)
+        window.Auth.salvarUsuario(u);
+      }
+
+      renderizar(usuario);
+
+      // Conta itens do carrinho (servidor)
+      fetch('/api/carrinho/' + usuario.id)
+        .then(r => r.json())
+        .then(itens => {
+          const total = (itens || []).reduce((s, it) => s + (Number(it.qty) || 0), 0);
+          document.getElementById('infoCarrinho').textContent = total + (total === 1 ? ' item' : ' itens');
+        })
+        .catch(() => {
+          document.getElementById('infoCarrinho').textContent = '—';
+        });
+
+      // Upload de foto
+      const inputFoto = $('#inputFoto');
+      inputFoto.addEventListener('change', () => {
+        const arquivo = inputFoto.files[0];
+        if (!arquivo) return;
+
+        if (arquivo.size > 5 * 1024 * 1024) {
+          return mostrarAviso('Arquivo muito grande (máx 5MB).', true);
+        }
+
+        const fd = new FormData();
+        fd.append('foto', arquivo);
+
+        mostrarAviso('Enviando foto...', false);
+
+        fetch('/api/usuario/' + usuario.id + '/foto', {
+          method: 'POST',
+          body: fd
+        })
+          .then(r => r.json().then(c => ({ ok: r.ok, c })))
+          .then(({ ok, c }) => {
+            if (!ok) return mostrarAviso(c.erro || 'Falha no upload.', true);
+            renderizar(c);
+            mostrarAviso('Foto atualizada!', false);
+          })
+          .catch(err => mostrarAviso('Erro de comunicação: ' + err.message, true))
+          .finally(() => { inputFoto.value = ''; });
+      });
+
+      // Logout (preserva carrinho)
+      $('#btnLogout').addEventListener('click', () => {
+        if (!confirm('Deseja sair? Seu carrinho continuará salvo.')) return;
+        window.Auth.logout();
+      });
+    })();
+  </script>
+</body>
+</html>

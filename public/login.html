@@ -3,8 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Livraria Multicultural - Cadastro</title>
+  <title>Entrar / Criar Conta | Livraria Multicultural</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .tabs { display:flex; gap:.5rem; margin-bottom:1.5rem; }
+    .tab-btn {
+      flex:1; padding:.7rem 1rem; border:1px solid var(--cor-borda);
+      background:#fafafa; color:#555; font-weight:600; border-radius:5px;
+      cursor:pointer; transition:all .2s; font-size:.95rem;
+    }
+    .tab-btn.ativo { background:var(--cor-primaria); color:#fff; border-color:var(--cor-primaria); }
+    .tab-painel { display:none; }
+    .tab-painel.ativo { display:block; }
+    .aviso-sessao {
+      background:#fff8e1; border:1px solid #f4d03f; color:#8b4513;
+      padding:.8rem 1rem; border-radius:5px; font-size:.85rem;
+      margin-bottom:1rem; display:flex; align-items:center; gap:.5rem;
+    }
+    #avisoAuth { margin-top:1rem; font-weight:600; font-size:.9rem; color:var(--cor-sucesso); }
+    #avisoAuth.erro { color:var(--cor-erro); }
+  </style>
 </head>
 <body>
 
@@ -13,69 +32,187 @@
       <a href="index.html"><img src="logo/logo.png" alt="Multicultural"></a>
       <h1 style="margin:0;">Livraria Multicultural</h1>
     </div>
-    <p>Gestão e Cadastro de Clientes</p>
+    <p>Área do Cliente</p>
+    <p style="margin-top:.5rem;">
+      <a href="consultas_login.html" style="color:#8b4513; font-weight:600; text-decoration:none;">
+        <i class="fa-solid fa-table-list"></i> Ver clientes cadastrados
+      </a>
+    </p>
   </header>
 
   <div class="pagina-container">
     <main class="container-card">
-      <form id="formCliente">
-        <fieldset>
-          <legend>Novo Cliente</legend>
+      <fieldset>
+        <legend>Bem-vindo(a)</legend>
 
-          <div class="linha">
-            <label class="campo-nome">
-              <span>Nome Completo *</span>
-              <input type="text" name="nome" placeholder="Digite o nome completo" required>
+        <div class="tabs">
+          <button type="button" class="tab-btn ativo" data-tab="entrar">Entrar</button>
+          <button type="button" class="tab-btn" data-tab="cadastrar">Criar Conta</button>
+        </div>
+
+        <!-- ====== LOGIN ====== -->
+        <div class="tab-painel ativo" id="painel-entrar">
+          <form id="formLogin">
+            <label>
+              <span>Nome de Usuário *</span>
+              <input type="text" name="nome_usuario" placeholder="seu_usuario" required autocomplete="username">
             </label>
-            <label class="campo-cep">
-              <span>CEP *</span>
-              <input type="text" name="cep" placeholder="85860-000" required>
+            <label>
+              <span>Senha *</span>
+              <input type="password" name="senha" placeholder="••••••••" required autocomplete="current-password">
             </label>
+            <button type="submit" style="width:100%;">
+              <i class="fa-solid fa-right-to-bracket"></i> Entrar
+            </button>
+          </form>
+        </div>
+
+        <!-- ====== CADASTRO ====== -->
+        <div class="tab-painel" id="painel-cadastrar">
+          <div class="aviso-sessao">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>A foto de perfil poderá ser enviada depois, dentro da sua conta.</span>
           </div>
 
-          <div class="linha">
-            <label class="campo-cpf">
-              <span>CPF *</span>
-              <input type="text" name="cpf" placeholder="000.000.000-00" required>
-            </label>
-            <label class="campo-telefone">
-              <span>Telefone</span>
-              <input type="text" name="telefone" placeholder="(00) 00000-0000">
-            </label>
-            <label class="campo-data">
-              <span>Data de Nascimento</span>
-              <input type="date" name="nascimento" id="data">
-            </label>
-          </div>
+          <form id="formCadastroUsuario">
+            <div class="linha">
+              <label class="campo-nome">
+                <span>Nome Completo *</span>
+                <input type="text" name="nome_completo" placeholder="Seu nome completo" required>
+              </label>
+              <label class="campo-nome">
+                <span>Nome de Usuário *</span>
+                <input type="text" name="nome_usuario" placeholder="seu_usuario" required minlength="3">
+              </label>
+            </div>
 
-          <button type="submit">Salvar Cliente</button>
-          <p id="aviso"></p>
-        </fieldset>
-      </form>
+            <div class="linha">
+              <label class="campo-nome">
+                <span>Email *</span>
+                <input type="email" name="email" placeholder="voce@email.com" required>
+              </label>
+              <label class="campo-telefone">
+                <span>Telefone</span>
+                <input type="text" name="telefone" placeholder="(00) 00000-0000">
+              </label>
+            </div>
+
+            <div class="linha">
+              <label class="campo-cpf">
+                <span>CPF</span>
+                <input type="text" name="cpf" placeholder="000.000.000-00">
+              </label>
+              <label class="campo-data">
+                <span>Data de Nascimento</span>
+                <input type="date" name="data_nascimento">
+              </label>
+              <label class="campo-cep">
+                <span>CEP</span>
+                <input type="text" name="cep" placeholder="85860-000">
+              </label>
+            </div>
+
+            <div class="linha">
+              <label class="campo-nome">
+                <span>Senha * (mín. 6 caracteres)</span>
+                <input type="password" name="senha" placeholder="••••••••" required minlength="6" autocomplete="new-password">
+              </label>
+              <label class="campo-nome">
+                <span>Confirmar Senha *</span>
+                <input type="password" name="senha_confirm" placeholder="••••••••" required minlength="6" autocomplete="new-password">
+              </label>
+            </div>
+
+            <button type="submit" style="width:100%;">
+              <i class="fa-solid fa-user-plus"></i> Criar Conta
+            </button>
+          </form>
+        </div>
+
+        <p id="avisoAuth"></p>
+      </fieldset>
     </main>
-
-    <section class="secao-tabela">
-      <h2>Clientes Cadastrados</h2>
-      <div class="tabela-container">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>CEP</th>
-              <th>Nome</th>
-              <th>Telefone</th>
-              <th>CPF</th>
-              <th>Data Nasc.</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="corpoTabela"></tbody>
-        </table>
-      </div>
-    </section>
   </div>
+  <script src="js/mascaras.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      const $ = (s) => document.querySelector(s);
+      const aviso = $('#avisoAuth');
 
-  <script src="script.js"></script>
+      function mostrarAviso(texto, erro) {
+        if (!aviso) return;
+        aviso.textContent = texto;
+        aviso.className = erro ? 'erro' : '';
+      }
 
+      // Tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
+          document.querySelectorAll('.tab-painel').forEach(p => p.classList.remove('ativo'));
+          btn.classList.add('ativo');
+          $('#painel-' + btn.dataset.tab).classList.add('ativo');
+          aviso.textContent = '';
+        });
+      });
+
+      // LOGIN
+      const formLogin = $('#formLogin');
+      formLogin.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fd = new FormData(formLogin);
+        const dados = {};
+        fd.forEach((v, k) => { dados[k] = v; });
+
+        fetch('/api/usuario/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        })
+          .then(r => r.json().then(c => ({ ok: r.ok, c })))
+          .then(({ ok, c }) => {
+            if (!ok) return mostrarAviso(c.erro || 'Falha no login.', true);
+            window.Auth.salvarUsuario(c);
+            mostrarAviso('Login realizado! Sincronizando carrinho...', false);
+            window.Auth.aoLogar().then(() => {
+              setTimeout(() => window.location.href = 'conta.html', 400);
+            });
+          })
+          .catch(err => mostrarAviso('Erro de comunicação: ' + err.message, true));
+      });
+
+      // CADASTRO
+      const formCad = $('#formCadastroUsuario');
+      formCad.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fd = new FormData(formCad);
+        const dados = {};
+        fd.forEach((v, k) => { dados[k] = v; });
+
+        if (dados.senha !== dados.senha_confirm) {
+          return mostrarAviso('As senhas não coincidem.', true);
+        }
+        delete dados.senha_confirm;
+
+        fetch('/api/usuario/registrar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        })
+          .then(r => r.json().then(c => ({ ok: r.ok, c })))
+          .then(({ ok, c }) => {
+            if (!ok) return mostrarAviso(c.erro || 'Falha no cadastro.', true);
+            window.Auth.salvarUsuario(c);
+            mostrarAviso('Conta criada! Sincronizando carrinho...', false);
+            window.Auth.aoLogar().then(() => {
+              setTimeout(() => window.location.href = 'conta.html', 400);
+            });
+          })
+          .catch(err => mostrarAviso('Erro de comunicação: ' + err.message, true));
+      });
+    })();
+  </script>
 </body>
 </html>

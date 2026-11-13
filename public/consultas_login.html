@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clientes Cadastrados | Livraria Multicultural</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="header-livraria">
+    <div class="header-logo-row">
+      <a href="index.html"><img src="logo/logo.png" alt="Multicultural"></a>
+      <h1 style="margin:0;">Livraria Multicultural</h1>
+    </div>
+    <p>Consulta de Clientes</p>
+    <p style="margin-top:.5rem;">
+      <a href="login.html" style="color:#8b4513; font-weight:600; text-decoration:none;">
+        <i class="fa-solid fa-arrow-left"></i> Voltar para o Login
+      </a>
+    </p>
+  </header>
+
+  <div class="pagina-container">
+    <section class="secao-tabela">
+      <h2>Clientes Cadastrados</h2>
+      <div class="tabela-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>CEP</th>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>CPF</th>
+              <th>Data Nasc.</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="corpoTabela"></tbody>
+        </table>
+      </div>
+      <p id="aviso" style="margin-top:1rem;font-weight:600;font-size:.9rem;color:var(--cor-sucesso);"></p>
+    </section>
+  </div>
+    <script src="js/mascaras.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      const corpoTabela = document.getElementById('corpoTabela');
+      const aviso = document.getElementById('aviso');
+
+      function mostrarAviso(txt, erro) {
+        aviso.textContent = txt;
+        aviso.style.color = erro ? 'var(--cor-erro)' : 'var(--cor-sucesso)';
+      }
+
+      function desenhar(lista) {
+        corpoTabela.innerHTML = '';
+        if (!Array.isArray(lista) || lista.length === 0) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 7;
+          td.textContent = 'Nenhum cliente cadastrado ainda.';
+          tr.appendChild(td);
+          corpoTabela.appendChild(tr);
+          return;
+        }
+        lista.forEach(c => {
+          const tr = document.createElement('tr');
+          [c.id, c.cep, c.nome, c.telefone, c.cpf, c.nascimento].forEach(v => {
+            const td = document.createElement('td');
+            td.textContent = (v === null || v === undefined) ? '' : v;
+            tr.appendChild(td);
+          });
+          const tdBtn = document.createElement('td');
+          const btn = document.createElement('button');
+          btn.textContent = 'Excluir';
+          btn.addEventListener('click', () => excluir(c.id));
+          tdBtn.appendChild(btn);
+          tr.appendChild(tdBtn);
+          corpoTabela.appendChild(tr);
+        });
+      }
+
+      function carregar() {
+        fetch('/api/cliente')
+          .then(r => r.json())
+          .then(desenhar)
+          .catch(e => mostrarAviso('Falha ao carregar: ' + e.message, true));
+      }
+
+      function excluir(id) {
+        if (!confirm('Excluir o cliente #' + id + '?')) return;
+        fetch('/api/cliente/' + id, { method: 'DELETE' })
+          .then(r => {
+            if (!r.ok) throw new Error('Falha ao remover.');
+            mostrarAviso('Cliente ' + id + ' removido.', false);
+            carregar();
+          })
+          .catch(e => mostrarAviso('Falha: ' + e.message, true));
+      }
+
+      carregar();
+    })();
+  </script>
+</body>
+</html>

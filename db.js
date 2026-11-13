@@ -36,6 +36,23 @@ db.exec(`
   )
 `);
 
+// ---- Tabela de usuários ----
+db.exec(`
+  CREATE TABLE IF NOT EXISTS usuario (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_usuario TEXT NOT NULL UNIQUE,
+    senha_hash TEXT NOT NULL,
+    nome_completo TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    telefone TEXT,
+    cpf TEXT,
+    data_nascimento TEXT,
+    cep TEXT,
+    foto_perfil TEXT,
+    criado_em TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`);
+
 // ---- Migração segura para bancos antigos ----
 (function migrar() {
   var cols = db.prepare("PRAGMA table_info(livro)").all().map(function (c) { return c.name; });
@@ -66,4 +83,22 @@ db.exec(`
   }
 })();
 
+// ---- Tabela de itens do carrinho (por usuário) ----
+db.exec(`
+  CREATE TABLE IF NOT EXISTS carrinho_item (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL,
+    livro_id TEXT NOT NULL,
+    nome TEXT,
+    autor TEXT,
+    img TEXT,
+    genero TEXT,
+    origem TEXT,
+    price REAL NOT NULL,
+    qty INTEGER NOT NULL DEFAULT 1,
+    atualizado_em TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(usuario_id, livro_id),
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
+  )
+`);
 module.exports = db;
