@@ -8,76 +8,95 @@ var PORTA = 7600;
 
 var TIPOS = {
   '.html': 'text/html; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.js': 'application/javascript; charset=utf-8',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
+  '.css':  'text/css; charset=utf-8',
+  '.js':   'application/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png':  'image/png',
+  '.jpg':  'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.webp': 'image/webp',
-  '.gif': 'image/gif',
-  '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon'
+  '.gif':  'image/gif',
+  '.svg':  'image/svg+xml',
+  '.ico':  'image/x-icon'
 };
 
+var RAIZ_PUBLIC = path.join(__dirname, 'public');
+
 // Pasta para uploads de fotos de perfil
-var PASTA_UPLOADS = path.join(__dirname, 'public', 'uploads');
+var PASTA_UPLOADS = path.join(RAIZ_PUBLIC, 'uploads');
 if (!fs.existsSync(PASTA_UPLOADS)) {
   fs.mkdirSync(PASTA_UPLOADS, { recursive: true });
 }
 
-function responderJson(res, status, conteudo) {
-  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify(conteudo));
+// Pasta para imagens de livros
+var PASTA_IMAGENS = path.join(RAIZ_PUBLIC, 'imagens');
+if (!fs.existsSync(PASTA_IMAGENS)) {
+  fs.mkdirSync(PASTA_IMAGENS, { recursive: true });
 }
 
 // ---------------------------------------------------------------
-// Servir arquivo estático (com fallback case-insensitive em imagens)
+// Helpers
 // ---------------------------------------------------------------
+function responderJson(res, status, conteudo) {
+  res.writeHead(status, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'X-Content-Type-Options': 'nosniff'
+  });
+  res.end(JSON.stringify(conteudo));
+}
+
+function estaDentroDe(raiz, alvo) {
+  var rel = path.relative(raiz, alvo);
+  return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
+}
+
 function servirArquivo(res, caminhoRelativo) {
-  var alvo = caminhoRelativo.replace(/^\/+/, '');
-  var caminhoPublic = path.join(__dirname, 'public', alvo);
-  var caminhoRaiz = path.join(__dirname, alvo);
+  var alvo = caminhoRelativo.replace(/^\/+/, '').split('?')[0].split('#')[0];
+  if (!alvo) alvo = 'index.html';
 
-  var caminho = null;
+  var candidatoPublic = path.resolve(RAIZ_PUBLIC, alvo);
+  var candidatoRaiz = path.resolve(__dirname, alvo);
+  var caminhoFinal = null;
 
-  if (fs.existsSync(caminhoPublic) && fs.statSync(caminhoPublic).isFile()) {
-    caminho = caminhoPublic;
-  } else if (fs.existsSync(caminhoRaiz) && fs.statSync(caminhoRaiz).isFile()) {
-    caminho = caminhoRaiz;
+  if (estaDentroDe(RAIZ_PUBLIC, candidatoPublic) &&
+      fs.existsSync(candidatoPublic) &&
+      fs.statSync(candidatoPublic).isFile()) {
+    caminhoFinal = candidatoPublic;
+  } else if (estaDentroDe(__dirname, candidatoRaiz) &&
+             fs.existsSync(candidatoRaiz) &&
+             fs.statSync(candidatoRaiz).isFile()) {
+    caminhoFinal = candidatoRaiz;
   }
 
-  if (!caminho && alvo.indexOf('imagens/') === 0) {
-    var pastaImagens = path.join(__dirname, 'public', 'imagens');
+  // Fallback case-insensitive só para imagens
+  if (!caminhoFinal && alvo.indexOf('imagens/') === 0) {
+    var pastaImagens = path.join(RAIZ_PUBLIC, 'imagens');
     var nomeBusca = path.basename(alvo).toLowerCase();
-
     if (fs.existsSync(pastaImagens)) {
       var arquivos = fs.readdirSync(pastaImagens);
-      var encontrado = null;
       for (var i = 0; i < arquivos.length; i++) {
         if (arquivos[i].toLowerCase() === nomeBusca) {
-          encontrado = arquivos[i];
+          caminhoFinal = path.join(pastaImagens, arquivos[i]);
           break;
         }
-      }
-      if (encontrado) {
-        caminho = path.join(pastaImagens, encontrado);
       }
     }
   }
 
-  if (!caminho) {
+  if (!caminhoFinal) {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
     return res.end('Arquivo nao encontrado: ' + caminhoRelativo);
   }
 
-  var tipo = TIPOS[path.extname(caminho).toLowerCase()] || 'text/plain; charset=utf-8';
-  res.writeHead(200, { 'Content-Type': tipo });
-  res.end(fs.readFileSync(caminho));
+  var ext = path.extname(caminhoFinal).toLowerCase();
+  var tipo = TIPOS[ext] || 'application/octet-stream';
+  res.writeHead(200, {
+    'Content-Type': tipo,
+    'X-Content-Type-Options': 'nosniff'
+  });
+  res.end(fs.readFileSync(caminhoFinal));
 }
 
-// ---------------------------------------------------------------
-// Ler corpo JSON
-// ---------------------------------------------------------------
 function lerCorpoJson(req, callback) {
   var texto = '';
   req.on('data', function (pedaco) { texto += pedaco; });
@@ -92,9 +111,6 @@ function lerCorpoJson(req, callback) {
   });
 }
 
-// ---------------------------------------------------------------
-// Hash de senha com salt (SHA-256 + salt aleatório)
-// ---------------------------------------------------------------
 function gerarHashSenha(senha) {
   var salt = crypto.randomBytes(16).toString('hex');
   var hash = crypto.createHash('sha256').update(salt + senha).digest('hex');
@@ -110,9 +126,6 @@ function verificarSenha(senha, hashArmazenado) {
   return hashCalculado === hashEsperado;
 }
 
-// ---------------------------------------------------------------
-// Upload multipart simples (para foto de perfil)
-// ---------------------------------------------------------------
 function lerUploadMultipart(req, callback) {
   var chunks = [];
   var tamanhoTotal = 0;
@@ -185,7 +198,7 @@ var stmtExcluirCliente = db.prepare('DELETE FROM cliente WHERE id = ?');
 
 var stmtListarLivros = db.prepare('SELECT * FROM livro ORDER BY id DESC');
 var stmtInserirLivro = db.prepare(
-  'INSERT INTO livro (titulo, autor, preco, genero, estoque, isbn, imagem, origem, avaliacao, editora, paginas) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+  'INSERT INTO livro (titulo, autor, preco, genero, estoque, isbn, imagem, origem, avaliacao, editora, paginas, categoria) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 );
 var stmtExcluirLivro = db.prepare('DELETE FROM livro WHERE id = ?');
 var stmtBuscarLivro = db.prepare('SELECT * FROM livro WHERE id = ?');
@@ -206,9 +219,6 @@ var stmtAtualizarItemCarrinho = db.prepare(
 );
 var stmtExcluirItemCarrinho = db.prepare('DELETE FROM carrinho_item WHERE usuario_id = ? AND livro_id = ?');
 var stmtLimparCarrinho = db.prepare('DELETE FROM carrinho_item WHERE usuario_id = ?');
-var stmtSubstituirCarrinho = db.prepare(
-  'UPDATE carrinho_item SET qty = ? WHERE usuario_id = ? AND livro_id = ?'
-);
 
 // ---------------------------------------------------------------
 // Servidor HTTP
@@ -229,11 +239,9 @@ var servidor = http.createServer(function (req, res) {
   if (req.method === 'POST' && caminho === '/api/cliente') {
     lerCorpoJson(req, function (erro, novo) {
       if (erro) return responderJson(res, 400, { erro: erro.message });
-
       if (!novo.nome || !novo.cpf || !novo.cep) {
         return responderJson(res, 400, { erro: 'CEP, nome e CPF sao obrigatorios.' });
       }
-
       var valores = [
         novo.nome,
         novo.telefone || '',
@@ -241,11 +249,9 @@ var servidor = http.createServer(function (req, res) {
         novo.nascimento || '',
         novo.cep
       ];
-
       try {
         var resultado = stmtInserirCliente.run(...valores);
         novo.id = Number(resultado.lastInsertRowid);
-        console.log('Cliente cadastrado: id ' + novo.id + ' - ' + novo.nome);
         return responderJson(res, 201, novo);
       } catch (err) {
         if (err.message && err.message.indexOf('UNIQUE') !== -1) {
@@ -267,11 +273,47 @@ var servidor = http.createServer(function (req, res) {
       if (resDelCli.changes === 0) {
         return responderJson(res, 404, { erro: 'Cliente nao encontrado.' });
       }
-      console.log('Cliente excluido: id ' + idCli);
       return responderJson(res, 200, { removido: Number(idCli) });
     } catch (erro) {
       return responderJson(res, 500, { erro: erro.message });
     }
+  }
+
+  // ============ UPLOAD DE IMAGEM DE LIVRO (deve vir ANTES de /api/livro) ============
+
+  if (req.method === 'POST' && caminho === '/api/livro/upload') {
+    lerUploadMultipart(req, function (erro, partes) {
+      if (erro) return responderJson(res, 400, { erro: erro.message });
+
+      var parteArquivo = partes.find(function (p) {
+        return p.name === 'imagem' && p.filename && p.data && p.data.length > 0;
+      });
+
+      if (!parteArquivo) {
+        return responderJson(res, 400, { erro: 'Nenhum arquivo enviado.' });
+      }
+
+      var ext = path.extname(parteArquivo.filename).toLowerCase();
+      var extValidas = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg'];
+      if (extValidas.indexOf(ext) === -1) {
+        return responderJson(res, 400, { erro: 'Formato invalido. Use PNG, JPG, JPEG, WEBP, GIF ou SVG.' });
+      }
+
+      var baseNome = path.basename(parteArquivo.filename, ext)
+        .replace(/[^a-zA-Z0-9_-]/g, '_')
+        .slice(0, 40);
+      var nomeArquivo = 'livro_' + Date.now() + '_' + baseNome + ext;
+      var caminhoFinal = path.join(PASTA_IMAGENS, nomeArquivo);
+
+      try {
+        fs.writeFileSync(caminhoFinal, parteArquivo.data);
+        console.log('Imagem de livro salva: ' + nomeArquivo);
+        return responderJson(res, 200, { imagem: nomeArquivo });
+      } catch (e) {
+        return responderJson(res, 500, { erro: 'Falha ao salvar imagem: ' + e.message });
+      }
+    });
+    return;
   }
 
   // ============ API LIVROS ============
@@ -296,7 +338,6 @@ var servidor = http.createServer(function (req, res) {
       }
       return responderJson(res, 200, livro);
     } catch (erro) {
-      console.error('Erro em GET /api/livro/' + idBusca + ':', erro);
       return responderJson(res, 500, { erro: 'Erro interno do servidor.' });
     }
   }
@@ -319,6 +360,12 @@ var servidor = http.createServer(function (req, res) {
 
       var origem = (novo.origem === 'Internacional') ? 'Internacional' : 'Nacional';
 
+      var CATEGORIAS_VALIDAS = ['hq', 'livro', 'manga', 'kit'];
+
+      var categoria = String(novo.categoria || '').trim().toLowerCase();
+      if (CATEGORIAS_VALIDAS.indexOf(categoria) === -1) {
+        categoria = 'livro'; // padrão
+      }
       var imagem = (novo.imagem || '').trim();
       if (imagem) {
         imagem = imagem.replace(/[\\/]/g, '').replace(/\.\./g, '').toLowerCase();
@@ -367,7 +414,8 @@ var servidor = http.createServer(function (req, res) {
         origem,
         avaliacaoNum,
         editora,
-        paginasNum
+        paginasNum,
+        categoria
       ];
 
       try {
@@ -380,7 +428,7 @@ var servidor = http.createServer(function (req, res) {
         novo.avaliacao = avaliacaoNum;
         novo.editora = editora;
         novo.paginas = paginasNum;
-        console.log('Livro cadastrado: id ' + novo.id + ' - ' + novo.titulo);
+        novo.categoria = categoria;
         return responderJson(res, 201, novo);
       } catch (err) {
         if (err.message && err.message.indexOf('UNIQUE') !== -1) {
@@ -410,7 +458,6 @@ var servidor = http.createServer(function (req, res) {
 
   // ============ API USUÁRIOS ============
 
-  // POST /api/usuario/registrar
   if (req.method === 'POST' && caminho === '/api/usuario/registrar') {
     lerCorpoJson(req, function (erro, dados) {
       if (erro) return responderJson(res, 400, { erro: erro.message });
@@ -425,23 +472,18 @@ var servidor = http.createServer(function (req, res) {
           erro: 'Nome de usuario, senha, nome completo e email sao obrigatorios.'
         });
       }
-
       if (nomeUsuario.length < 3) {
         return responderJson(res, 400, { erro: 'Nome de usuario deve ter pelo menos 3 caracteres.' });
       }
-
       if (!/^[a-zA-Z0-9_]+$/.test(nomeUsuario)) {
         return responderJson(res, 400, { erro: 'Nome de usuario so pode conter letras, numeros e underscore.' });
       }
-
       if (senha.length < 6) {
         return responderJson(res, 400, { erro: 'Senha deve ter pelo menos 6 caracteres.' });
       }
-
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         return responderJson(res, 400, { erro: 'Email invalido.' });
       }
-
       if (stmtBuscarUsuarioPorNome.get(nomeUsuario)) {
         return responderJson(res, 400, { erro: 'Nome de usuario ja existe.' });
       }
@@ -459,11 +501,8 @@ var servidor = http.createServer(function (req, res) {
           dados.data_nascimento || null,
           dados.cep || null
         );
-
         var usuario = stmtBuscarUsuarioPorId.get(Number(resultado.lastInsertRowid));
         delete usuario.senha_hash;
-
-        console.log('Usuario registrado: ' + nomeUsuario + ' (id ' + usuario.id + ')');
         return responderJson(res, 201, usuario);
       } catch (err) {
         if (err.message && err.message.indexOf('UNIQUE') !== -1) {
@@ -478,7 +517,6 @@ var servidor = http.createServer(function (req, res) {
     return;
   }
 
-  // POST /api/usuario/login
   if (req.method === 'POST' && caminho === '/api/usuario/login') {
     lerCorpoJson(req, function (erro, dados) {
       if (erro) return responderJson(res, 400, { erro: erro.message });
@@ -494,15 +532,20 @@ var servidor = http.createServer(function (req, res) {
       if (!usuario || !verificarSenha(senha, usuario.senha_hash)) {
         return responderJson(res, 401, { erro: 'Nome de usuario ou senha incorretos.' });
       }
-
       delete usuario.senha_hash;
-      console.log('Login: ' + nomeUsuario);
       return responderJson(res, 200, usuario);
     });
     return;
   }
-
-  // GET /api/usuario/:id
+  // GET /api/usuario — lista todos os usuários (SEM senha)
+  if (req.method === 'GET' && caminho === '/api/usuario') {
+    try {
+      var lista = db.prepare('SELECT id, nome_usuario, nome_completo, email, telefone, cpf, data_nascimento, cep, foto_perfil, criado_em FROM usuario ORDER BY id DESC').all();
+      return responderJson(res, 200, lista);
+    } catch (erro) {
+      return responderJson(res, 500, { erro: erro.message });
+    }
+  }
   if (req.method === 'GET' && caminho.indexOf('/api/usuario/') === 0) {
     var idUsr = caminho.split('/')[3];
     if (!idUsr || isNaN(Number(idUsr))) {
@@ -516,7 +559,6 @@ var servidor = http.createServer(function (req, res) {
     return responderJson(res, 200, usuario);
   }
 
-  // POST /api/usuario/:id/foto — upload multipart
   if (req.method === 'POST' && caminho.indexOf('/api/usuario/') === 0 && caminho.indexOf('/foto') !== -1) {
     var partesCaminho = caminho.split('/');
     var idFoto = partesCaminho[3];
@@ -551,21 +593,15 @@ var servidor = http.createServer(function (req, res) {
 
       try {
         fs.writeFileSync(caminhoFinal, parteArquivo.data);
-
-        // Remove foto antiga
         if (usuarioAlvo.foto_perfil) {
           var caminhoAntigo = path.join(PASTA_UPLOADS, usuarioAlvo.foto_perfil);
           if (fs.existsSync(caminhoAntigo)) {
             try { fs.unlinkSync(caminhoAntigo); } catch (e) {}
           }
         }
-
         stmtAtualizarFoto.run(nomeArquivo, Number(idFoto));
-
         var atualizado = stmtBuscarUsuarioPorId.get(Number(idFoto));
         delete atualizado.senha_hash;
-
-        console.log('Foto atualizada: usuario ' + idFoto + ' -> ' + nomeArquivo);
         return responderJson(res, 200, atualizado);
       } catch (e) {
         return responderJson(res, 500, { erro: 'Falha ao salvar arquivo: ' + e.message });
@@ -573,9 +609,9 @@ var servidor = http.createServer(function (req, res) {
     });
     return;
   }
-    // ============ API CARRINHO (por usuário) ============
 
-  // GET /api/carrinho/:usuarioId — lista itens
+  // ============ API CARRINHO ============
+
   if (req.method === 'GET' && /^\/api\/carrinho\/\d+$/.test(caminho)) {
     var idCarrinhoGet = Number(caminho.split('/')[3]);
     try {
@@ -586,11 +622,8 @@ var servidor = http.createServer(function (req, res) {
     }
   }
 
-  // POST /api/carrinho/:usuarioId/sincronizar — substitui o carrinho inteiro
-  // Body: { itens: [{id, price, qty, nome, autor, img, genero, origem}, ...] }
   if (req.method === 'POST' && /^\/api\/carrinho\/\d+\/sincronizar$/.test(caminho)) {
     var idCarrinhoSync = Number(caminho.split('/')[3]);
-
     lerCorpoJson(req, function (erro, dados) {
       if (erro) return responderJson(res, 400, { erro: erro.message });
 
@@ -626,7 +659,6 @@ var servidor = http.createServer(function (req, res) {
       try {
         sincronizar();
         var resultado = stmtListarCarrinho.all(idCarrinhoSync);
-        console.log('Carrinho sincronizado: usuario ' + idCarrinhoSync + ' -> ' + resultado.length + ' itens');
         return responderJson(res, 200, resultado);
       } catch (e) {
         return responderJson(res, 500, { erro: e.message });
@@ -635,11 +667,8 @@ var servidor = http.createServer(function (req, res) {
     return;
   }
 
-  // POST /api/carrinho/:usuarioId/item — adiciona/atualiza um item
-  // Body: { livro_id, price, qty, nome, autor, img, genero, origem }
   if (req.method === 'POST' && /^\/api\/carrinho\/\d+\/item$/.test(caminho)) {
     var idCarrinhoItem = Number(caminho.split('/')[3]);
-
     lerCorpoJson(req, function (erro, dados) {
       if (erro) return responderJson(res, 400, { erro: erro.message });
 
@@ -658,7 +687,6 @@ var servidor = http.createServer(function (req, res) {
 
       try {
         var existente = stmtBuscarItemCarrinho.get(idCarrinhoItem, livroId);
-
         if (existente) {
           var novaQty = existente.qty + Math.floor(qtyNum);
           stmtAtualizarItemCarrinho.run(
@@ -682,7 +710,6 @@ var servidor = http.createServer(function (req, res) {
             Math.floor(qtyNum)
           );
         }
-
         var itens = stmtListarCarrinho.all(idCarrinhoItem);
         return responderJson(res, 200, itens);
       } catch (e) {
@@ -692,12 +719,10 @@ var servidor = http.createServer(function (req, res) {
     return;
   }
 
-  // DELETE /api/carrinho/:usuarioId/item/:livroId
   if (req.method === 'DELETE' && /^\/api\/carrinho\/\d+\/item\/.+$/.test(caminho)) {
     var partesCarrinhoDel = caminho.split('/');
     var idCarrinhoDel = Number(partesCarrinhoDel[3]);
     var livroIdDel = decodeURIComponent(partesCarrinhoDel[5] || '');
-
     try {
       stmtExcluirItemCarrinho.run(idCarrinhoDel, livroIdDel);
       var itensDel = stmtListarCarrinho.all(idCarrinhoDel);
@@ -707,7 +732,6 @@ var servidor = http.createServer(function (req, res) {
     }
   }
 
-  // DELETE /api/carrinho/:usuarioId — limpa o carrinho
   if (req.method === 'DELETE' && /^\/api\/carrinho\/\d+$/.test(caminho)) {
     var idCarrinhoLimpar = Number(caminho.split('/')[3]);
     try {
@@ -741,4 +765,6 @@ servidor.on('error', function (err) {
 
 servidor.listen(PORTA, function () {
   console.log('Pronto! Servidor rodando em http://localhost:' + PORTA);
+  console.log('   Web root: ' + RAIZ_PUBLIC);
+  console.log('   Imagens:  ' + PASTA_IMAGENS);
 });

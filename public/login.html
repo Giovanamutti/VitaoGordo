@@ -1,138 +1,454 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Entrar / Criar Conta | Livraria Multicultural</title>
-  <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brasil: {
+              verde: '#1B4D3E',
+              amarelo: '#F4D03F',
+              terracota: '#C0392B',
+              madeira: '#8D5524',
+              creme: '#FDFBF7',
+              areia: '#F4ECE1',
+              escuro: '#1A1818'
+            },
+            mfs: '#80c0d8'
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif']
+          },
+          boxShadow: {
+            'cartao': '0 24px 60px -20px rgba(27, 77, 62, 0.35)',
+            'suave': '0 8px 24px -10px rgba(27, 77, 62, 0.20)'
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    .tabs { display:flex; gap:.5rem; margin-bottom:1.5rem; }
-    .tab-btn {
-      flex:1; padding:.7rem 1rem; border:1px solid var(--cor-borda);
-      background:#fafafa; color:#555; font-weight:600; border-radius:5px;
-      cursor:pointer; transition:all .2s; font-size:.95rem;
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #FDFBF7;
+      color: #1A1818;
+      overflow-x: hidden;
     }
-    .tab-btn.ativo { background:var(--cor-primaria); color:#fff; border-color:var(--cor-primaria); }
-    .tab-painel { display:none; }
-    .tab-painel.ativo { display:block; }
+    h1, h2, h3, h4, .font-serif { font-family: 'Playfair Display', serif; }
+
+    /* Fundo com bolinhas (mesmo motivo do index, mas mais suave) */
+    .padrao-bolinhas {
+      background-image:
+        radial-gradient(#C0392B 0.75px, transparent 0.75px),
+        radial-gradient(#1B4D3E 0.75px, #FDFBF7 0.75px);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
+    }
+
+    /* Painel visual do lado esquerdo */
+    .painel-visual {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(244, 208, 63, 0.18), transparent 45%),
+        radial-gradient(circle at 80% 80%, rgba(192, 57, 43, 0.18), transparent 45%),
+        linear-gradient(135deg, #1B4D3E 0%, #245C4A 50%, #8D5524 100%);
+    }
+    .painel-visual::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(rgba(255,255,255,0.10) 1px, transparent 1px);
+      background-size: 22px 22px;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    /* Aba em formato pílula */
+    .aba-btn {
+      transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
+    }
+    .aba-btn.ativo {
+      background-color: #1B4D3E;
+      color: #F4D03F;
+      box-shadow: 0 6px 18px -8px rgba(27, 77, 62, 0.6);
+    }
+    .aba-btn:not(.ativo):hover {
+      background-color: rgba(27, 77, 62, 0.08);
+      color: #1B4D3E;
+    }
+
+    /* Inputs com foco elegante */
+    .campo {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 2.75rem;
+      border-radius: 0.9rem;
+      border: 1px solid #e2d7cd;
+      background-color: #fbf7f1;
+      font-size: 0.95rem;
+      transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+    }
+    .campo:focus {
+      outline: none;
+      border-color: #1B4D3E;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(27, 77, 62, 0.10);
+    }
+    .campo::placeholder { color: #9a8f86; }
+
+    .campo-wrap { position: relative; }
+    .campo-wrap > i {
+      position: absolute;
+      top: 50%;
+      left: 0.95rem;
+      transform: translateY(-50%);
+      color: #C0392B;
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    /* Botão principal com brilho */
+    .btn-primario {
+      background: linear-gradient(135deg, #1B4D3E 0%, #245C4A 100%);
+      color: #F4D03F;
+      transition: transform .15s ease, box-shadow .2s ease, background .3s ease;
+      box-shadow: 0 10px 24px -10px rgba(27, 77, 62, 0.55);
+    }
+    .btn-primario:hover {
+      background: linear-gradient(135deg, #C0392B 0%, #a82f22 100%);
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 16px 28px -12px rgba(192, 57, 43, 0.6);
+    }
+    .btn-primario:active { transform: translateY(0); }
+
+    /* Aviso de sessão */
     .aviso-sessao {
-      background:#fff8e1; border:1px solid #f4d03f; color:#8b4513;
-      padding:.8rem 1rem; border-radius:5px; font-size:.85rem;
-      margin-bottom:1rem; display:flex; align-items:center; gap:.5rem;
+      background: #fff8e1;
+      border: 1px solid #f4d03f;
+      color: #8b4513;
+      padding: 0.8rem 1rem;
+      border-radius: 0.7rem;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
     }
-    #avisoAuth { margin-top:1rem; font-weight:600; font-size:.9rem; color:var(--cor-sucesso); }
-    #avisoAuth.erro { color:var(--cor-erro); }
+
+    /* AvisoAuth (mensagens de erro/sucesso) */
+    #avisoAuth { transition: color .2s ease, opacity .2s ease; }
+    #avisoAuth.erro { color: #C0392B; }
+    #avisoAuth:not(:empty) { font-weight: 600; }
+
+    /* Painéis de aba */
+    .aba-painel { display: none; animation: fadeIn .25s ease; }
+    .aba-painel.ativo { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Animação do ornamento */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50%      { transform: translateY(-10px) rotate(1deg); }
+    }
+    .flutuar { animation: floatSlow 6s ease-in-out infinite; }
+
+    /* Scrollbar custom */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #F4ECE1; }
+    ::-webkit-scrollbar-thumb { background: #1B4D3E; border-radius: 4px; }
   </style>
 </head>
-<body>
 
-  <header class="header-livraria">
-    <div class="header-logo-row">
-      <a href="index.html"><img src="logo/logo.png" alt="Multicultural"></a>
-      <h1 style="margin:0;">Livraria Multicultural</h1>
-    </div>
-    <p>Área do Cliente</p>
-    <p style="margin-top:.5rem;">
-      <a href="consultas_login.html" style="color:#8b4513; font-weight:600; text-decoration:none;">
-        <i class="fa-solid fa-table-list"></i> Ver clientes cadastrados
+<body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro min-h-screen">
+
+  <!-- ============== BARRA SUPERIOR MINIMALISTA ============== -->
+  <header class="fixed top-0 inset-x-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5 group">
+        <img src="logo/logo.png" alt="Multicultural" class="w-10 h-10 object-contain drop-shadow">
+        <div class="leading-none">
+          <span class="block text-sm font-serif font-bold text-brasil-verde">Multicultural</span>
+          <span class="block text-[9px] uppercase tracking-widest text-brasil-terracota font-semibold mt-0.5">Livraria & Cultura</span>
+        </div>
       </a>
-    </p>
+      <a href="index.html" class="text-xs font-bold text-brasil-verde hover:text-brasil-terracota transition-colors inline-flex items-center gap-1.5">
+        <i class="fa-solid fa-arrow-left text-[10px]"></i>
+        Voltar ao site
+      </a>
+    </div>
   </header>
 
-  <div class="pagina-container">
-    <main class="container-card">
-      <fieldset>
-        <legend>Bem-vindo(a)</legend>
+  <!-- ============== CONTEÚDO PRINCIPAL (split screen) ============== -->
+  <main class="pt-16 min-h-screen grid lg:grid-cols-2">
 
-        <div class="tabs">
-          <button type="button" class="tab-btn ativo" data-tab="entrar">Entrar</button>
-          <button type="button" class="tab-btn" data-tab="cadastrar">Criar Conta</button>
+    <!-- ============== COLUNA VISUAL (esquerda) ============== -->
+    <section class="relative hidden lg:flex flex-col justify-between p-12 xl:p-16 text-brasil-creme overflow-hidden painel-visual">
+      <div class="relative z-10">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[10px] font-bold uppercase tracking-widest text-brasil-amarelo backdrop-blur-sm">
+          <i class="fa-solid fa-feather"></i>
+          Área do Leitor
+        </span>
+      </div>
+
+      <div class="relative z-10 max-w-md space-y-6">
+        <h2 class="text-4xl xl:text-5xl font-serif font-extrabold leading-tight">
+          Sua estante começa aqui,<br>
+          <span class="italic text-brasil-amarelo">página por página.</span>
+        </h2>
+        <p class="text-brasil-creme/80 text-base font-light leading-relaxed">
+          Entre na sua conta para salvar favoritos, sincronizar o carrinho e viver experiências literárias feitas sob medida para você.
+        </p>
+
+        <div class="flex items-center gap-3 pt-2">
+          <div class="flex -space-x-2">
+            <span class="w-9 h-9 rounded-full bg-brasil-amarelo text-brasil-verde flex items-center justify-center text-xs font-extrabold shadow ring-2 ring-white/40">ML</span>
+            <span class="w-9 h-9 rounded-full bg-brasil-terracota text-white flex items-center justify-center text-xs font-extrabold shadow ring-2 ring-white/40">CS</span>
+            <span class="w-9 h-9 rounded-full bg-brasil-madeira text-white flex items-center justify-center text-xs font-extrabold shadow ring-2 ring-white/40">JR</span>
+          </div>
+          <p class="text-xs text-brasil-creme/70">
+            Junte-se a leitores que celebram a diversidade literária.
+          </p>
         </div>
+      </div>
 
-        <!-- ====== LOGIN ====== -->
-        <div class="tab-painel ativo" id="painel-entrar">
-          <form id="formLogin">
-            <label>
-              <span>Nome de Usuário *</span>
-              <input type="text" name="nome_usuario" placeholder="seu_usuario" required autocomplete="username">
-            </label>
-            <label>
-              <span>Senha *</span>
-              <input type="password" name="senha" placeholder="••••••••" required autocomplete="current-password">
-            </label>
-            <button type="submit" style="width:100%;">
-              <i class="fa-solid fa-right-to-bracket"></i> Entrar
-            </button>
-          </form>
+      <div class="relative z-10 space-y-3">
+        <blockquote class="text-sm italic text-brasil-creme/80 border-l-2 border-brasil-amarelo pl-4 max-w-sm">
+          “A leitura é uma viagem que não pede passaporte.”
+        </blockquote>
+        <p class="text-[10px] uppercase tracking-widest text-brasil-amarelo font-bold pl-4">
+          — Manifesto Multicultural
+        </p>
+      </div>
+
+      <!-- Ornamento flutuante: selo MFS -->
+      <div class="absolute bottom-10 right-10 flutuar opacity-90">
+        <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl">
+          <img src="logo/mutti.png" alt="Mutti Full Stack" class="w-11 h-11 object-contain">
         </div>
+      </div>
+    </section>
 
-        <!-- ====== CADASTRO ====== -->
-        <div class="tab-painel" id="painel-cadastrar">
-          <div class="aviso-sessao">
-            <i class="fa-solid fa-circle-info"></i>
-            <span>A foto de perfil poderá ser enviada depois, dentro da sua conta.</span>
+    <!-- ============== COLUNA DO FORMULÁRIO (direita) ============== -->
+    <section class="relative flex items-center justify-center px-4 sm:px-6 py-10 lg:py-16 bg-brasil-creme padrao-bolinhas">
+      <!-- Overlay para suavizar o padrão de bolinhas atrás do card -->
+      <div class="absolute inset-0 bg-brasil-creme/70 pointer-events-none"></div>
+
+      <div class="relative w-full max-w-md">
+
+        <!-- Card principal -->
+        <div class="bg-white rounded-3xl shadow-cartao border border-brasil-areia p-6 sm:p-8 space-y-6">
+
+          <!-- Cabeçalho do card -->
+          <div class="text-center space-y-1">
+            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-brasil-terracota">
+              <i class="fa-solid fa-key"></i>
+              Bem-vindo(a) de volta
+            </span>
+            <h1 class="text-3xl font-serif font-extrabold text-brasil-verde leading-tight">
+              Sua conta
+            </h1>
+            <p class="text-sm text-brasil-escuro/60 font-light">
+              Entre ou crie uma conta para continuar sua jornada.
+            </p>
           </div>
 
-          <form id="formCadastroUsuario">
-            <div class="linha">
-              <label class="campo-nome">
-                <span>Nome Completo *</span>
-                <input type="text" name="nome_completo" placeholder="Seu nome completo" required>
-              </label>
-              <label class="campo-nome">
-                <span>Nome de Usuário *</span>
-                <input type="text" name="nome_usuario" placeholder="seu_usuario" required minlength="3">
-              </label>
-            </div>
-
-            <div class="linha">
-              <label class="campo-nome">
-                <span>Email *</span>
-                <input type="email" name="email" placeholder="voce@email.com" required>
-              </label>
-              <label class="campo-telefone">
-                <span>Telefone</span>
-                <input type="text" name="telefone" placeholder="(00) 00000-0000">
-              </label>
-            </div>
-
-            <div class="linha">
-              <label class="campo-cpf">
-                <span>CPF</span>
-                <input type="text" name="cpf" placeholder="000.000.000-00">
-              </label>
-              <label class="campo-data">
-                <span>Data de Nascimento</span>
-                <input type="date" name="data_nascimento">
-              </label>
-              <label class="campo-cep">
-                <span>CEP</span>
-                <input type="text" name="cep" placeholder="85860-000">
-              </label>
-            </div>
-
-            <div class="linha">
-              <label class="campo-nome">
-                <span>Senha * (mín. 6 caracteres)</span>
-                <input type="password" name="senha" placeholder="••••••••" required minlength="6" autocomplete="new-password">
-              </label>
-              <label class="campo-nome">
-                <span>Confirmar Senha *</span>
-                <input type="password" name="senha_confirm" placeholder="••••••••" required minlength="6" autocomplete="new-password">
-              </label>
-            </div>
-
-            <button type="submit" style="width:100%;">
-              <i class="fa-solid fa-user-plus"></i> Criar Conta
+          <!-- Abas -->
+          <div class="grid grid-cols-2 gap-1 p-1 rounded-2xl bg-brasil-areia/70">
+            <button type="button" class="aba-btn ativo py-2.5 rounded-xl text-sm font-bold" data-tab="entrar">
+              <i class="fa-solid fa-right-to-bracket mr-1.5 text-[11px]"></i> Entrar
             </button>
-          </form>
+            <button type="button" class="aba-btn py-2.5 rounded-xl text-sm font-bold text-brasil-escuro/60" data-tab="cadastrar">
+              <i class="fa-solid fa-user-plus mr-1.5 text-[11px]"></i> Criar Conta
+            </button>
+          </div>
+
+          <!-- ================ ABA: ENTRAR ================ -->
+          <div class="aba-painel ativo" id="painel-entrar">
+            <form id="formLogin" class="space-y-4">
+              <label class="block">
+                <span class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-1.5">
+                  Nome de Usuário
+                </span>
+                <div class="campo-wrap">
+                  <i class="fa-solid fa-user"></i>
+                  <input type="text" name="nome_usuario" placeholder="seu_usuario"
+                         class="campo" required autocomplete="username">
+                </div>
+              </label>
+
+              <label class="block">
+                <span class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-1.5">
+                  Senha
+                </span>
+                <div class="campo-wrap">
+                  <i class="fa-solid fa-lock"></i>
+                  <input type="password" name="senha" placeholder="••••••••"
+                         class="campo" required autocomplete="current-password">
+                </div>
+              </label>
+
+              <button type="submit" class="btn-primario w-full py-3.5 rounded-2xl font-bold text-sm inline-flex items-center justify-center gap-2 mt-2">
+                <span>Entrar na conta</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </button>
+            </form>
+          </div>
+
+          <!-- ================ ABA: CRIAR CONTA ================ -->
+          <div class="aba-painel" id="painel-cadastrar">
+            <div class="aviso-sessao mb-4">
+              <i class="fa-solid fa-circle-info text-brasil-terracota mt-0.5"></i>
+              <span>A foto de perfil poderá ser enviada depois, dentro da sua conta.</span>
+            </div>
+
+            <form id="formCadastroUsuario" class="space-y-3.5">
+              <label class="block">
+                <span class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-1.5">
+                  Nome Completo
+                </span>
+                <div class="campo-wrap">
+                  <i class="fa-solid fa-signature"></i>
+                  <input type="text" name="nome_completo" placeholder="Seu nome completo"
+                         class="campo" required>
+                </div>
+              </label>
+
+              <label class="block">
+                <span class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-1.5">
+                  Nome de Usuário
+                </span>
+                <div class="campo-wrap">
+                  <i class="fa-solid fa-at"></i>
+                  <input type="text" name="nome_usuario" placeholder="seu_usuario"
+                         class="campo" required minlength="3">
+                </div>
+              </label>
+
+              <label class="block">
+                <span class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-1.5">
+                  Email
+                </span>
+                <div class="campo-wrap">
+                  <i class="fa-solid fa-envelope"></i>
+                  <input type="email" name="email" placeholder="voce@email.com"
+                         class="campo" required>
+                </div>
+              </label>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label class="block">
+                  <span class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-1.5">
+                    Telefone
+                  </span>
+                  <div class="campo-wrap">
+                    <i class="fa-solid fa-phone"></i>
+                    <input type="text" name="telefone" placeholder="(00) 00000-0000" class="campo">
+                  </div>
+                </label>
+
+                <label class="block">
+                  <span class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-1.5">
+                    CPF
+                  </span>
+                  <div class="campo-wrap">
+                    <i class="fa-solid fa-id-card"></i>
+                    <input type="text" name="cpf" placeholder="000.000.000-00" class="campo">
+                  </div>
+                </label>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label class="block">
+                  <span class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-1.5">
+                    Nascimento
+                  </span>
+                  <div class="campo-wrap">
+                    <i class="fa-solid fa-calendar"></i>
+                    <input type="date" name="data_nascimento" class="campo">
+                  </div>
+                </label>
+
+                <label class="block">
+                  <span class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-1.5">
+                    CEP
+                  </span>
+                  <div class="campo-wrap">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <input type="text" name="cep" placeholder="00000-000" class="campo">
+                  </div>
+                </label>
+              </div>
+
+              <label class="block">
+                <span class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-1.5">
+                  Senha <span class="normal-case font-medium text-brasil-escuro/40">(mín. 6 caracteres)</span>
+                </span>
+                <div class="campo-wrap">
+                  <i class="fa-solid fa-lock"></i>
+                  <input type="password" name="senha" placeholder="••••••••"
+                         class="campo" required minlength="6" autocomplete="new-password">
+                </div>
+              </label>
+
+              <label class="block">
+                <span class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-1.5">
+                  Confirmar Senha
+                </span>
+                <div class="campo-wrap">
+                  <i class="fa-solid fa-lock-open"></i>
+                  <input type="password" name="senha_confirm" placeholder="••••••••"
+                         class="campo" required minlength="6" autocomplete="new-password">
+                </div>
+              </label>
+
+              <button type="submit" class="btn-primario w-full py-3.5 rounded-2xl font-bold text-sm inline-flex items-center justify-center gap-2 mt-2">
+                <span>Criar minha conta</span>
+                <i class="fa-solid fa-sparkles text-xs"></i>
+              </button>
+            </form>
+          </div>
+
+          <!-- Mensagem de status -->
+          <p id="avisoAuth" class="text-center text-sm"></p>
+
+          <!-- Rodapé do card -->
+          <div class="pt-4 border-t border-brasil-areia flex items-center justify-center gap-2 text-[11px] text-brasil-escuro/50">
+            <i class="fa-solid fa-shield-halved text-brasil-terracota"></i>
+            <span>Seus dados são tratados com segurança</span>
+          </div>
         </div>
 
-        <p id="avisoAuth"></p>
-      </fieldset>
-    </main>
-  </div>
+        <!-- Links auxiliares -->
+        <div class="mt-6 text-center text-xs space-y-2">
+          <a href="consultas_login.html" class="inline-flex items-center gap-1.5 text-brasil-verde font-bold hover:text-brasil-terracota transition-colors">
+            <i class="fa-solid fa-table-list text-[10px]"></i>
+            Ver usuários cadastrados
+          </a>
+          <p class="text-brasil-escuro/50">
+            © 2026 Livraria Multicultural — feito por
+            <span class="text-mfs font-semibold">MFS</span>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============== SCRIPTS (mesma lógica do login.html original) ============== -->
   <script src="js/mascaras.js"></script>
   <script src="js/auth.js"></script>
   <script>
@@ -144,14 +460,14 @@
       function mostrarAviso(texto, erro) {
         if (!aviso) return;
         aviso.textContent = texto;
-        aviso.className = erro ? 'erro' : '';
+        aviso.className = 'text-center text-sm ' + (erro ? 'erro' : '');
       }
 
       // Tabs
-      document.querySelectorAll('.tab-btn').forEach(btn => {
+      document.querySelectorAll('.aba-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
-          document.querySelectorAll('.tab-painel').forEach(p => p.classList.remove('ativo'));
+          document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativo'));
+          document.querySelectorAll('.aba-painel').forEach(p => p.classList.remove('ativo'));
           btn.classList.add('ativo');
           $('#painel-' + btn.dataset.tab).classList.add('ativo');
           aviso.textContent = '';

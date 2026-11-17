@@ -1,12 +1,11 @@
 /* =========================================================================
-   Livraria Multicultural - produtos.js
+   Livraria Multicultural - produtos.js (v2)
    Página produtos.html:
      - Carrega os livros via GET /api/livro
-     - Filtra por busca / origem
+     - Filtra por busca (título, autor, gênero, editora, ISBN), origem e categoria
      - Ordena por recentes, preço, avaliação ou título
-     - Renderiza a grade
+     - Renderiza a grade com badge de categoria
      - Botão "Comprar" → delegado globalmente pelo script.js
-       (NÃO colamos listener local — evita duplo bind)
    ========================================================================= */
 
 (function () {
@@ -22,6 +21,9 @@
 
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
 
+  // ---------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------
   function formatarPreco(v) {
     const n = Number(v);
     if (!isFinite(n)) return 'R$ 0,00';
@@ -47,6 +49,25 @@
     return html;
   }
 
+  function escaparAtributo(s) {
+    return String(s || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // Mapa de categorias → nome + cor do badge
+  const CATEGORIAS = {
+    hq:     { nome: 'HQ',    classe: 'bg-brasil-terracota text-white' },
+    livro:  { nome: 'Livro', classe: 'bg-brasil-verde text-brasil-amarelo' },
+    manga:  { nome: 'Mangá', classe: 'bg-brasil-madeira text-white' },
+    kit:    { nome: 'Kit',   classe: 'bg-brasil-amarelo text-brasil-escuro' }
+  };
+
+  function infoCategoria(cat) {
+    return CATEGORIAS[cat] || CATEGORIAS.livro;
+  }
+
+  // ---------------------------------------------------------------------
+  // Filtro + ordenação
+  // ---------------------------------------------------------------------
   function livrosFiltrados() {
     const termo = Estado.busca.trim().toLowerCase();
 
@@ -54,11 +75,15 @@
       if (Estado.origem && (livro.origem || 'Nacional') !== Estado.origem) return false;
       if (Estado.categoria && (livro.categoria || 'livro') !== Estado.categoria) return false;
       if (!termo) return true;
+
       const campos = [
         livro.titulo || '',
         livro.autor || '',
-        livro.genero || ''
+        livro.genero || '',
+        livro.editora || '',
+        livro.isbn || ''
       ].map(s => s.toLowerCase());
+
       return campos.some(c => c.indexOf(termo) !== -1);
     });
 
@@ -84,24 +109,30 @@
     return lista;
   }
 
+  // ---------------------------------------------------------------------
+  // Card do livro
+  // ---------------------------------------------------------------------
   function criarCardLivro(livro) {
     const origem = livro.origem || 'Nacional';
     const badgeOrigemClasses = origem === 'Internacional'
       ? 'bg-mfs text-brasil-escuro'
       : 'bg-brasil-verde text-brasil-amarelo';
 
+    const catInfo = infoCategoria(livro.categoria || 'livro');
     const imagemSrc = livro.imagem ? 'imagens/' + livro.imagem : '';
     const temImagem = !!imagemSrc;
     const precoNum = Number(livro.preco) || 0;
+    const semEstoque = livro.estoque !== undefined && Number(livro.estoque) <= 0;
 
     const card = document.createElement('div');
     card.className = 'bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between border border-brasil-areia';
+    card.style.cursor = 'pointer';
 
     card.innerHTML = `
       <div>
         <div class="relative overflow-hidden aspect-[3/4] bg-brasil-areia">
           ${temImagem
-            ? `<img src="${imagemSrc}" alt="${livro.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            ? `<img src="${imagemSrc}" alt="${escaparAtributo(livro.titulo)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                <div style="display:none;" class="absolute inset-0 items-center justify-center text-brasil-verde/30">
                  <i class="fa-solid fa-book text-5xl"></i>
@@ -109,15 +140,25 @@
             : `<div class="absolute inset-0 flex items-center justify-center text-brasil-verde/30">
                  <i class="fa-solid fa-book text-5xl"></i>
                </div>`}
+
+          <!-- Origem (canto superior esquerdo) -->
           <div class="absolute top-3 left-3 ${badgeOrigemClasses} text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shadow">
             ${origem}
           </div>
-          ${livro.avaliacao > 0 ? `
-          <div class="absolute top-3 right-3 bg-white/95 backdrop-blur text-brasil-escuro text-[10px] font-bold px-2 py-1 rounded-md shadow flex items-center gap-1">
+
+          <!-- Categoria (canto superior direito) -->
+          <div class="absolute top-3 right-3 ${catInfo.classe} text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shadow">
+            ${catInfo.nome}
+          </div>
+
+          <!-- Avaliação (canto inferior direito, se houver) -->
+          ${Number(livro.avaliacao) > 0 ? `
+          <div class="absolute bottom-3 right-3 bg-white/95 backdrop-blur text-brasil-escuro text-[10px] font-bold px-2 py-1 rounded-md shadow flex items-center gap-1">
             <i class="fa-solid fa-star" style="color:#F4D03F;"></i>
             ${Number(livro.avaliacao).toFixed(1)}
           </div>` : ''}
         </div>
+
         <div class="p-5 space-y-2">
           ${livro.genero ? `<span class="inline-block text-[10px] uppercase font-bold tracking-wider text-brasil-terracota">${livro.genero}</span>` : ''}
           <h3 class="text-lg font-serif font-bold text-brasil-verde group-hover:text-brasil-terracota transition-colors line-clamp-2 min-h-[3.5rem]">
@@ -127,29 +168,32 @@
             <i class="fa-solid fa-pen-nib mr-1 text-brasil-terracota/60"></i>
             ${livro.autor}
           </p>
+          ${livro.editora ? `<p class="text-[11px] text-brasil-escuro/40">
+            <i class="fa-solid fa-building mr-1"></i>${livro.editora}
+          </p>` : ''}
           <div class="pt-1">${renderEstrelas(livro.avaliacao)}</div>
         </div>
       </div>
+
       <div class="p-5 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-2">
         <span class="text-lg font-bold text-brasil-verde">${formatarPreco(precoNum)}</span>
         <button
           data-id="${livro.id}"
-          data-nome="${(livro.titulo || '').replace(/"/g, '&quot;')}"
-          data-autor="${(livro.autor || '').replace(/"/g, '&quot;')}"
-          data-img="${livro.imagem ? 'imagens/' + livro.imagem : ''}"
-          data-genero="${(livro.genero || '').replace(/"/g, '&quot;')}"
-          data-origem="${livro.origem || 'Nacional'}"
+          data-nome="${escaparAtributo(livro.titulo)}"
+          data-autor="${escaparAtributo(livro.autor)}"
+          data-img="${escaparAtributo(imagemSrc)}"
+          data-genero="${escaparAtributo(livro.genero)}"
+          data-origem="${escaparAtributo(origem)}"
           data-preco="${precoNum.toFixed(2)}"
           class="comprar-btn px-4 py-2 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors inline-flex items-center"
-          ${livro.estoque !== undefined && Number(livro.estoque) <= 0 ? 'disabled title="Sem estoque"' : ''}
+          ${semEstoque ? 'disabled title="Sem estoque"' : ''}
         >
           <i class="fa-solid fa-cart-plus mr-1"></i>
-          ${livro.estoque !== undefined && Number(livro.estoque) <= 0 ? 'Esgotado' : 'Comprar'}
+          ${semEstoque ? 'Esgotado' : 'Comprar'}
         </button>
       </div>
     `;
 
-    card.style.cursor = 'pointer';
     card.addEventListener('click', (e) => {
       if (e.target.closest('button')) return;
       window.location.href = 'livro.html?id=' + livro.id;
@@ -158,6 +202,9 @@
     return card;
   }
 
+  // ---------------------------------------------------------------------
+  // Renderização
+  // ---------------------------------------------------------------------
   function renderizar() {
     const grade = $('#grade-livros');
     const loading = $('#loading');
@@ -168,8 +215,8 @@
 
     if (!grade) return;
 
-    loading.classList.add('hidden');
-    erro.classList.add('hidden');
+    if (loading) loading.classList.add('hidden');
+    if (erro) erro.classList.add('hidden');
 
     const lista = livrosFiltrados();
 
@@ -181,16 +228,15 @@
     if (lista.length === 0) {
       grade.innerHTML = '';
       grade.classList.add('hidden');
-      vazio.classList.remove('hidden');
+      if (vazio) vazio.classList.remove('hidden');
       return;
     }
 
-    vazio.classList.add('hidden');
+    if (vazio) vazio.classList.add('hidden');
     grade.classList.remove('hidden');
 
     grade.innerHTML = '';
     lista.forEach(livro => grade.appendChild(criarCardLivro(livro)));
-    // O clique em ".comprar-btn" é delegado pelo script.js — sem rebind local
   }
 
   function mostrarErro(msg) {
@@ -202,6 +248,9 @@
     if (erroMsg) erroMsg.textContent = msg;
   }
 
+  // ---------------------------------------------------------------------
+  // Carregamento
+  // ---------------------------------------------------------------------
   function carregarLivros() {
     fetch('/api/livro')
       .then(r => {
@@ -218,26 +267,24 @@
       });
   }
 
+  // ---------------------------------------------------------------------
+  // Eventos
+  // ---------------------------------------------------------------------
   function initEventos() {
-    const filtroCategoria = $('#filtro-categoria');
-    if (filtroCategoria) {  
-      filtroCategoria.addEventListener('change', (e) => {
-        Estado.categoria = e.target.value || '';
-        renderizar();
-      });
-    }
+    // Busca com debounce
     const busca = $('#busca');
     if (busca) {
-      let debounceTimer = null;
+      let timer = null;
       busca.addEventListener('input', (e) => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
           Estado.busca = e.target.value || '';
           renderizar();
         }, 200);
       });
     }
 
+    // Filtro origem
     const filtroOrigem = $('#filtro-origem');
     if (filtroOrigem) {
       filtroOrigem.addEventListener('change', (e) => {
@@ -246,6 +293,16 @@
       });
     }
 
+    // Filtro categoria
+    const filtroCategoria = $('#filtro-categoria');
+    if (filtroCategoria) {
+      filtroCategoria.addEventListener('change', (e) => {
+        Estado.categoria = e.target.value || '';
+        renderizar();
+      });
+    }
+
+    // Ordenação
     const ordenar = $('#ordenar');
     if (ordenar) {
       ordenar.addEventListener('change', (e) => {
@@ -254,12 +311,13 @@
       });
     }
 
+    // Limpar filtros
     const limpar = $('#btn-limpar-filtros');
     if (limpar) {
       limpar.addEventListener('click', () => {
         Estado.busca = '';
         Estado.origem = '';
-        Estado.categoria = '';   
+        Estado.categoria = '';
         Estado.ordenar = 'recentes';
         if (busca) busca.value = '';
         if (filtroOrigem) filtroOrigem.value = '';
@@ -269,6 +327,7 @@
       });
     }
 
+    // Fechar modal de info (se existir)
     const btnModal = $('#btn-fechar-modal');
     if (btnModal) {
       btnModal.addEventListener('click', () => {

@@ -32,7 +32,8 @@ db.exec(`
     origem TEXT NOT NULL DEFAULT 'Nacional',
     avaliacao REAL NOT NULL DEFAULT 0,
     editora TEXT,
-    paginas INTEGER
+    paginas INTEGER,
+    categoria TEXT NOT NULL DEFAULT 'livro'
   )
 `);
 
@@ -80,6 +81,10 @@ db.exec(`
   if (cols.indexOf('paginas') === -1) {
     db.exec("ALTER TABLE livro ADD COLUMN paginas INTEGER");
     console.log('✔ coluna "paginas" adicionada');
+  }
+  if (cols.indexOf('categoria') === -1) {
+    db.exec("ALTER TABLE livro ADD COLUMN categoria TEXT NOT NULL DEFAULT 'livro'");
+    console.log('✔ coluna "categoria" adicionada');
   }
 })();
 

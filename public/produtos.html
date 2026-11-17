@@ -110,7 +110,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
 
                     <!-- Busca -->
-                    <div class="lg:col-span-7">
+                    <div class="lg:col-span-6">
                         <label for="busca" class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-2">
                             <i class="fa-solid fa-magnifying-glass mr-1 text-brasil-terracota"></i>
                             Buscar livro
@@ -120,14 +120,14 @@
                             <input
                                 type="text"
                                 id="busca"
-                                placeholder="Título, autor ou gênero..."
+                                placeholder="Título, autor, editora ou ISBN..."
                                 class="w-full pl-11 pr-4 py-3 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde focus:ring-2 focus:ring-brasil-verde/20 transition-all"
                             >
                         </div>
                     </div>
 
-                    <!-- Filtro origem -->
-                    <div class="lg:col-span-3">
+                    <!-- Categoria -->
+                    <div class="lg:col-span-2">
                         <label for="filtro-categoria" class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-2">
                             <i class="fa-solid fa-tag mr-1 text-brasil-terracota"></i>
                             Categoria
@@ -140,8 +140,10 @@
                             <option value="manga">Mangás</option>
                             <option value="kit">Kits</option>
                         </select>
-                        </div>
-                    <div class="lg:col-span-3">
+                    </div>
+
+                    <!-- Origem -->
+                    <div class="lg:col-span-2">
                         <label for="filtro-origem" class="block text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 mb-2">
                             <i class="fa-solid fa-earth-americas mr-1 text-brasil-terracota"></i>
                             Origem
