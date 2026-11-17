@@ -52,63 +52,76 @@
             -webkit-backdrop-filter: blur(12px);
         }
         #info-modal.flex { display: flex; }
+
+        /* Ajuste do card do item para acomodar o checkbox no canto */
+        #lista-itens > div { position: relative; }
+
+        /* Transição suave no checkbox custom */
+        input[data-acao="selecionar"] + span {
+            transition: background-color .15s ease, border-color .15s ease;
+        }
     </style>
 </head>
 <body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro">
 
+    <!-- ============== HEADER ============== -->
     <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <a href="index.html" class="flex items-center gap-3 group">
-            <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
-            <div>
-                <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
-                <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold">Livraria & Cultura</span>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
+                <div>
+                    <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
+                    <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold">Livraria & Cultura</span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
+                <a href="index.html#destaques" class="hover:text-brasil-terracota transition-colors">Destaque</a>
+                <a href="produtos.html" class="hover:text-brasil-terracota transition-colors">Livro</a>
+                <a href="index.html#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
+            </nav>
+
+            <div class="flex items-center gap-3 sm:gap-5">
+                <a href="login.html" title="Área do Usuário" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
+                    <i class="fa-regular fa-user text-sm"></i>
+                </a>
+                <a href="clube.html" title="Clube" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
+                    <i class="fa-solid fa-crown text-brasil-terracota"></i>
+                    <span>Clube</span>
+                </a>
+                <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md ring-2 ring-brasil-terracota">
+                    <i class="fa-solid fa-bag-shopping text-sm"></i>
+                    <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </a>
+                <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
             </div>
-        </a>
-
-        <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
-            <a href="index.html#destaques" class="hover:text-brasil-terracota transition-colors">Destaque</a>
-            <a href="produtos.html" class="hover:text-brasil-terracota transition-colors">Livro</a>
-            <a href="index.html#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
-        </nav>
-
-        <div class="flex items-center gap-3 sm:gap-5">
-            <a href="login.html" title="Área do Usuário" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
-                <i class="fa-regular fa-user text-sm"></i>
-            </a>
-            <a href="clube.html" title="Clube" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
-                <i class="fa-solid fa-crown text-brasil-terracota"></i>
-                <span>Clube</span>
-            </a>
-            <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md ring-2 ring-brasil-terracota">
-                <i class="fa-solid fa-bag-shopping text-sm"></i>
-                <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
-            </a>
-            <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
-                <i class="fa-solid fa-bars text-lg"></i>
-            </button>
         </div>
-    </div>
 
-    <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
-        <a href="index.html#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Destaque</a>
-        <a href="produtos.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Livro</a>
-        <a href="index.html#manifesto" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Manifesto</a>
-        <a href="login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
-    </div>
-</header>
+        <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
+            <a href="index.html#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Destaque</a>
+            <a href="produtos.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Livro</a>
+            <a href="index.html#manifesto" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Manifesto</a>
+            <a href="login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
+        </div>
+    </header>
 
+    <!-- ============== CONTEÚDO ============== -->
     <main class="pt-32 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="mb-10 text-center sm:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brasil-verde/10 text-brasil-verde text-xs font-bold uppercase tracking-wider mb-3">
                 <i class="fa-solid fa-cart-shopping"></i> Sua Sacola Literária
             </div>
             <h1 class="text-3xl sm:text-5xl font-serif font-extrabold text-brasil-verde tracking-tight">Carrinho de Compras</h1>
-            <p class="text-brasil-escuro/70 mt-2 font-light">Reveja seus exemplares selecionados antes de prosseguir para a entrega.</p>
+            <p class="text-brasil-escuro/70 mt-2 font-light">
+                Selecione os livros que deseja comprar agora, calcule o frete e finalize.
+            </p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
 
+            <!-- ===== COLUNA ESQUERDA: ITENS ===== -->
             <div class="lg:col-span-8 space-y-6">
 
                 <div id="lista-itens" class="space-y-6"></div>
@@ -134,32 +147,86 @@
                 </div>
             </div>
 
+            <!-- ===== COLUNA DIREITA: RESUMO ===== -->
             <div class="lg:col-span-4 space-y-6">
                 <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-brasil-areia space-y-6 sticky top-28">
                     <h3 class="font-serif font-bold text-2xl text-brasil-verde border-b border-brasil-areia pb-4">Resumo do Pedido</h3>
 
+                    <!-- ===== SELEÇÃO DE ITENS ===== -->
                     <div class="space-y-2">
-                        <label class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">Calcular Frete e Prazo</label>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">
+                                Itens selecionados
+                            </span>
+                            <button id="btn-toggle-todos"
+                                    class="text-[11px] font-bold text-brasil-verde hover:text-brasil-terracota transition-colors">
+                                Marcar todos
+                            </button>
+                        </div>
+                        <p id="resumo-selecao" class="text-xs text-brasil-escuro/60">
+                            0 de 0 selecionados
+                        </p>
+                    </div>
+
+                    <!-- ===== FRETE + ENDEREÇO ===== -->
+                    <div class="space-y-2 pt-2">
+                        <label for="cep-input" class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">
+                            Calcular Frete e Prazo
+                        </label>
                         <div class="flex gap-2">
-                            <input type="text" id="cep-input" placeholder="00000-000" maxlength="9" class="w-full px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde">
-                            <button id="btn-calcular-frete" class="px-4 py-2.5 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota transition-colors">
+                            <input type="text" id="cep-input" placeholder="00000-000" maxlength="9"
+                                   class="w-full px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde">
+                            <button id="btn-calcular-frete"
+                                    class="px-4 py-2.5 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota transition-colors">
                                 OK
                             </button>
                         </div>
-                        <p id="freight-result" class="text-xs text-brasil-verde font-medium pt-1 hidden">Frete fixo para o Brasil: <span class="font-bold">R$ 15,00</span> (5 dias úteis)</p>
+
+                        <!-- Endereço retornado pelo ViaCEP -->
+                        <div id="endereco-info" class="hidden bg-brasil-areia/40 border border-brasil-areia rounded-xl p-3 text-xs space-y-1">
+                            <div class="flex items-start gap-2">
+                                <i class="fa-solid fa-location-dot text-brasil-terracota mt-0.5"></i>
+                                <div class="flex-1 min-w-0">
+                                    <div id="endereco-rua" class="font-bold text-brasil-verde truncate">—</div>
+                                    <div id="endereco-bairro-cidade" class="text-brasil-escuro/70 truncate">—</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botão "Usar CEP do perfil" (só aparece se logado e tiver CEP) -->
+                        <button id="btn-cep-perfil"
+                                class="hidden w-full px-4 py-2 rounded-xl bg-brasil-areia border border-brasil-madeira/20 text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-colors inline-flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-address-card"></i>
+                            <span>Usar CEP do perfil</span>
+                        </button>
+
+                        <!-- Aviso "último CEP usado" (só se diferente do CEP do perfil) -->
+                        <p id="cep-ultimo-aviso" class="hidden text-[11px] text-brasil-escuro/60">
+                            Último CEP usado:
+                            <button id="btn-cep-ultimo"
+                                    class="font-bold text-brasil-verde hover:text-brasil-terracota underline"></button>
+                        </p>
+
+                        <p id="freight-result" class="text-xs text-brasil-verde font-medium pt-1 hidden">
+                            Frete fixo para o Brasil: <span class="font-bold">R$ 15,00</span> (5 dias úteis)
+                        </p>
                     </div>
 
+                    <!-- ===== CUPOM ===== -->
                     <div class="space-y-2 pt-2">
-                        <label class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">Cupom de Desconto</label>
+                        <label for="coupon-input" class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">Cupom de Desconto</label>
                         <div class="flex gap-2">
-                            <input type="text" id="coupon-input" placeholder="Ex: MULTICULTURAL10" class="w-full px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm uppercase focus:outline-none focus:border-brasil-verde">
-                            <button id="btn-aplicar-cupom" class="px-4 py-2.5 bg-brasil-areia text-brasil-verde rounded-xl text-xs font-bold hover:bg-brasil-amarelo transition-colors">
+                            <input type="text" id="coupon-input" placeholder="Ex: MULTICULTURAL10"
+                                   class="w-full px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm uppercase focus:outline-none focus:border-brasil-verde">
+                            <button id="btn-aplicar-cupom"
+                                    class="px-4 py-2.5 bg-brasil-areia text-brasil-verde rounded-xl text-xs font-bold hover:bg-brasil-amarelo transition-colors">
                                 Aplicar
                             </button>
                         </div>
                         <p id="coupon-msg" class="text-xs text-brasil-terracota font-medium pt-1 hidden"></p>
                     </div>
 
+                    <!-- ===== TOTAIS ===== -->
                     <div class="space-y-3 pt-4 border-t border-brasil-areia text-sm">
                         <div class="flex justify-between text-brasil-escuro/70">
                             <span>Subtotal</span>
@@ -179,7 +246,42 @@
                         </div>
                     </div>
 
-                    <button id="btn-finalizar" class="w-full py-4 rounded-xl bg-brasil-amarelo text-brasil-escuro font-bold hover:bg-brasil-verde hover:text-brasil-amarelo transition-all duration-300 shadow-lg text-center flex items-center justify-center gap-2">
+                    <!-- ===== PARCELAMENTO ===== -->
+                    <div class="space-y-2 pt-4 border-t border-brasil-areia">
+                        <label for="parcelas-select" class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70 flex items-center gap-1">
+                            <i class="fa-solid fa-credit-card text-brasil-terracota"></i>
+                            Parcelamento
+                        </label>
+                        <select id="parcelas-select"
+                                class="w-full px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde">
+                            <option value="1" data-juros="0">1x de R$ 0,00 (sem juros)</option>
+                            <option value="2" data-juros="0">2x de R$ 0,00 (sem juros)</option>
+                            <option value="3" data-juros="0">3x de R$ 0,00 (sem juros)</option>
+                            <option value="4" data-juros="3">4x com 3% de juros</option>
+                            <option value="5" data-juros="5">5x com 5% de juros</option>
+                            <option value="6" data-juros="7">6x com 7% de juros</option>
+                        </select>
+
+                        <!-- Resumo do parcelamento -->
+                        <div id="parcelamento-info" class="hidden bg-brasil-areia/40 border border-brasil-areia rounded-xl p-3 text-xs space-y-1">
+                            <div class="flex justify-between">
+                                <span class="text-brasil-escuro/70">Total com juros:</span>
+                                <span id="total-com-juros" class="font-bold text-brasil-verde">R$ 0,00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-brasil-escuro/70">Valor da parcela:</span>
+                                <span id="valor-parcela" class="font-bold text-brasil-terracota">R$ 0,00</span>
+                            </div>
+                            <div id="juros-aplicados" class="hidden justify-between text-brasil-terracota">
+                                <span>Juros aplicados:</span>
+                                <span id="valor-juros" class="font-bold">R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== FINALIZAR ===== -->
+                    <button id="btn-finalizar"
+                            class="w-full py-4 rounded-xl bg-brasil-amarelo text-brasil-escuro font-bold hover:bg-brasil-verde hover:text-brasil-amarelo transition-all duration-300 shadow-lg text-center flex items-center justify-center gap-2">
                         <span>Finalizar Compra</span>
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
@@ -193,6 +295,7 @@
         </div>
     </main>
 
+    <!-- ============== FOOTER ============== -->
     <footer class="bg-brasil-escuro text-brasil-creme pt-16 pb-12 border-t border-brasil-areia/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
@@ -241,6 +344,7 @@
         </div>
     </footer>
 
+    <!-- ============== MODAL ============== -->
     <div id="info-modal" class="fixed inset-0 z-50 bg-brasil-escuro/70 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-brasil-creme rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-4 shadow-2xl relative border border-brasil-areia">
             <button id="btn-fechar-modal" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-brasil-areia flex items-center justify-center text-brasil-escuro hover:bg-brasil-terracota hover:text-white transition-colors">
@@ -260,6 +364,7 @@
             </div>
         </div>
     </div>
+
     <script src="js/auth.js"></script>
     <script src="js/script.js"></script>
 </body>

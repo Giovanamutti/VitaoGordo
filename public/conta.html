@@ -1,251 +1,470 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Minha Conta | Livraria Multicultural</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    .conta-grid {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 2rem;
-      align-items: start;
-    }
-    @media (max-width: 720px) {
-      .conta-grid { grid-template-columns: 1fr; }
-    }
-    .avatar-card {
-      background: var(--cor-card);
-      border: 1px solid var(--cor-borda);
-      border-radius: 8px;
-      padding: 2rem 1.5rem;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,.05);
-    }
-    .avatar-wrap {
-      width: 140px; height: 140px; border-radius: 50%;
-      margin: 0 auto 1rem; overflow: hidden;
-      background: linear-gradient(135deg, #8b4513, #c0392b);
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 2.5rem; font-weight: 700;
-      border: 4px solid #F4D03F;
-      box-shadow: 0 6px 20px rgba(0,0,0,.15);
-    }
-    .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-nome { font-weight: 700; color: var(--cor-primaria); font-size: 1.1rem; }
-    .avatar-user { color: #888; font-size: .85rem; margin-top: .2rem; }
-    .btn-upload {
-      margin-top: 1rem; display: inline-block;
-      background: var(--cor-primaria); color: #fff;
-      padding: .6rem 1.2rem; border-radius: 5px; font-weight: 600;
-      font-size: .85rem; cursor: pointer; transition: background .2s;
-      border: none;
-    }
-    .btn-upload:hover { background: var(--cor-primaria-hover); }
-    .btn-logout {
-      margin-top: .6rem; display: inline-block;
-      background: transparent; color: var(--cor-erro);
-      padding: .6rem 1.2rem; border: 1px solid var(--cor-erro);
-      border-radius: 5px; font-weight: 600; font-size: .85rem;
-      cursor: pointer; transition: all .2s;
-    }
-    .btn-logout:hover { background: var(--cor-erro); color: #fff; }
-    .info-card {
-      background: var(--cor-card);
-      border: 1px solid var(--cor-borda);
-      border-radius: 8px;
-      padding: 2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,.05);
-    }
-    .info-card h2 {
-      color: var(--cor-primaria);
-      font-size: 1.3rem;
-      margin-bottom: 1.2rem;
-      padding-bottom: .5rem;
-      border-bottom: 1px solid var(--cor-borda);
-    }
-    .info-linha {
-      display: flex; justify-content: space-between;
-      padding: .7rem 0; border-bottom: 1px dashed var(--cor-borda);
-      font-size: .95rem;
-    }
-    .info-linha:last-child { border-bottom: none; }
-    .info-linha strong { color: var(--cor-primaria); }
-    .info-linha span { color: #555; text-align: right; }
-    #avisoConta {
-      margin-top: 1rem; font-weight: 600; font-size: .9rem;
-      color: var(--cor-sucesso);
-    }
-    #avisoConta.erro { color: var(--cor-erro); }
-  </style>
-</head>
-<body>
-
-  <header class="header-livraria">
-    <div class="header-logo-row">
-      <a href="index.html"><img src="logo/logo.png" alt="Multicultural"></a>
-      <h1 style="margin:0;">Livraria Multicultural</h1>
-    </div>
-    <p>Minha Conta</p>
-  </header>
-
-  <div class="pagina-container">
-    <div id="conteudo" style="display:none;">
-      <div class="conta-grid">
-
-        <!-- Coluna avatar -->
-        <div class="avatar-card">
-          <div class="avatar-wrap" id="avatarWrap">
-            <span id="avatarIniciais"></span>
-          </div>
-          <div class="avatar-nome" id="avatarNome"></div>
-          <div class="avatar-user" id="avatarUser"></div>
-
-          <label class="btn-upload" for="inputFoto">
-            <i class="fa-solid fa-camera"></i> Enviar Foto
-          </label>
-          <input type="file" id="inputFoto" accept="image/png,image/jpeg,image/jpg,image/webp,image/gif" style="display:none;">
-
-          <button class="btn-logout" id="btnLogout">
-            <i class="fa-solid fa-right-from-bracket"></i> Sair da Conta
-          </button>
-
-          <p style="margin-top:1rem;font-size:.75rem;color:#888;">
-            Seu carrinho continua salvo mesmo após sair.
-          </p>
-        </div>
-
-        <!-- Coluna dados -->
-        <div class="info-card">
-          <h2><i class="fa-solid fa-id-card"></i> Dados da Conta</h2>
-          <div class="info-linha"><strong>ID</strong><span id="infoId">—</span></div>
-          <div class="info-linha"><strong>Nome completo</strong><span id="infoNomeCompleto">—</span></div>
-          <div class="info-linha"><strong>Nome de usuário</strong><span id="infoUsuario">—</span></div>
-          <div class="info-linha"><strong>Email</strong><span id="infoEmail">—</span></div>
-          <div class="info-linha"><strong>Telefone</strong><span id="infoTelefone">—</span></div>
-          <div class="info-linha"><strong>CPF</strong><span id="infoCpf">—</span></div>
-          <div class="info-linha"><strong>Nascimento</strong><span id="infoNascimento">—</span></div>
-          <div class="info-linha"><strong>CEP</strong><span id="infoCep">—</span></div>
-          <div class="info-linha"><strong>Conta criada em</strong><span id="infoCriado">—</span></div>
-          <div class="info-linha"><strong>Itens no carrinho</strong><span id="infoCarrinho">—</span></div>
-
-          <p id="avisoConta"></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bloqueio se não logado -->
-    <div id="bloqueio" class="container-card" style="text-align:center;">
-      <h2 style="color:var(--cor-primaria);margin-bottom:.5rem;">Você não está logado</h2>
-      <p style="color:#666;margin-bottom:1rem;">Faça login para acessar sua conta.</p>
-      <a href="login.html" style="display:inline-block;background:var(--cor-primaria);color:#fff;padding:.7rem 1.5rem;border-radius:5px;text-decoration:none;font-weight:600;">Ir para o Login</a>
-    </div>
-  </div>
-  <script src="js/mascaras.js"></script>
-  <script src="js/auth.js"></script>
-  <script>
-    (function () {
-      'use strict';
-      const $ = (s) => document.querySelector(s);
-      const aviso = $('#avisoConta');
-
-      const usuario = window.Auth.obterUsuario();
-      if (!usuario) {
-        $('#conteudo').style.display = 'none';
-        $('#bloqueio').style.display = 'block';
-        return;
-      }
-      $('#bloqueio').style.display = 'none';
-      $('#conteudo').style.display = 'block';
-
-      function mostrarAviso(texto, erro) {
-        aviso.textContent = texto;
-        aviso.className = erro ? 'erro' : '';
-      }
-
-      function iniciais(nome) {
-        if (!nome) return '?';
-        const parts = nome.trim().split(/\s+/);
-        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-      }
-
-      function renderizar(u) {
-        // Avatar
-        const wrap = $('#avatarWrap');
-        if (u.foto_perfil) {
-          wrap.innerHTML = `<img src="uploads/${u.foto_perfil}?t=${Date.now()}" alt="Foto de perfil">`;
-        } else {
-          wrap.innerHTML = `<span id="avatarIniciais">${iniciais(u.nome_completo)}</span>`;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta | Livraria Multicultural</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brasil: {
+                            verde: '#1B4D3E',
+                            amarelo: '#F4D03F',
+                            terracota: '#C0392B',
+                            madeira: '#8D5524',
+                            creme: '#FDFBF7',
+                            areia: '#F4ECE1',
+                            escuro: '#1A1818'
+                        },
+                        mfs: '#80c0d8'
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    }
+                }
+            }
         }
-        $('#avatarNome').textContent = u.nome_completo || '—';
-        $('#avatarUser').textContent = '@' + (u.nome_usuario || '—');
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FDFBF7; color: #1A1818; overflow-x: hidden; }
+        h1, h2, h3, h4, .font-serif { font-family: 'Playfair Display', serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F4ECE1; }
+        ::-webkit-scrollbar-thumb { background: #1B4D3E; border-radius: 4px; }
+        .glass-nav { background: rgba(253, 251, 247, 0.30); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .hero-pattern { background-image: radial-gradient(#C0392B 0.75px, transparent 0.75px), radial-gradient(#1B4D3E 0.75px, #FDFBF7 0.75px); background-size: 30px 30px; background-position: 0 0, 15px 15px; }
+        #info-modal.flex { display: flex; }
+        #avisoConta { transition: opacity .2s ease; }
+    </style>
+</head>
+<body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro">
 
-        // Dados
-        $('#infoId').textContent = u.id;
-        $('#infoNomeCompleto').textContent = u.nome_completo || '—';
-        $('#infoUsuario').textContent = u.nome_usuario || '—';
-        $('#infoEmail').textContent = u.email || '—';
-        $('#infoTelefone').textContent = u.telefone || '—';
-        $('#infoCpf').textContent = u.cpf || '—';
-        $('#infoNascimento').textContent = u.data_nascimento || '—';
-        $('#infoCep').textContent = u.cep || '—';
-        $('#infoCriado').textContent = u.criado_em || '—';
+    <!-- ============== HEADER ============== -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3 group">
+            <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
+            <div class="flex flex-col justify-center leading-tight">
+                <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
+                <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold mt-1">Livraria & Cultura</span>
+            </div>
+        </a>
 
-        // Atualiza cache local (sessão)
-        window.Auth.salvarUsuario(u);
-      }
+        <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
+            <a href="index.html#destaques" class="hover:text-brasil-terracota transition-colors">Destaque</a>
+            <a href="produtos.html" class="hover:text-brasil-terracota transition-colors">Livro</a>
+            <a href="index.html#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
+        </nav>
 
-      renderizar(usuario);
+        <div class="flex items-center gap-3 sm:gap-5">
+            <a href="login.html" title="Área do Usuário" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
+                <i class="fa-regular fa-user text-sm"></i>
+            </a>
+            <a href="clube.html" title="Clube" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
+                <i class="fa-solid fa-crown text-brasil-terracota"></i>
+                <span>Clube</span>
+            </a>
+            <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md">
+                <i class="fa-solid fa-bag-shopping text-sm"></i>
+                <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
+            </a>
+            <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+        </div>
+    </div>
 
-      // Conta itens do carrinho (servidor)
-      fetch('/api/carrinho/' + usuario.id)
-        .then(r => r.json())
-        .then(itens => {
-          const total = (itens || []).reduce((s, it) => s + (Number(it.qty) || 0), 0);
-          document.getElementById('infoCarrinho').textContent = total + (total === 1 ? ' item' : ' itens');
-        })
-        .catch(() => {
-          document.getElementById('infoCarrinho').textContent = '—';
+    <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
+        <a href="index.html#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Destaque</a>
+        <a href="produtos.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Livro</a>
+        <a href="index.html#manifesto" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Manifesto</a>
+        <a href="consultas_login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Clientes</a>
+        <div class="pt-3 border-t border-brasil-areia flex gap-4">
+            <a href="carrinho.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-verde text-brasil-amarelo text-xs font-bold">Carrinho</a>
+            <a href="clube.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-amarelo/30 text-brasil-verde text-xs font-bold">Clube</a>
+        </div>
+    </div>
+</header>
+
+        <!-- ============== HERO ============== -->
+    <section class="relative pt-32 pb-12 md:pt-40 md:pb-16 hero-pattern overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brasil-terracota/10 text-brasil-terracota text-xs font-bold uppercase tracking-wider mb-6">
+                <i class="fa-solid fa-id-card"></i> Sua Conta
+            </div>
+  
+            <p class="text-lg sm:text-xl text-brasil-escuro/80 max-w-2xl font-light leading-relaxed">
+                Gerencie seus dados, sua foto de perfil e acompanhe seu carrinho — tudo em um só lugar.
+            </p>
+        </div>
+    </section>
+
+    <!-- ============== CONTEÚDO ============== -->
+    <main class="pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Bloqueio se não logado -->
+            <div id="bloqueio" class="hidden bg-white rounded-3xl p-12 text-center space-y-4 border border-brasil-areia shadow-sm max-w-2xl mx-auto">
+                <div class="w-16 h-16 rounded-full bg-brasil-areia text-brasil-verde flex items-center justify-center mx-auto text-2xl">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h2 class="font-serif font-bold text-2xl text-brasil-verde">Você não está logado</h2>
+                <p class="text-brasil-escuro/70 text-sm">Faça login para acessar sua conta.</p>
+                <a href="login.html" class="inline-block px-6 py-3 bg-brasil-verde text-brasil-amarelo font-bold rounded-xl text-xs hover:bg-brasil-terracota hover:text-white transition-colors">
+                    Ir para o Login
+                </a>
+            </div>
+
+            <!-- Conteúdo real -->
+            <div id="conteudo" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+                    <!-- ============== COLUNA AVATAR ============== -->
+                    <aside class="lg:col-span-4">
+                        <div class="bg-white rounded-3xl border border-brasil-areia shadow-xl p-8 text-center sticky top-28">
+
+                            <!-- Avatar -->
+                            <div class="relative w-40 h-40 mx-auto mb-6">
+                                <div class="absolute -inset-2 bg-gradient-to-br from-brasil-amarelo to-brasil-terracota rounded-full blur-xl opacity-30"></div>
+                                <div id="avatarWrap" class="relative w-40 h-40 rounded-full overflow-hidden bg-gradient-to-br from-brasil-madeira to-brasil-terracota border-4 border-brasil-amarelo shadow-2xl flex items-center justify-center text-white text-4xl font-bold">
+                                    <span id="avatarIniciais">?</span>
+                                </div>
+                            </div>
+
+                            <h2 id="avatarNome" class="font-serif font-bold text-2xl text-brasil-verde leading-tight">—</h2>
+                            <p id="avatarUser" class="text-sm text-brasil-terracota font-semibold mt-1">@—</p>
+
+                            <div class="mt-6 space-y-3">
+                                <label for="inputFoto" class="block w-full cursor-pointer px-5 py-3 rounded-xl bg-brasil-verde text-brasil-amarelo font-bold text-sm hover:bg-brasil-terracota hover:text-white transition-all duration-300 shadow-lg inline-flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-camera"></i>
+                                    <span>Enviar Foto</span>
+                                </label>
+                                <input type="file" id="inputFoto" accept="image/png,image/jpeg,image/jpg,image/webp,image/gif" class="hidden">
+
+                                <a href="carrinho.html" class="block w-full px-5 py-3 rounded-xl bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde font-bold text-sm hover:bg-brasil-amarelo/40 transition-all inline-flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-bag-shopping"></i>
+                                    <span>Meu Carrinho</span>
+                                </a>
+
+                                <button id="btnLogout" class="w-full px-5 py-3 rounded-xl border border-brasil-terracota text-brasil-terracota font-bold text-sm hover:bg-brasil-terracota hover:text-white transition-all inline-flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-right-from-bracket"></i>
+                                    <span>Sair da Conta</span>
+                                </button>
+                            </div>
+
+                            <p class="mt-5 text-[11px] text-brasil-escuro/50 leading-relaxed">
+                                <i class="fa-solid fa-shield-halved text-brasil-terracota mr-1"></i>
+                                Seu carrinho continua salvo mesmo após sair.
+                            </p>
+                        </div>
+                    </aside>
+
+                    <!-- ============== COLUNA DADOS ============== -->
+                    <section class="lg:col-span-8 space-y-6">
+
+                        <!-- Card de dados -->
+                        <div class="bg-white rounded-3xl border border-brasil-areia shadow-xl p-8">
+                            <div class="flex items-center justify-between mb-6 pb-4 border-b border-brasil-areia">
+                                <h3 class="font-serif font-bold text-2xl text-brasil-verde flex items-center gap-3">
+                                    <i class="fa-solid fa-user text-brasil-terracota"></i>
+                                    Dados Pessoais
+                                </h3>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="bg-brasil-areia/50 rounded-2xl p-4">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                        <i class="fa-solid fa-hashtag text-brasil-terracota mr-1"></i> ID
+                                    </div>
+                                    <div id="infoId" class="text-sm font-semibold text-brasil-escuro">—</div>
+                                </div>
+
+                                <div class="bg-brasil-areia/50 rounded-2xl p-4">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                        <i class="fa-solid fa-user text-brasil-terracota mr-1"></i> Nome de usuário
+                                    </div>
+                                    <div id="infoUsuario" class="text-sm font-semibold text-brasil-escuro break-all">—</div>
+                                </div>
+
+                                <div class="bg-brasil-areia/50 rounded-2xl p-4 sm:col-span-2">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                        <i class="fa-solid fa-signature text-brasil-terracota mr-1"></i> Nome completo
+                                    </div>
+                                    <div id="infoNomeCompleto" class="text-sm font-semibold text-brasil-escuro">—</div>
+                                </div>
+
+                                <div class="bg-brasil-areia/50 rounded-2xl p-4 sm:col-span-2">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                        <i class="fa-solid fa-envelope text-brasil-terracota mr-1"></i> Email
+                                    </div>
+                                    <div id="infoEmail" class="text-sm font-semibold text-brasil-escuro break-all">—</div>
+                                </div>
+
+                                <div class="bg-brasil-areia/50 rounded-2xl p-4">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                        <i class="fa-solid fa-phone text-brasil-terracota mr-1"></i> Telefone
+                                    </div>
+                                    <div id="infoTelefone" class="text-sm font-semibold text-brasil-escuro">—</div>
+                                </div>
+
+                                <div class="bg-brasil-areia/50 rounded-2xl p-4">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                        <i class="fa-solid fa-id-card text-brasil-terracota mr-1"></i> CPF
+                                    </div>
+                                    <div id="infoCpf" class="text-sm font-semibold text-brasil-escuro">—</div>
+                                </div>
+
+                                <div class="bg-brasil-areia/50 rounded-2xl p-4">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                        <i class="fa-solid fa-cake-candles text-brasil-terracota mr-1"></i> Nascimento
+                                    </div>
+                                    <div id="infoNascimento" class="text-sm font-semibold text-brasil-escuro">—</div>
+                                </div>
+
+                                <div class="bg-brasil-areia/50 rounded-2xl p-4">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                        <i class="fa-solid fa-location-dot text-brasil-terracota mr-1"></i> CEP
+                                    </div>
+                                    <div id="infoCep" class="text-sm font-semibold text-brasil-escuro">—</div>
+                                </div>
+
+                                <div class="bg-brasil-areia/50 rounded-2xl p-4 sm:col-span-2">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
+                                        <i class="fa-solid fa-calendar-plus text-brasil-terracota mr-1"></i> Conta criada em
+                                    </div>
+                                    <div id="infoCriado" class="text-sm font-semibold text-brasil-escuro">—</div>
+                                </div>
+                            </div>
+
+                            <p id="avisoConta" class="mt-5 text-sm font-semibold text-brasil-verde"></p>
+                        </div>
+
+                        <!-- Card de carrinho rápido -->
+                        <div class="bg-gradient-to-br from-brasil-verde to-brasil-madeira rounded-3xl shadow-xl p-8 text-brasil-creme">
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-16 h-16 rounded-2xl bg-brasil-amarelo text-brasil-verde flex items-center justify-center text-2xl shadow-lg">
+                                        <i class="fa-solid fa-bag-shopping"></i>
+                                    </div>
+                                    <div class="text-center sm:text-left">
+                                        <div class="text-[10px] uppercase tracking-widest font-bold text-brasil-amarelo">Seu Carrinho</div>
+                                        <div id="infoCarrinho" class="text-2xl font-serif font-bold">—</div>
+                                    </div>
+                                </div>
+                                <a href="carrinho.html" class="px-6 py-3 rounded-xl bg-brasil-amarelo text-brasil-escuro font-bold text-sm hover:bg-white transition-colors shadow-lg inline-flex items-center gap-2">
+                                    <span>Ver Carrinho</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                    </section>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ============== FOOTER ============== -->
+    <footer class="bg-brasil-escuro text-brasil-creme pt-16 pb-12 border-t border-brasil-areia/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <img src="logo/logo.png" alt="Multicultural" class="w-12 h-12 object-contain">
+                        <span class="text-xl font-serif font-bold text-white">Multicultural</span>
+                    </div>
+                    <p class="text-xs text-brasil-creme/70 leading-relaxed">
+                        Muito mais que uma livraria, um santuário de preservação e celebração da nossa diversidade cultural e literária.
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <h4 class="font-serif font-bold text-brasil-amarelo text-sm tracking-wider uppercase">Navegação</h4>
+                    <ul class="space-y-2 text-xs text-brasil-creme/70">
+                        <li><a href="index.html#destaques" class="hover:text-brasil-amarelo transition-colors">Destaques da Semana</a></li>
+                        <li><a href="produtos.html" class="hover:text-brasil-amarelo transition-colors">Acervo Completo</a></li>
+                        <li><a href="clube.html" class="hover:text-brasil-amarelo transition-colors">Clube de Leitura</a></li>
+                        <li><a href="carrinho.html" class="hover:text-brasil-amarelo transition-colors">Meu Carrinho</a></li>
+                        <li><a href="login.html" class="hover:text-brasil-amarelo transition-colors">Área do Cliente</a></li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3 lg:col-span-2 bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center font-extrabold shadow-md tracking-tighter overflow-hidden">
+                            <img src="logo/mutti.png" alt="Mutti Full Stack">
+                        </div>
+                        <div>
+                            <h4 class="font-serif font-bold text-white text-base">Mutti Full Stack</h4>
+                            <span class="text-[10px] uppercase tracking-widest font-semibold text-mfs">Engenharia de Software & Inovação</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-brasil-creme/80 leading-relaxed font-light">
+                        A <strong class="text-mfs">Mutti Full Stack</strong> é uma empresa de software focada em desenvolver arquiteturas digitais modernas, inovadoras e de alto desempenho.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-brasil-creme/50 gap-4">
+                <p>&copy; 2026 Livraria Multicultural. Todos os direitos reservados.</p>
+                <p class="flex items-center gap-1">
+                    Desenvolvido com <i class="fa-solid fa-heart text-brasil-terracota"></i> por <span class="text-mfs font-semibold">Mutti Full Stack (MFS)</span>.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============== MODAL ============== -->
+    <div id="info-modal" class="fixed inset-0 z-50 bg-brasil-escuro/70 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-brasil-creme rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-4 shadow-2xl relative border border-brasil-areia">
+            <button id="btn-fechar-modal" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-brasil-areia flex items-center justify-center text-brasil-escuro hover:bg-brasil-terracota hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="modal-icon" class="w-12 h-12 rounded-2xl bg-brasil-verde text-brasil-amarelo flex items-center justify-center text-xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="modal-title" class="text-2xl font-serif font-bold text-brasil-verde">Sucesso</h3>
+            <p id="modal-desc" class="text-brasil-escuro/70 text-sm leading-relaxed"></p>
+            <div class="pt-4 flex justify-end">
+                <button onclick="document.getElementById('btn-fechar-modal').click()" class="px-6 py-2.5 bg-brasil-verde text-brasil-amarelo font-bold rounded-xl text-xs hover:bg-brasil-terracota hover:text-white transition-colors">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============== SCRIPTS ============== -->
+    <script src="js/mascaras.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        const $ = (s) => document.querySelector(s);
+
+        function iniciarMenuMobile() {
+          const btn = $('#menu-btn');
+          const menu = $('#mobile-menu');
+          if (!btn || !menu) return;
+          btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+        }
+
+        // ---- Sessão ----
+        const usuario = window.Auth.obterUsuario();
+        if (!usuario) {
+          $('#conteudo').classList.add('hidden');
+          $('#bloqueio').classList.remove('hidden');
+          iniciarMenuMobile();
+          return;
+        }
+        $('#bloqueio').classList.add('hidden');
+        $('#conteudo').classList.remove('hidden');
+        iniciarMenuMobile();
+
+        const aviso = $('#avisoConta');
+        function mostrarAviso(texto, erro) {
+          aviso.textContent = texto;
+          aviso.className = 'mt-5 text-sm font-semibold ' + (erro ? 'text-brasil-terracota' : 'text-brasil-verde');
+        }
+
+        function iniciais(nome) {
+          if (!nome) return '?';
+          const parts = nome.trim().split(/\s+/);
+          if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+          return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        function renderizar(u) {
+          const wrap = $('#avatarWrap');
+          if (u.foto_perfil) {
+            wrap.innerHTML = `<img src="uploads/${u.foto_perfil}?t=${Date.now()}" alt="Foto de perfil" class="w-full h-full object-cover">`;
+          } else {
+            wrap.innerHTML = `<span id="avatarIniciais">${iniciais(u.nome_completo)}</span>`;
+          }
+          $('#avatarNome').textContent = u.nome_completo || '—';
+          $('#avatarUser').textContent = '@' + (u.nome_usuario || '—');
+
+          $('#infoId').textContent = u.id;
+          $('#infoUsuario').textContent = u.nome_usuario || '—';
+          $('#infoNomeCompleto').textContent = u.nome_completo || '—';
+          $('#infoEmail').textContent = u.email || '—';
+          $('#infoTelefone').textContent = u.telefone || '—';
+          $('#infoCpf').textContent = u.cpf || '—';
+          $('#infoNascimento').textContent = u.data_nascimento || '—';
+          $('#infoCep').textContent = u.cep || '—';
+          $('#infoCriado').textContent = u.criado_em || '—';
+
+          window.Auth.salvarUsuario(u);
+        }
+
+        renderizar(usuario);
+
+        // ---- Conta itens do carrinho ----
+        fetch('/api/carrinho/' + usuario.id)
+          .then(r => r.json())
+          .then(itens => {
+            const total = (itens || []).reduce((s, it) => s + (Number(it.qty) || 0), 0);
+            const el = $('#infoCarrinho');
+            el.textContent = total + (total === 1 ? ' item' : ' itens');
+          })
+          .catch(() => {
+            const el = $('#infoCarrinho');
+            if (el) el.textContent = '—';
+          });
+
+        // ---- Upload de foto ----
+        const inputFoto = $('#inputFoto');
+        inputFoto.addEventListener('change', () => {
+          const arquivo = inputFoto.files[0];
+          if (!arquivo) return;
+
+          if (arquivo.size > 5 * 1024 * 1024) {
+            return mostrarAviso('Arquivo muito grande (máx 5MB).', true);
+          }
+
+          const fd = new FormData();
+          fd.append('foto', arquivo);
+
+          mostrarAviso('Enviando foto...', false);
+
+          fetch('/api/usuario/' + usuario.id + '/foto', {
+            method: 'POST',
+            body: fd
+          })
+            .then(r => r.json().then(c => ({ ok: r.ok, c })))
+            .then(({ ok, c }) => {
+              if (!ok) return mostrarAviso(c.erro || 'Falha no upload.', true);
+              renderizar(c);
+              mostrarAviso('Foto atualizada!', false);
+            })
+            .catch(err => mostrarAviso('Erro de comunicação: ' + err.message, true))
+            .finally(() => { inputFoto.value = ''; });
         });
 
-      // Upload de foto
-      const inputFoto = $('#inputFoto');
-      inputFoto.addEventListener('change', () => {
-        const arquivo = inputFoto.files[0];
-        if (!arquivo) return;
+        // ---- Logout ----
+        $('#btnLogout').addEventListener('click', () => {
+          if (!confirm('Deseja sair? Seu carrinho continuará salvo.')) return;
+          window.Auth.logout();
+        });
 
-        if (arquivo.size > 5 * 1024 * 1024) {
-          return mostrarAviso('Arquivo muito grande (máx 5MB).', true);
+        // ---- Fechar modal ----
+        const btnModal = $('#btn-fechar-modal');
+        if (btnModal) {
+          btnModal.addEventListener('click', () => {
+            const modal = $('#info-modal');
+            if (modal) { modal.classList.remove('flex'); modal.classList.add('hidden'); }
+          });
         }
-
-        const fd = new FormData();
-        fd.append('foto', arquivo);
-
-        mostrarAviso('Enviando foto...', false);
-
-        fetch('/api/usuario/' + usuario.id + '/foto', {
-          method: 'POST',
-          body: fd
-        })
-          .then(r => r.json().then(c => ({ ok: r.ok, c })))
-          .then(({ ok, c }) => {
-            if (!ok) return mostrarAviso(c.erro || 'Falha no upload.', true);
-            renderizar(c);
-            mostrarAviso('Foto atualizada!', false);
-          })
-          .catch(err => mostrarAviso('Erro de comunicação: ' + err.message, true))
-          .finally(() => { inputFoto.value = ''; });
-      });
-
-      // Logout (preserva carrinho)
-      $('#btnLogout').addEventListener('click', () => {
-        if (!confirm('Deseja sair? Seu carrinho continuará salvo.')) return;
-        window.Auth.logout();
-      });
-    })();
-  </script>
+      })();
+    </script>
 </body>
 </html>

@@ -16,6 +16,7 @@
     livros: [],
     busca: '',
     origem: '',
+    categoria: '',
     ordenar: 'recentes'
   };
 
@@ -51,6 +52,7 @@
 
     let lista = Estado.livros.filter(livro => {
       if (Estado.origem && (livro.origem || 'Nacional') !== Estado.origem) return false;
+      if (Estado.categoria && (livro.categoria || 'livro') !== Estado.categoria) return false;
       if (!termo) return true;
       const campos = [
         livro.titulo || '',
@@ -217,6 +219,13 @@
   }
 
   function initEventos() {
+    const filtroCategoria = $('#filtro-categoria');
+    if (filtroCategoria) {  
+      filtroCategoria.addEventListener('change', (e) => {
+        Estado.categoria = e.target.value || '';
+        renderizar();
+      });
+    }
     const busca = $('#busca');
     if (busca) {
       let debounceTimer = null;
@@ -250,9 +259,11 @@
       limpar.addEventListener('click', () => {
         Estado.busca = '';
         Estado.origem = '';
+        Estado.categoria = '';   
         Estado.ordenar = 'recentes';
         if (busca) busca.value = '';
         if (filtroOrigem) filtroOrigem.value = '';
+        if (filtroCategoria) filtroCategoria.value = '';
         if (ordenar) ordenar.value = 'recentes';
         renderizar();
       });
