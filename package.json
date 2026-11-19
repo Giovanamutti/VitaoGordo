@@ -11,6 +11,7 @@
     "reset": "node resetar.js"
   },
   "dependencies": {
-    "better-sqlite3": "^11.3.0"
+    "better-sqlite3": "^11.3.0",
+    "sqlite3": "^6.0.1"
   }
 }
