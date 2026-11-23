@@ -180,11 +180,19 @@
                                 </div>
                                 <div id="livro-paginas" class="text-sm font-semibold text-brasil-escuro">—</div>
                             </div>
-                            <div class="bg-brasil-areia/50 rounded-xl p-4">
+                           <div class="bg-brasil-areia/50 rounded-xl p-4">
                                 <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">
                                     <i class="fa-solid fa-barcode mr-1 text-brasil-terracota"></i> ISBN
                                 </div>
-                                <div id="livro-isbn" class="text-sm font-semibold text-brasil-escuro break-all">—</div>
+                                <div class="flex items-center gap-2">
+                                    <div id="livro-isbn" class="text-sm font-semibold text-brasil-escuro break-all flex-1">—</div>
+                                    <button type="button" id="btn-copiar-isbn"
+                                            title="Copiar ISBN"
+                                            class="hidden flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brasil-verde text-brasil-amarelo text-[11px] font-bold hover:bg-brasil-terracota hover:text-white transition-colors">
+                                        <i class="fa-regular fa-copy text-[10px]"></i>
+                                        <span>Copiar</span>
+                                    </button>
+                                </div>
                             </div>
                             <div class="bg-brasil-areia/50 rounded-xl p-4">
                                 <div class="text-[10px] uppercase tracking-wider font-bold text-brasil-escuro/60 mb-1">

@@ -1056,21 +1056,32 @@
       return html;
     }
 
-    function desenharTabelaLivros(lista) {
+        function desenharTabelaLivros(lista) {
       if (!corpoTabela) return;
       corpoTabela.innerHTML = '';
+
       if (!Array.isArray(lista) || lista.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = 14;
+        td.colSpan = 15;
         td.textContent = 'Nenhum livro cadastrado ainda.';
+        td.style.textAlign = 'center';
+        td.style.padding = '2rem';
+        td.style.color = '#888';
         tr.appendChild(td);
         corpoTabela.appendChild(tr);
         return;
       }
+
       lista.forEach(livro => {
         const tr = document.createElement('tr');
-        const tdId = document.createElement('td'); tdId.textContent = livro.id; tr.appendChild(tdId);
+
+        // 1. ID
+        const tdId = document.createElement('td');
+        tdId.textContent = livro.id;
+        tr.appendChild(tdId);
+
+        // 2. Capa
         const tdImg = document.createElement('td');
         if (livro.imagem) {
           const img = document.createElement('img');
@@ -1079,13 +1090,17 @@
           img.style.cssText = 'width:40px; height:56px; object-fit:cover; border-radius:4px; border:1px solid #e2d7cd;';
           img.onerror = () => { img.style.display = 'none'; tdImg.textContent = '—'; };
           tdImg.appendChild(img);
-        } else tdImg.textContent = '—';
+        } else {
+          tdImg.textContent = '—';
+        }
         tr.appendChild(tdImg);
 
-        const tdTitulo = document.createElement('td'); tdTitulo.textContent = livro.titulo; tr.appendChild(tdTitulo);
-        const tdAutor = document.createElement('td'); tdAutor.textContent = livro.autor; tr.appendChild(tdAutor);
-        const tdEditora = document.createElement('td'); tdEditora.textContent = livro.editora || '—'; tr.appendChild(tdEditora);
-        const tdPaginas = document.createElement('td'); tdPaginas.textContent = livro.paginas || '—'; tr.appendChild(tdPaginas);
+        // 3. Título
+        const tdTitulo = document.createElement('td');
+        tdTitulo.textContent = livro.titulo;
+        tr.appendChild(tdTitulo);
+
+        // 4. Categoria  ← ANTES DO AUTOR
         const tdCategoria = document.createElement('td');
         const badgeCat = document.createElement('span');
         const nomesCat = { hq: 'HQ', livro: 'Livro', manga: 'Mangá', kit: 'Kit' };
@@ -1102,6 +1117,22 @@
         tdCategoria.appendChild(badgeCat);
         tr.appendChild(tdCategoria);
 
+        // 5. Autor
+        const tdAutor = document.createElement('td');
+        tdAutor.textContent = livro.autor;
+        tr.appendChild(tdAutor);
+
+        // 6. Editora
+        const tdEditora = document.createElement('td');
+        tdEditora.textContent = livro.editora || '—';
+        tr.appendChild(tdEditora);
+
+        // 7. Páginas
+        const tdPaginas = document.createElement('td');
+        tdPaginas.textContent = livro.paginas || '—';
+        tr.appendChild(tdPaginas);
+
+        // 8. Origem
         const tdOrigem = document.createElement('td');
         const badge = document.createElement('span');
         badge.textContent = livro.origem || 'Nacional';
@@ -1113,12 +1144,32 @@
         tdOrigem.appendChild(badge);
         tr.appendChild(tdOrigem);
 
-        const tdGenero = document.createElement('td'); tdGenero.textContent = livro.genero || '—'; tr.appendChild(tdGenero);
-        const tdPreco = document.createElement('td'); tdPreco.textContent = formatarPreco(livro.preco); tr.appendChild(tdPreco);
-        const tdEstoque = document.createElement('td'); tdEstoque.textContent = livro.estoque; tr.appendChild(tdEstoque);
-        const tdIsbn = document.createElement('td'); tdIsbn.textContent = livro.isbn || '—'; tr.appendChild(tdIsbn);
-        const tdAval = document.createElement('td'); tdAval.innerHTML = renderEstrelas(livro.avaliacao); tr.appendChild(tdAval);
+        // 9. Gênero
+        const tdGenero = document.createElement('td');
+        tdGenero.textContent = livro.genero || '—';
+        tr.appendChild(tdGenero);
 
+        // 10. Preço
+        const tdPreco = document.createElement('td');
+        tdPreco.textContent = formatarPreco(livro.preco);
+        tr.appendChild(tdPreco);
+
+        // 11. Estoque
+        const tdEstoque = document.createElement('td');
+        tdEstoque.textContent = livro.estoque;
+        tr.appendChild(tdEstoque);
+
+        // 12. ISBN
+        const tdIsbn = document.createElement('td');
+        tdIsbn.textContent = livro.isbn || '—';
+        tr.appendChild(tdIsbn);
+
+        // 13. Avaliação
+        const tdAval = document.createElement('td');
+        tdAval.innerHTML = renderEstrelas(livro.avaliacao);
+        tr.appendChild(tdAval);
+
+        // 14. Ações — Excluir
         const tdBotao = document.createElement('td');
         const botao = document.createElement('button');
         botao.type = 'button';
@@ -1126,6 +1177,18 @@
         botao.addEventListener('click', () => excluirLivro(livro.id));
         tdBotao.appendChild(botao);
         tr.appendChild(tdBotao);
+
+        // 15. Editar
+        const tdEditar = document.createElement('td');
+        const botaoEditar = document.createElement('button');
+        botaoEditar.type = 'button';
+        botaoEditar.textContent = 'Editar';
+        botaoEditar.style.cssText = 'background:#8b4513; color:#fff; border:none; padding:.35rem .7rem; border-radius:4px; font-weight:600; cursor:pointer;';
+        botaoEditar.addEventListener('click', () => abrirEdicaoLivro(livro.id));
+        tdEditar.appendChild(botaoEditar);
+        tr.appendChild(tdEditar);
+
+        // Adiciona a linha à tabela
         corpoTabela.appendChild(tr);
       });
     }
@@ -1147,6 +1210,177 @@
           carregarLivros();
         })
         .catch(erro => mostrarAviso('Falha ao remover: ' + erro.message, true));
+    }
+        // ============ EDIÇÃO DE LIVROS ============
+    const modalEdicao = document.getElementById('modalEdicao');
+    const formEdicao = document.getElementById('formEdicao');
+    const editInputImagem = document.getElementById('editInputImagem');
+    const editPreviewWrap = document.getElementById('editPreviewWrap');
+    const editPreview = document.getElementById('editPreview');
+    let livroEmEdicao = null;
+    let imagemNovaSelecionada = null;
+
+    function abrirModalEdicao(livro) {
+      livroEmEdicao = livro;
+      imagemNovaSelecionada = null;
+
+      document.getElementById('editId').textContent = '(ID ' + livro.id + ')';
+      document.getElementById('editTitulo').value = livro.titulo || '';
+      document.getElementById('editAutor').value = livro.autor || '';
+      document.getElementById('editIsbn').value = livro.isbn || '';
+      document.getElementById('editGenero').value = livro.genero || '';
+      document.getElementById('editPreco').value = livro.preco || '';
+      document.getElementById('editEstoque').value = livro.estoque || 0;
+      document.getElementById('editEditora').value = livro.editora || '';
+      document.getElementById('editPaginas').value = livro.paginas || '';
+      document.getElementById('editCategoria').value = livro.categoria || 'livro';
+      document.getElementById('editOrigem').value = livro.origem || 'Nacional';
+
+      const range = document.getElementById('editAvaliacaoRange');
+      const txt = document.getElementById('editAvaliacaoTexto');
+      range.value = livro.avaliacao || 0;
+      txt.textContent = (livro.avaliacao > 0) ? Number(livro.avaliacao).toFixed(1) + ' ★' : 'Sem avaliação';
+
+      // Preview da imagem atual
+      if (livro.imagem) {
+        editPreview.src = 'imagens/' + livro.imagem;
+        editPreviewWrap.style.display = 'block';
+      } else {
+        editPreview.src = '';
+        editPreviewWrap.style.display = 'none';
+      }
+      editInputImagem.value = '';
+      document.getElementById('avisoEdicao').textContent = '';
+
+      modalEdicao.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function fecharModalEdicao() {
+      modalEdicao.style.display = 'none';
+      document.body.style.overflow = '';
+      livroEmEdicao = null;
+      imagemNovaSelecionada = null;
+    }
+
+    function abrirEdicaoLivro(id) {
+      fetch('/api/livro/' + id)
+        .then(r => r.json())
+        .then(livro => abrirModalEdicao(livro))
+        .catch(erro => alert('Falha ao carregar livro: ' + erro.message));
+    }
+
+    // Expor para o escopo da tabela
+    window.abrirEdicaoLivro = abrirEdicaoLivro;
+
+    // Preview ao selecionar nova imagem
+    if (editInputImagem) {
+      editInputImagem.addEventListener('change', () => {
+        const arq = editInputImagem.files[0];
+        if (!arq) {
+          imagemNovaSelecionada = null;
+          editPreviewWrap.style.display = livroEmEdicao && livroEmEdicao.imagem ? 'block' : 'none';
+          if (livroEmEdicao && livroEmEdicao.imagem) editPreview.src = 'imagens/' + livroEmEdicao.imagem;
+          return;
+        }
+        if (arq.size > 5 * 1024 * 1024) {
+          document.getElementById('avisoEdicao').textContent = 'Imagem muito grande (máx 5 MB).';
+          document.getElementById('avisoEdicao').style.color = '#c0392b';
+          editInputImagem.value = '';
+          return;
+        }
+        imagemNovaSelecionada = arq;
+        const url = URL.createObjectURL(arq);
+        editPreview.src = url;
+        editPreviewWrap.style.display = 'block';
+      });
+    }
+
+    // Fechar modal
+    const btnFecharEdicao = document.getElementById('btnFecharEdicao');
+    if (btnFecharEdicao) btnFecharEdicao.addEventListener('click', fecharModalEdicao);
+
+    const btnCancelarEdicao = document.getElementById('btnCancelarEdicao');
+    if (btnCancelarEdicao) btnCancelarEdicao.addEventListener('click', fecharModalEdicao);
+
+    if (modalEdicao) {
+      modalEdicao.addEventListener('click', (e) => {
+        if (e.target === modalEdicao) fecharModalEdicao();
+      });
+    }
+
+    // Submit da edição
+    if (formEdicao) {
+      formEdicao.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!livroEmEdicao) return;
+
+        const aviso = document.getElementById('avisoEdicao');
+        aviso.textContent = 'Salvando...';
+        aviso.style.color = '#8b4513';
+
+        const dados = {
+          titulo: document.getElementById('editTitulo').value.trim(),
+          autor: document.getElementById('editAutor').value.trim(),
+          isbn: document.getElementById('editIsbn').value.trim(),
+          genero: document.getElementById('editGenero').value.trim(),
+          preco: document.getElementById('editPreco').value,
+          estoque: document.getElementById('editEstoque').value,
+          editora: document.getElementById('editEditora').value.trim(),
+          paginas: document.getElementById('editPaginas').value,
+          categoria: document.getElementById('editCategoria').value,
+          origem: document.getElementById('editOrigem').value,
+          avaliacao: document.getElementById('editAvaliacaoRange').value
+        };
+
+        // Se tem imagem nova, faz upload primeiro
+        function enviarEdicao(nomeImagem) {
+          if (nomeImagem !== undefined) dados.imagem = nomeImagem;
+
+          fetch('/api/livro/' + livroEmEdicao.id, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+          })
+            .then(r => r.json().then(c => ({ ok: r.ok, c })))
+            .then(({ ok, c }) => {
+              if (!ok) {
+                aviso.textContent = c.erro || 'Erro ao salvar.';
+                aviso.style.color = '#c0392b';
+                return;
+              }
+              aviso.textContent = 'Livro atualizado com sucesso!';
+              aviso.style.color = '#2f855a';
+              carregarLivros();
+              setTimeout(fecharModalEdicao, 900);
+            })
+            .catch(erro => {
+              aviso.textContent = 'Erro de comunicação: ' + erro.message;
+              aviso.style.color = '#c0392b';
+            });
+        }
+
+        if (imagemNovaSelecionada) {
+          const fd = new FormData();
+          fd.append('imagem', imagemNovaSelecionada);
+          fetch('/api/livro/upload', { method: 'POST', body: fd })
+            .then(r => r.json().then(c => ({ ok: r.ok, c })))
+            .then(({ ok, c }) => {
+              if (!ok) {
+                aviso.textContent = c.erro || 'Falha no upload da imagem.';
+                aviso.style.color = '#c0392b';
+                return;
+              }
+              enviarEdicao(c.imagem);
+            })
+            .catch(erro => {
+              aviso.textContent = 'Erro no upload: ' + erro.message;
+              aviso.style.color = '#c0392b';
+            });
+        } else {
+          enviarEdicao(undefined);
+        }
+      });
     }
 
     if (form) {
@@ -1261,4 +1495,6 @@
   window.lerCarrinhoGlobal = carregarCarrinho;
   window.obterCarrinhoGlobal = () => Carrinho.dados;
   window.abrirModalLoginGlobal = abrirModalLogin;
+   
+  
 })();

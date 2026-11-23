@@ -93,7 +93,34 @@
 
     $('#livro-editora').textContent = livro.editora || '—';
     $('#livro-paginas').textContent = livro.paginas ? livro.paginas + ' págs.' : '—';
+    // ISBN + botão copiar
     $('#livro-isbn').textContent = livro.isbn || '—';
+
+    const btnCopiar = document.getElementById('btn-copiar-isbn');
+    if (btnCopiar) {
+      if (livro.isbn && String(livro.isbn).trim()) {
+        btnCopiar.classList.remove('hidden');
+
+        // Remove listener antigo (clonando o botão) pra não duplicar
+        const novoBtn = btnCopiar.cloneNode(true);
+        btnCopiar.parentNode.replaceChild(novoBtn, btnCopiar);
+
+        novoBtn.addEventListener('click', () => {
+          const isbn = String(livro.isbn).trim();
+
+          // Método moderno (funciona em HTTPS e localhost)
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(isbn)
+              .then(() => feedbackCopiado(novoBtn))
+              .catch(() => fallbackCopiar(isbn, novoBtn));
+          } else {
+            fallbackCopiar(isbn, novoBtn);
+          }
+        });
+      } else {
+        btnCopiar.classList.add('hidden');
+      }
+    }
     $('#livro-estoque').textContent = estoque > 0 ? estoque + ' unidades' : 'Sem estoque';
 
     // Botão comprar (listener próprio — não é .comprar-btn)
@@ -166,6 +193,37 @@
       })
       .then(livro => renderizar(livro))
       .catch(err => mostrarErro(err.message));
+  }
+  // Feedback visual "Copiado!" por 2 segundos
+  function feedbackCopiado(btn) {
+    if (!btn) return;
+    const original = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-check text-[10px]"></i><span>Copiado!</span>';
+    btn.classList.add('bg-green-600');
+    btn.classList.remove('bg-brasil-verde');
+    setTimeout(() => {
+      btn.innerHTML = original;
+      btn.classList.remove('bg-green-600');
+      btn.classList.add('bg-brasil-verde');
+    }, 2000);
+  }
+
+  // Fallback pra navegadores antigos (execCommand)
+  function fallbackCopiar(texto, btn) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = texto;
+      ta.style.cssText = 'position:fixed; top:-9999px; left:-9999px; opacity:0;';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (ok) feedbackCopiado(btn);
+      else alert('Não foi possível copiar. ISBN: ' + texto);
+    } catch (e) {
+      alert('Não foi possível copiar. ISBN: ' + texto);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', carregar);

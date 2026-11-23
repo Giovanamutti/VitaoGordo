@@ -754,6 +754,125 @@ var servidor = http.createServer(function (req, res) {
     });
     return;
   }
+    // ============ PUT /api/livro/:id — edita um livro ============
+
+  if (req.method === 'PUT' && /^\/api\/livro\/\d+$/.test(caminho)) {
+    var idEdit = caminho.split('/')[3];
+    if (!idEdit || isNaN(Number(idEdit))) {
+      return responderJson(res, 400, { erro: 'ID invalido.' });
+    }
+
+    var livroExistente = stmtBuscarLivro.get(Number(idEdit));
+    if (!livroExistente) {
+      return responderJson(res, 404, { erro: 'Livro nao encontrado.' });
+    }
+
+    lerCorpoJson(req, function (erro, novo) {
+      if (erro) return responderJson(res, 400, { erro: erro.message });
+
+      // Mesma validação do POST, mas usando fallback para os valores antigos
+      var titulo = (novo.titulo !== undefined ? novo.titulo : livroExistente.titulo);
+      var autor = (novo.autor !== undefined ? novo.autor : livroExistente.autor);
+      if (!titulo || !autor) {
+        return responderJson(res, 400, { erro: 'Titulo e autor sao obrigatorios.' });
+      }
+
+      var precoNum = (novo.preco !== undefined && novo.preco !== '') ? Number(novo.preco) : livroExistente.preco;
+      if (!isFinite(precoNum) || precoNum <= 0) {
+        return responderJson(res, 400, { erro: 'Preco deve ser um numero positivo.' });
+      }
+
+      var estoqueNum = (novo.estoque !== undefined && novo.estoque !== '') ? Number(novo.estoque) : livroExistente.estoque;
+      if (!isFinite(estoqueNum) || estoqueNum < 0) estoqueNum = 0;
+
+      var origem = (novo.origem === 'Internacional' || novo.origem === 'Nacional')
+        ? novo.origem
+        : livroExistente.origem;
+
+      var CATEGORIAS_VALIDAS_EDIT = ['hq', 'livro', 'manga', 'kit'];
+      var categoria = (novo.categoria || livroExistente.categoria || 'livro').toLowerCase();
+      if (CATEGORIAS_VALIDAS_EDIT.indexOf(categoria) === -1) categoria = 'livro';
+
+      var imagem = (novo.imagem !== undefined ? novo.imagem : livroExistente.imagem);
+      if (imagem && typeof imagem === 'string') {
+        imagem = imagem.trim();
+        if (imagem) {
+          imagem = imagem.replace(/[\\/]/g, '').replace(/\.\./g, '').toLowerCase();
+          if (!/\.(png|jpe?g|webp|gif|svg)$/i.test(imagem)) {
+            return responderJson(res, 400, { erro: 'Imagem deve terminar em .png, .jpg, .jpeg, .webp, .gif ou .svg' });
+          }
+        } else {
+          imagem = null;
+        }
+      } else {
+        imagem = livroExistente.imagem;
+      }
+
+      var avaliacaoNum;
+      if (novo.avaliacao === undefined || novo.avaliacao === '' || novo.avaliacao === null) {
+        avaliacaoNum = livroExistente.avaliacao;
+      } else {
+        avaliacaoNum = Number(novo.avaliacao);
+        if (!isFinite(avaliacaoNum)) avaliacaoNum = 0;
+        if (avaliacaoNum !== 0 && (avaliacaoNum < 0.1 || avaliacaoNum > 5)) {
+          return responderJson(res, 400, { erro: 'Avaliacao deve estar entre 0.1 e 5.0 estrelas.' });
+        }
+        avaliacaoNum = Math.round(avaliacaoNum * 10) / 10;
+      }
+
+      var editora = (novo.editora !== undefined) ? (String(novo.editora).trim() || null) : livroExistente.editora;
+
+      var paginasNum;
+      if (novo.paginas !== undefined && novo.paginas !== '' && novo.paginas !== null) {
+        paginasNum = Number(novo.paginas);
+        if (!isFinite(paginasNum) || paginasNum < 1) {
+          return responderJson(res, 400, { erro: 'Paginas deve ser um numero maior que zero.' });
+        }
+        paginasNum = Math.floor(paginasNum);
+      } else {
+        paginasNum = livroExistente.paginas;
+      }
+
+      var isbn = (novo.isbn !== undefined) ? (String(novo.isbn).trim() || null) : livroExistente.isbn;
+      var genero = (novo.genero !== undefined) ? String(novo.genero) : livroExistente.genero;
+
+      try {
+        var stmtAtualizarLivro = db.prepare(`
+          UPDATE livro SET
+            titulo = ?, autor = ?, preco = ?, genero = ?, estoque = ?,
+            isbn = ?, imagem = ?, origem = ?, avaliacao = ?, editora = ?,
+            paginas = ?, categoria = ?
+          WHERE id = ?
+        `);
+        stmtAtualizarLivro.run(
+          titulo,
+          autor,
+          precoNum,
+          genero || '',
+          Math.floor(estoqueNum),
+          isbn,
+          imagem,
+          origem,
+          avaliacaoNum,
+          editora,
+          paginasNum,
+          categoria,
+          Number(idEdit)
+        );
+
+        var atualizado = stmtBuscarLivro.get(Number(idEdit));
+        console.log('Livro editado: id ' + idEdit + ' — ' + titulo);
+        return responderJson(res, 200, atualizado);
+      } catch (err) {
+        if (err.message && err.message.indexOf('UNIQUE') !== -1) {
+          return responderJson(res, 400, { erro: 'ISBN ja cadastrado em outro livro.' });
+        }
+        return responderJson(res, 500, { erro: err.message });
+      }
+    });
+    return;
+  }
+
 
   if (req.method === 'DELETE' && /^\/api\/carrinho\/\d+\/item\/.+$/.test(caminho)) {
     var partesCarrinhoDel = caminho.split('/');
