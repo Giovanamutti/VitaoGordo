@@ -209,6 +209,7 @@ var stmtInserirUsuario = db.prepare(
   'INSERT INTO usuario (nome_usuario, senha_hash, nome_completo, email, telefone, cpf, data_nascimento, cep) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
 );
 var stmtAtualizarFoto = db.prepare('UPDATE usuario SET foto_perfil = ? WHERE id = ?');
+var stmtAtualizarClube = db.prepare('UPDATE usuario SET clube_ativo = ? WHERE id = ?');
 var stmtListarCarrinho = db.prepare('SELECT * FROM carrinho_item WHERE usuario_id = ? ORDER BY id ASC');
 var stmtBuscarItemCarrinho = db.prepare('SELECT * FROM carrinho_item WHERE usuario_id = ? AND livro_id = ?');
 var stmtInserirItemCarrinho = db.prepare(
@@ -609,6 +610,41 @@ var servidor = http.createServer(function (req, res) {
     });
     return;
   }
+
+    // ============ API CLUBE ============
+
+  // POST /api/usuario/:id/clube — ativa/desativa assinatura do clube
+  if (req.method === 'POST' && /^\/api\/usuario\/\d+\/clube$/.test(caminho)) {
+    var partesClube = caminho.split('/');
+    var idClube = Number(partesClube[3]);
+    if (!idClube || isNaN(idClube)) {
+      return responderJson(res, 400, { erro: 'ID invalido.' });
+    }
+
+    var usuarioClube = stmtBuscarUsuarioPorId.get(idClube);
+    if (!usuarioClube) {
+      return responderJson(res, 404, { erro: 'Usuario nao encontrado.' });
+    }
+
+    lerCorpoJson(req, function (erro, dados) {
+      if (erro) return responderJson(res, 400, { erro: erro.message });
+
+      var ativo = dados.ativo === true || dados.ativo === 1 || dados.ativo === '1';
+      var valor = ativo ? 1 : 0;
+
+      try {
+        stmtAtualizarClube.run(valor, idClube);
+        var atualizado = stmtBuscarUsuarioPorId.get(idClube);
+        delete atualizado.senha_hash;
+        console.log('Clube ' + (ativo ? 'ativado' : 'cancelado') + ' para usuario ' + idClube);
+        return responderJson(res, 200, atualizado);
+      } catch (e) {
+        return responderJson(res, 500, { erro: e.message });
+      }
+    });
+    return;
+  }
+
 
   // ============ API CARRINHO ============
 

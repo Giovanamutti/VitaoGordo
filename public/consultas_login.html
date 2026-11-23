@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Usuários Cadastrados | Livraria Multicultural</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="header-livraria">
+    <div class="header-logo-row">
+      <a href="index.html"><img src="logo/logo.png" alt="Multicultural"></a>
+      <h1 style="margin:0;">Livraria Multicultural</h1>
+    </div>
+    <p>Consulta de Usuários</p>
+    <p style="margin-top:.5rem;">
+      <a href="login.html" style="color:#8b4513; font-weight:600; text-decoration:none;">
+        <i class="fa-solid fa-arrow-left"></i> Voltar para o Login
+      </a>
+    </p>
+  </header>
+
+  <div class="pagina-container">
+    <section class="secao-tabela">
+      <h2>Usuários Cadastrados</h2>
+      <div class="tabela-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome Completo</th>
+              <th>Usuário</th>
+              <th>Email</th>
+              <th>Telefone</th>
+              <th>CPF</th>
+              <th>Nascimento</th>
+              <th>Criado em</th>
+            </tr>
+          </thead>
+          <tbody id="corpoTabela"></tbody>
+        </table>
+      </div>
+      <p id="aviso" style="margin-top:1rem;font-weight:600;font-size:.9rem;color:var(--cor-sucesso);"></p>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+      const corpoTabela = document.getElementById('corpoTabela');
+      const aviso = document.getElementById('aviso');
+
+      function mostrarAviso(txt, erro) {
+        aviso.textContent = txt;
+        aviso.style.color = erro ? 'var(--cor-erro)' : 'var(--cor-sucesso)';
+      }
+
+      function desenhar(lista) {
+        corpoTabela.innerHTML = '';
+        if (!Array.isArray(lista) || lista.length === 0) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 8;
+          td.textContent = 'Nenhum usuário cadastrado ainda.';
+          tr.appendChild(td);
+          corpoTabela.appendChild(tr);
+          return;
+        }
+        lista.forEach(u => {
+          const tr = document.createElement('tr');
+          [u.id, u.nome_completo, u.nome_usuario, u.email, u.telefone || '—', u.cpf || '—', u.data_nascimento || '—', u.criado_em || '—'].forEach(v => {
+            const td = document.createElement('td');
+            td.textContent = (v === null || v === undefined) ? '' : v;
+            tr.appendChild(td);
+          });
+          corpoTabela.appendChild(tr);
+        });
+      }
+
+      function carregar() {
+        fetch('/api/usuario')
+          .then(r => r.json())
+          .then(desenhar)
+          .catch(e => mostrarAviso('Falha ao carregar: ' + e.message, true));
+      }
+
+      carregar();
+    })();
+  </script>
+</body>
+</html>

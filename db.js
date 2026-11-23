@@ -40,18 +40,19 @@ db.exec(`
 // ---- Tabela de usuários ----
 db.exec(`
   CREATE TABLE IF NOT EXISTS usuario (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome_usuario TEXT NOT NULL UNIQUE,
-    senha_hash TEXT NOT NULL,
-    nome_completo TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    telefone TEXT,
-    cpf TEXT,
-    data_nascimento TEXT,
-    cep TEXT,
-    foto_perfil TEXT,
-    criado_em TEXT NOT NULL DEFAULT (datetime('now'))
-  )
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nome_usuario TEXT NOT NULL UNIQUE,
+  senha_hash TEXT NOT NULL,
+  nome_completo TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  telefone TEXT,
+  cpf TEXT,
+  data_nascimento TEXT,
+  cep TEXT,
+  foto_perfil TEXT,
+  criado_em TEXT NOT NULL DEFAULT (datetime('now')),
+  clube_ativo INTEGER NOT NULL DEFAULT 0
+)
 `);
 
 // ---- Migração segura para bancos antigos ----
@@ -85,6 +86,12 @@ db.exec(`
   if (cols.indexOf('categoria') === -1) {
     db.exec("ALTER TABLE livro ADD COLUMN categoria TEXT NOT NULL DEFAULT 'livro'");
     console.log('✔ coluna "categoria" adicionada');
+  }
+
+  var colsUsuario = db.prepare("PRAGMA table_info(usuario)").all().map(function (c) { return c.name; });
+  if (colsUsuario.indexOf('clube_ativo') === -1) {
+    db.exec("ALTER TABLE usuario ADD COLUMN clube_ativo INTEGER NOT NULL DEFAULT 0");
+    console.log('✔ coluna "clube_ativo" adicionada');
   }
 })();
 

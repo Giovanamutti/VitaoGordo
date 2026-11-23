@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar / Criar Conta | Livraria Multicultural</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* ====================================================================
+       Reset + base
+       ==================================================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+      text-decoration: none;
+    }
+
+    html, body {
+      min-height: 100vh;
+    }
+
+    body {
+      background-image: url('logo/fundo.png');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #1A1818;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Camada escura por cima do fundo, para o vidro fosco destacar */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 15, 15, 0.35);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* ====================================================================
+       Header minimalista com a logo
+       ==================================================================== */
+    header.top-bar {
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header.top-bar .marca {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header.top-bar .marca img {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+    }
+
+    header.top-bar .marca-texto {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    header.top-bar .marca-texto strong {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      color: #FDFBF7;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    header.top-bar .marca-texto small {
+      color: #F4D03F;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-top: 4px;
+      font-weight: 600;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    header.top-bar .voltar {
+      color: #FDFBF7;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.20);
+      transition: background 0.2s;
+    }
+
+    header.top-bar .voltar:hover {
+      background: rgba(255, 255, 255, 0.20);
+      color: #F4D03F;
+    }
+
+    /* ====================================================================
+       Main + caixa de login com vidro fosco
+       ==================================================================== */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 16px 60px;
+    }
+
+    .card-login {
+      width: 100%;
+      max-width: 440px;
+      padding: 32px 28px;
+
+      /* === MESMO EFEITO DO HEADER (glass-nav) === */
+      background: rgba(26, 24, 24, 0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(244, 208, 63, 0.25);
+      /* ========================================== */
+
+      border-radius: 22px;
+      box-shadow:
+        0 24px 60px -20px rgba(0, 0, 0, 0.60),
+        0 6px 16px rgba(0, 0, 0, 0.30);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #FDFBF7;
+      animation: aparecer 0.35s ease both;
+    }
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-login h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #F4D03F;
+      text-align: center;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-login .subtitulo {
+      font-size: 0.85rem;
+      color: rgba(253, 251, 247, 0.75);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    /* ====================================================================
+       Campos
+       ==================================================================== */
+    .campo {
+      width: 100%;
+      margin-bottom: 14px;
+    }
+
+    .campo-label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #F4D03F;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      height: 46px;
+      padding: 8px 15px 8px 42px;
+      border: 0;
+      outline: 0;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      color: #FDFBF7;
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .input-wrap input:focus {
+      background-color: rgba(255, 255, 255, 0.14);
+      border-color: #F4D03F;
+      box-shadow: 0 0 0 4px rgba(244, 208, 63, 0.15);
+    }
+
+    .input-wrap input::placeholder {
+      color: rgba(253, 251, 247, 0.45);
+      font-size: 0.85rem;
+    }
+
+    .input-wrap > i.icone-esq {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #F4D03F;
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    .input-wrap .olho {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(253, 251, 247, 0.6);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+      padding: 4px;
+    }
+
+    .input-wrap .olho:hover {
+      color: #F4D03F;
+    }
+
+    .input-wrap .olho.oculto {
+      display: none;
+    }
+
+    /* ====================================================================
+       Linha "Lembrar senha" + "Esqueceu"
+       ==================================================================== */
+    .password-infos {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: -2px 0 18px;
+      font-size: 0.78rem;
+    }
+
+    .password-infos label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(253, 251, 247, 0.7);
+      cursor: pointer;
+    }
+
+    .password-infos input[type="checkbox"] {
+      accent-color: #F4D03F;
+      cursor: pointer;
+      width: 14px;
+      height: 14px;
+    }
+
+    .password-infos a {
+      color: #F4D03F;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .password-infos a:hover {
+      color: #FDFBF7;
+      text-decoration: underline;
+    }
+
+    /* ====================================================================
+       Botão principal
+       ==================================================================== */
+    .btn-principal {
+      width: 100%;
+      height: 50px;
+      border: 0;
+      outline: 0;
+      border-radius: 12px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #FDFBF7;
+      background: linear-gradient(135deg, #1B4D3E 0%, #245C4A 100%);
+      cursor: pointer;
+      transition: background 0.25s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 22px -8px rgba(27, 77, 62, 0.6);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-principal:hover {
+      background: linear-gradient(135deg, #C0392B 0%, #8D5524 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px -10px rgba(192, 57, 43, 0.6);
+    }
+
+    .btn-principal:active {
+      transform: translateY(0);
+    }
+
+    /* ====================================================================
+       Separador + link "Cadastre-se"
+       ==================================================================== */
+    .separador {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 22px 0 14px;
+      color: rgba(253, 251, 247, 0.5);
+      font-size: 0.75rem;
+    }
+
+    .separador::before,
+    .separador::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(253, 251, 247, 0.15);
+    }
+
+    .link-cadastro {
+      width: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      color: rgba(253, 251, 247, 0.75);
+    }
+
+    .link-cadastro button {
+      background: none;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      color: #F4D03F;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0 4px;
+      transition: color 0.2s;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .link-cadastro button:hover {
+      color: #FDFBF7;
+    }
+
+    /* ====================================================================
+       Painéis das abas
+       ==================================================================== */
+    .aba-painel {
+      display: none;
+      width: 100%;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .aba-painel.ativo {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Aviso informativo dentro do cadastro */
+    .aviso-sessao {
+      background: rgba(244, 208, 63, 0.12);
+      border: 1px solid rgba(244, 208, 63, 0.35);
+      color: #F4D03F;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 16px;
+      width: 100%;
+      line-height: 1.4;
+    }
+
+    .aviso-sessao i {
+      margin-top: 2px;
+      color: #F4D03F;
+    }
+
+    /* ====================================================================
+       Mensagem de status (avisoAuth)
+       ==================================================================== */
+    #avisoAuth {
+      width: 100%;
+      margin-top: 14px;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #86efac;
+    }
+
+    #avisoAuth.erro {
+      color: #fca5a5;
+    }
+
+    /* ====================================================================
+       Responsivo
+       ==================================================================== */
+    @media (max-width: 480px) {
+      header.top-bar {
+        padding: 16px 20px;
+      }
+
+      header.top-bar .marca img {
+        width: 42px;
+        height: 42px;
+      }
+
+      header.top-bar .marca-texto strong {
+        font-size: 1rem;
+      }
+
+      main {
+        padding: 20px 12px 40px;
+      }
+
+      .card-login {
+        padding: 24px 20px;
+      }
+
+      .card-login h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ================= HEADER ================= -->
+  <header class="top-bar">
+    <div class="marca">
+      <img src="logo/logo.png" alt="Multicultural">
+      <div class="marca-texto">
+        <strong>Multicultural</strong>
+        <small>Livraria & Cultura</small>
+      </div>
+    </div>
+    <a href="index.html" class="voltar">
+      <i class="fa-solid fa-arrow-left"></i>
+      Voltar ao site
+    </a>
+  </header>
+
+  <!-- ================= MAIN ================= -->
+  <main>
+    <div class="card-login">
+
+      <h1 id="tituloCard">Bem-vindo(a) de volta</h1>
+      <p class="subtitulo" id="subtituloCard">Entre com sua conta para continuar.</p>
+
+      <!-- ============ PAINEL: ENTRAR ============ -->
+      <div class="aba-painel ativo" id="painel-entrar">
+        <form id="formLogin" autocomplete="on">
+
+          <div class="campo">
+            <label class="campo-label" for="login-usuario">Nome de Usuário</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user icone-esq"></i>
+              <input
+                type="text"
+                id="login-usuario"
+                name="nome_usuario"
+                placeholder="seu_usuario"
+                required
+                autocomplete="username"
+              >
+            </div>
+          </div>
+
+          <div class="campo">
+            <label class="campo-label" for="login-senha">Senha</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-lock icone-esq"></i>
+              <input
+                type="password"
+                id="login-senha"
+                name="senha"
+                placeholder="••••••••"
+                required
+                autocomplete="current-password"
+              >
+              <i class="fa-solid fa-eye olho oculto" data-olho="login-senha"></i>
+              <i class="fa-solid fa-eye-slash olho" data-olho="login-senha"></i>
+            </div>
+          </div>
+
+          <div class="password-infos">
+            <label>
+              <input type="checkbox">
+              <span>Lembrar senha</span>
+            </label>
+            <a href="#">Esqueceu sua senha?</a>
+          </div>
+
+          <button type="submit" class="btn-principal">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            Entrar
+          </button>
+        </form>
+
+        <div class="separador">ou</div>
+
+        <p class="link-cadastro">
+          Não tem uma conta ainda?
+          <button type="button" id="ir-para-cadastro">Cadastre-se</button>
+        </p>
+      </div>
+
+      <!-- ============ PAINEL: CADASTRAR ============ -->
+      <div class="aba-painel" id="painel-cadastrar">
+
+        <div class="aviso-sessao">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>A foto de perfil poderá ser enviada depois, dentro da sua conta.</span>
+        </div>
+
+        <form id="formCadastroUsuario" autocomplete="on">
+
+          <div class="campo">
+            <label class="campo-label" for="cad-nome">Nome Completo</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-signature icone-esq"></i>
+              <input type="text" id="cad-nome" name="nome_completo" placeholder="Seu nome completo" required>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label class="campo-label" for="cad-usuario">Nome de Usuário</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-at icone-esq"></i>
+              <input type="text" id="cad-usuario" name="nome_usuario" placeholder="seu_usuario" required minlength="3">
+            </div>
+          </div>
+
+          <div class="campo">
+            <label class="campo-label" for="cad-email">Email</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-envelope icone-esq"></i>
+              <input type="email" id="cad-email" name="email" placeholder="voce@email.com" required>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label class="campo-label" for="cad-telefone">Telefone</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-phone icone-esq"></i>
+              <input type="text" id="cad-telefone" name="telefone" placeholder="(00) 00000-0000">
+            </div>
+          </div>
+
+          <div class="campo">
+            <label class="campo-label" for="cad-cpf">CPF</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-id-card icone-esq"></i>
+              <input type="text" id="cad-cpf" name="cpf" placeholder="000.000.000-00">
+            </div>
+          </div>
+
+          <div class="campo">
+            <label class="campo-label" for="cad-nascimento">Data de Nascimento</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-calendar icone-esq"></i>
+              <input type="date" id="cad-nascimento" name="data_nascimento">
+            </div>
+          </div>
+
+          <div class="campo">
+            <label class="campo-label" for="cad-cep">CEP</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-location-dot icone-esq"></i>
+              <input type="text" id="cad-cep" name="cep" placeholder="00000-000">
+            </div>
+          </div>
+
+          <div class="campo">
+            <label class="campo-label" for="cad-senha">Senha <small style="font-weight:400;text-transform:none;letter-spacing:0;color:rgba(253,251,247,0.5);">(mín. 6 caracteres)</small></label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-lock icone-esq"></i>
+              <input
+                type="password"
+                id="cad-senha"
+                name="senha"
+                placeholder="••••••••"
+                required
+                minlength="6"
+                autocomplete="new-password"
+              >
+              <i class="fa-solid fa-eye olho oculto" data-olho="cad-senha"></i>
+              <i class="fa-solid fa-eye-slash olho" data-olho="cad-senha"></i>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label class="campo-label" for="cad-senha-confirm">Confirmar Senha</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-lock-open icone-esq"></i>
+              <input
+                type="password"
+                id="cad-senha-confirm"
+                name="senha_confirm"
+                placeholder="••••••••"
+                required
+                minlength="6"
+                autocomplete="new-password"
+              >
+              <i class="fa-solid fa-eye olho oculto" data-olho="cad-senha-confirm"></i>
+              <i class="fa-solid fa-eye-slash olho" data-olho="cad-senha-confirm"></i>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-principal">
+            <i class="fa-solid fa-user-plus"></i>
+            Criar minha conta
+          </button>
+        </form>
+
+        <div class="separador">ou</div>
+
+        <p class="link-cadastro">
+          Já tem uma conta?
+          <button type="button" id="ir-para-login">Faça login</button>
+        </p>
+      </div>
+
+      <!-- ============ MENSAGEM DE STATUS ============ -->
+      <p id="avisoAuth"></p>
+
+    </div>
+  </main>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="js/mascaras.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => document.querySelectorAll(s);
+
+      const aviso = $('#avisoAuth');
+      const tituloCard = $('#tituloCard');
+      const subtituloCard = $('#subtituloCard');
+
+      function mostrarAviso(texto, erro) {
+        if (!aviso) return;
+        aviso.textContent = texto;
+        aviso.className = erro ? 'erro' : '';
+      }
+
+      // ----------------------------------------------------------------
+      // Alternar entre "Entrar" e "Cadastrar"
+      // ----------------------------------------------------------------
+      function mostrarPainel(nome) {
+        $$('.aba-painel').forEach(p => p.classList.toggle('ativo', p.id === 'painel-' + nome));
+
+        if (nome === 'entrar') {
+          tituloCard.textContent = 'Bem-vindo(a) de volta';
+          subtituloCard.textContent = 'Entre com sua conta para continuar.';
+        } else {
+          tituloCard.textContent = 'Crie sua conta';
+          subtituloCard.textContent = 'É rápido, gratuito e você ganha acesso ao Clube.';
+        }
+
+        aviso.textContent = '';
+        aviso.className = '';
+      }
+
+      const btnIrCadastro = $('#ir-para-cadastro');
+      if (btnIrCadastro) btnIrCadastro.addEventListener('click', () => mostrarPainel('cadastrar'));
+
+      const btnIrLogin = $('#ir-para-login');
+      if (btnIrLogin) btnIrLogin.addEventListener('click', () => mostrarPainel('entrar'));
+
+      // ----------------------------------------------------------------
+      // Mostrar/ocultar senha
+      // ----------------------------------------------------------------
+      $$('.olho').forEach(icone => {
+        icone.addEventListener('click', () => {
+          const idAlvo = icone.getAttribute('data-olho');
+          const input = document.getElementById(idAlvo);
+          if (!input) return;
+
+          const wrap = icone.closest('.input-wrap');
+          const olhoAberto = wrap.querySelector('.fa-eye');
+          const olhoFechado = wrap.querySelector('.fa-eye-slash');
+
+          if (input.type === 'password') {
+            input.type = 'text';
+            olhoAberto.classList.remove('oculto');
+            olhoFechado.classList.add('oculto');
+          } else {
+            input.type = 'password';
+            olhoAberto.classList.add('oculto');
+            olhoFechado.classList.remove('oculto');
+          }
+        });
+      });
+
+      // ----------------------------------------------------------------
+      // Redirecionamento respeitando ?redirect=
+      // ----------------------------------------------------------------
+      function destinoSeguro() {
+        const params = new URLSearchParams(location.search);
+        const bruto = params.get('redirect') || '';
+        // Lista branca — evita redirecionar para fora do site
+        const permitidos = [
+          'carrinho.html', 'conta.html', 'produtos.html', 'clube.html',
+          'index.html', 'livro.html', 'add_livros.html'
+        ];
+        return permitidos.includes(bruto) ? bruto : 'conta.html';
+      }
+
+      function redirecionar() {
+        setTimeout(() => { window.location.href = destinoSeguro(); }, 400);
+      }
+
+      // ----------------------------------------------------------------
+      // Login
+      // ----------------------------------------------------------------
+      const formLogin = $('#formLogin');
+      formLogin.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fd = new FormData(formLogin);
+        const dados = {};
+        fd.forEach((v, k) => { dados[k] = v; });
+
+        fetch('/api/usuario/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        })
+          .then(r => r.json().then(c => ({ ok: r.ok, c })))
+          .then(({ ok, c }) => {
+            if (!ok) return mostrarAviso(c.erro || 'Falha no login.', true);
+
+            window.Auth.salvarUsuario(c);
+            mostrarAviso('Login realizado! Sincronizando carrinho...', false);
+
+            window.Auth.aoLogar().then(redirecionar);
+          })
+          .catch(err => mostrarAviso('Erro de comunicação: ' + err.message, true));
+      });
+
+      // ----------------------------------------------------------------
+      // Cadastro
+      // ----------------------------------------------------------------
+      const formCad = $('#formCadastroUsuario');
+      formCad.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fd = new FormData(formCad);
+        const dados = {};
+        fd.forEach((v, k) => { dados[k] = v; });
+
+        if (dados.senha !== dados.senha_confirm) {
+          return mostrarAviso('As senhas não coincidem.', true);
+        }
+        delete dados.senha_confirm;
+
+        fetch('/api/usuario/registrar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        })
+          .then(r => r.json().then(c => ({ ok: r.ok, c })))
+          .then(({ ok, c }) => {
+            if (!ok) return mostrarAviso(c.erro || 'Falha no cadastro.', true);
+
+            window.Auth.salvarUsuario(c);
+            mostrarAviso('Conta criada! Sincronizando carrinho...', false);
+
+            window.Auth.aoLogar().then(redirecionar);
+          })
+          .catch(err => mostrarAviso('Erro de comunicação: ' + err.message, true));
+      });
+
+    })();
+  </script>
+</body>
+</html>
