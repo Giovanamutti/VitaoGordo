@@ -34,64 +34,220 @@
         }
     </script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FDFBF7; color: #1A1818; overflow-x: hidden; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FDFBF7;
+            color: #1A1818;
+            overflow-x: hidden;
+        }
         h1, h2, h3, h4, .font-serif { font-family: 'Playfair Display', serif; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #F4ECE1; }
         ::-webkit-scrollbar-thumb { background: #1B4D3E; border-radius: 4px; }
-        .glass-nav { background: rgba(253, 251, 247, 0.30); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-        .hero-pattern { background-image: radial-gradient(#C0392B 0.75px, transparent 0.75px), radial-gradient(#1B4D3E 0.75px, #FDFBF7 0.75px); background-size: 30px 30px; background-position: 0 0, 15px 15px; }
-        @keyframes floatSlow { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
+
+        /* Header / nav */
+        .glass-nav {
+            background: rgba(253, 251, 247, 0.10);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        #site-header.scrolled {
+            background: rgba(253, 251, 247, 0.15);
+            box-shadow: 0 6px 24px -12px rgba(26, 24, 24, 0.25);
+            backdrop-filter: blur(16px) saturate(160%);
+            -webkit-backdrop-filter: blur(16px) saturate(160%);
+        }
+        .nav-link {
+            color: #1A1818;
+            position: relative;
+            padding: 6px 0;
+            transition: color .25s;
+            white-space: nowrap;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: 0;
+            height: 2px; width: 0;
+            background: #C0392B;
+            transition: width .3s;
+        }
+        .nav-link:hover { color: #C0392B; }
+        .nav-link:hover::after { width: 100%; }
+
+        /* Compensa o header fixed ao rolar pra âncoras (#destaques) */
+        html { scroll-padding-top: 100px; }
+
+        /* Menu mobile */
+        .mobile-menu {
+            position: fixed;
+            top: 0; right: 0;
+            height: 100vh;
+            width: 82%;
+            max-width: 340px;
+            background: rgba(253, 251, 247, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid #F4ECE1;
+            padding: 100px 28px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transform: translateX(100%);
+            transition: transform .4s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 60;
+            overflow-y: auto;
+            box-shadow: -20px 0 40px -20px rgba(0,0,0,0.15);
+        }
+        .mobile-menu.open { transform: translateX(0); }
+        .mobile-link {
+            display: block;
+            padding: 14px 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #1B4D3E;
+            text-decoration: none;
+            border-bottom: 1px solid #F4ECE1;
+            transition: color .2s, padding-left .25s;
+        }
+        .mobile-link:hover { color: #C0392B; padding-left: 16px; }
+        .mobile-club-cta {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #F4D03F 0%, #e9b800 100%);
+            color: #1B4D3E;
+            font-weight: 800;
+            font-size: .85rem;
+            letter-spacing: .5px;
+            border-radius: 12px;
+            text-decoration: none;
+            box-shadow: 0 6px 16px -6px rgba(244, 208, 63, 0.5);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .mobile-club-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -8px rgba(244,208,63,.6); }
+        .mobile-club-cta i { color: #C0392B; }
+        .menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26,24,24,.5);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s;
+            z-index: 55;
+        }
+        .menu-overlay.open { opacity: 1; pointer-events: auto; }
+        body.menu-open { overflow: hidden; }
+        #menu-btn.is-open i::before { content: "\f00d"; }
+
+        /* Hero */
+        .hero-pattern {
+            background-image:
+                radial-gradient(#C0392B 0.75px, transparent 0.75px),
+                radial-gradient(#1B4D3E 0.75px, #FDFBF7 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+        }
         .floating-card { animation: floatSlow 6s ease-in-out infinite; }
+
+        /* Botão de logout discreto no header */
+        .btn-logout-header {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem 0.75rem;
+            border-radius: 9999px;
+            background: #F4ECE1;
+            color: #C0392B;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1px solid #e2d7cd;
+            cursor: pointer;
+            transition: background .2s, color .2s;
+        }
+        .btn-logout-header:hover { background: #C0392B; color: #fff; }
     </style>
 </head>
 <body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro">
 
     <!-- ============== HEADER ============== -->
-    <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3 group">
-                <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
-                <div class="flex flex-col justify-center leading-tight">
+    <header id="site-header" class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+
+            <!-- LOGO -->
+            <a href="index.html" class="flex items-center gap-3 group shrink-0">
+                <img src="logo/logo.png" alt="Multicultural" class="w-14 h-14 sm:w-16 sm:h-16 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
+                <div class="hidden sm:block">
                     <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
-                    <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold mt-1">Livraria & Cultura</span>
+                    <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold">Livraria & Cultura</span>
                 </div>
             </a>
 
+            <!-- NAV DESKTOP -->
             <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
-                <a href="#destaques" class="hover:text-brasil-terracota transition-colors">Destaque</a>
-                <a href="produtos.html" class="hover:text-brasil-terracota transition-colors">Livro</a>
-                <a href="#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
+                <a href="index.html#destaques" class="nav-link">Destaques</a>
+                <a href="produtos.html" class="nav-link">Livros</a>
+                <a href="pagamento.html" class="nav-link">Formas de Pagamento</a>
             </nav>
 
-            <div class="flex items-center gap-3 sm:gap-5">
-                <a href="login.html" title="Área do Usuário / Banco de Dados" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
+            <!-- AÇÕES À DIREITA -->
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+
+                <!-- Login / Conta -->
+                <a href="login.html" title="Área do Usuário" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
                     <i class="fa-regular fa-user text-sm"></i>
                 </a>
-                <a href="clube.html" title="Clube" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
+
+                <!-- Logout (só aparece se logado) -->
+                <button id="btn-logout" class="btn-logout-header hidden" title="Sair da conta">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+
+                <!-- Club (desktop) -->
+                <a href="clube.html" title="Clube de Leitura" class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
                     <i class="fa-solid fa-crown text-brasil-terracota"></i>
-                    <span>Clube</span>
+                    <span>Club</span>
                 </a>
-                <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo hover:bg-brasil-terracota hover:text-white transition-all flex items-center justify-center shadow-md">
+
+                <!-- Carrinho -->
+                <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md ring-2 ring-brasil-terracota">
                     <i class="fa-solid fa-bag-shopping text-sm"></i>
                     <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
                 </a>
-                <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
+
+                <!-- HAMBÚRGUER (mobile) -->
+                <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
             </div>
         </div>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
-            <a href="#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Destaque</a>
-            <a href="produtos.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Livro</a>
-            <a href="#manifesto" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Manifesto</a>
-            <a href="login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
-            <div class="pt-3 border-t border-brasil-areia flex gap-4">
-                <a href="carrinho.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-verde text-brasil-amarelo text-xs font-bold">Carrinho</a>
-                <a href="clube.html" class="flex-1 text-center py-2 rounded-lg bg-brasil-amarelo/30 text-brasil-verde text-xs font-bold">Clube</a>
-            </div>
-        </div>
+        <!-- ===== MENU MOBILE ===== -->
+        <aside id="mobile-menu" class="mobile-menu md:hidden" aria-hidden="true">
+            <a href="index.html#destaques" class="mobile-link">Destaques</a>
+            <a href="produtos.html" class="mobile-link">Livros</a>
+            <a href="pagamento.html" class="mobile-link">Formas de Pagamento</a>
+            <a href="login.html" class="mobile-link">Minha Conta</a>
+            <a href="carrinho.html" class="mobile-link">Carrinho</a>
+            <button id="btn-logout-mobile" class="mobile-link hidden" style="text-align:left; background:none; border:none; cursor:pointer; color:#C0392B;">Sair da conta</button>
+
+            <a href="clube.html" class="mobile-club-cta">
+                <i class="fa-solid fa-crown"></i>
+                <span>Assinar o Club</span>
+            </a>
+        </aside>
+
+        <!-- Overlay -->
+        <div id="menu-overlay" class="menu-overlay md:hidden"></div>
     </header>
 
     <!-- ============== HERO ============== -->
@@ -128,7 +284,9 @@
                                 Destaque do Mês
                             </div>
                             <div class="overflow-hidden rounded-2xl mb-6 shadow-inner aspect-[3/4] bg-brasil-areia">
-                                <a href="livro.html?id=2"><img src="imagens/veredas2.png" alt="Grande Sertão: Veredas" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"></a>
+                                <a href="livro.html?id=2">
+                                    <img src="imagens/veredas2.png" alt="Grande Sertão: Veredas" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
+                                </a>
                             </div>
                             <div class="space-y-2">
                                 <span class="text-xs uppercase tracking-widest text-brasil-terracota font-bold">Romance Regionalista</span>
@@ -142,7 +300,7 @@
         </div>
     </section>
 
-        <!-- ============== DESTAQUES DA SEMANA ============== -->
+    <!-- ============== DESTAQUES DA SEMANA ============== -->
     <section id="destaques" class="py-20 bg-brasil-areia/50 border-t border-b border-brasil-areia">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
@@ -155,7 +313,7 @@
                 <!-- skeletons... -->
             </div>
 
-            <!-- NOVO: botão Ver mais -->
+            <!-- Botão Ver mais -->
             <div class="mt-14 text-center">
                 <a href="produtos.html"
                    class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-brasil-verde text-brasil-creme font-semibold hover:bg-brasil-terracota transition-all duration-300 shadow-xl group">
@@ -222,10 +380,34 @@
     </footer>
 
     <!-- ============== SCRIPTS ============== -->
-    <!-- O script.js já cuida do menu mobile (initMenuMobile) e do carrinho. -->
-    <!-- O destaques.js carrega os 4 livros aleatórios do banco na #grade-livros. -->
     <script src="js/auth.js"></script>
     <script src="js/script.js"></script>
     <script src="js/destaques.js"></script>
+    <script>
+    // Logout no header (desktop + mobile)
+    (function () {
+        var usuario = window.Auth && window.Auth.obterUsuario ? window.Auth.obterUsuario() : null;
+        var btnDesktop = document.getElementById('btn-logout');
+        var btnMobile  = document.getElementById('btn-logout-mobile');
+
+        if (usuario) {
+            if (btnDesktop) btnDesktop.classList.remove('hidden');
+            if (btnMobile)  btnMobile.classList.remove('hidden');
+        }
+
+        function fazerLogout() {
+            if (!confirm('Deseja sair da sua conta?')) return;
+            if (window.Auth && window.Auth.logout) {
+                window.Auth.logout();
+            } else {
+                localStorage.removeItem('brasilidade_usuario');
+                window.location.href = 'login.html';
+            }
+        }
+
+        if (btnDesktop) btnDesktop.addEventListener('click', fazerLogout);
+        if (btnMobile)  btnMobile.addEventListener('click', fazerLogout);
+    })();
+    </script>
 </body>
 </html>

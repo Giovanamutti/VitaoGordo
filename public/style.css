@@ -255,3 +255,113 @@ td button:hover { background-color: var(--cor-erro); color: white; }
 
   .container-card { padding: 1.25rem; }
 }
+/* ==================== HEADER ==================== */
+#site-header.scrolled {
+    background: rgba(253, 251, 247, 0.85);
+    box-shadow: 0 6px 24px -12px rgba(26, 24, 24, 0.25);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+}
+
+/* Links do desktop com underline animado */
+.nav-link {
+    color: #1A1818;
+    position: relative;
+    padding: 6px 0;
+    transition: color 0.25s;
+    white-space: nowrap;
+}
+.nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 0;
+    background: #C0392B;
+    transition: width 0.3s ease;
+}
+.nav-link:hover { color: #C0392B; }
+.nav-link:hover::after { width: 100%; }
+
+/* ==================== MENU MOBILE ==================== */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 82%;
+    max-width: 340px;
+    background: rgba(253, 251, 247, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-left: 1px solid #F4ECE1;
+    padding: 100px 28px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 60;
+    overflow-y: auto;
+    box-shadow: -20px 0 40px -20px rgba(0,0,0,0.15);
+}
+.mobile-menu.open { transform: translateX(0); }
+
+.mobile-link {
+    display: block;
+    padding: 14px 8px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1B4D3E;
+    text-decoration: none;
+    border-bottom: 1px solid #F4ECE1;
+    transition: color 0.2s, padding-left 0.25s;
+}
+.mobile-link:hover {
+    color: #C0392B;
+    padding-left: 16px;
+}
+
+.mobile-club-cta {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #F4D03F 0%, #e9b800 100%);
+    color: #1B4D3E;
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border-radius: 12px;
+    text-decoration: none;
+    box-shadow: 0 6px 16px -6px rgba(244, 208, 63, 0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.mobile-club-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px -8px rgba(244, 208, 63, 0.6);
+}
+.mobile-club-cta i { color: #C0392B; }
+
+/* Overlay */
+.menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 24, 24, 0.5);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 55;
+}
+.menu-overlay.open { opacity: 1; pointer-events: auto; }
+
+/* Bloqueia scroll do body com o menu aberto */
+body.menu-open { overflow: hidden; }
+
+/* Hambúrguer vira "X" */
+#menu-btn.is-open i::before { content: "\f00d"; }

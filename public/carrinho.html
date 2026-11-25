@@ -51,7 +51,9 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
+        
         #info-modal.flex { display: flex; }
+        
 
         /* Ajuste do card do item para acomodar o checkbox no canto */
         #lista-itens > div { position: relative; }
@@ -209,52 +211,75 @@
         #overlay-login .link-voltar:hover {
             color: #C0392B;
         }
-            </style>
+
+        </style>
 </head>
 <body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro">
 
-    <!-- ============== HEADER ============== -->
-    <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3 group">
-                <img src="logo/logo.png" alt="Multicultural" class="w-16 h-16 sm:w-20 sm:h-20 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
-                <div>
-                    <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
-                    <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold">Livraria & Cultura</span>
+   <!-- ============== HEADER ============== -->
+        <header id="site-header" class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+
+                <!-- LOGO -->
+                <a href="index.html" class="flex items-center gap-3 group shrink-0">
+                    <img src="logo/logo.png" alt="Multicultural" class="w-14 h-14 sm:w-16 sm:h-16 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
+                    <div class="hidden sm:block">
+                        <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
+                        <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold">Livraria & Cultura</span>
+                    </div>
+                </a>
+
+                <!-- NAV DESKTOP -->
+                <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
+                    <a href="index.html#destaques" class="nav-link">Destaques</a>
+                    <a href="produtos.html" class="nav-link">Livros</a>
+                    <a href="pagamento.html" class="nav-link">Formas de Pagamento</a>
+                </nav>
+
+                <!-- AÇÕES À DIREITA -->
+                <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+
+                    <!-- Login / Conta -->
+                    <a href="login.html" title="Área do Usuário" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
+                        <i class="fa-regular fa-user text-sm"></i>
+                    </a>
+
+                    <!-- Club (desktop) -->
+                    <a href="clube.html" title="Clube de Leitura" class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
+                        <i class="fa-solid fa-crown text-brasil-terracota"></i>
+                        <span>Club</span>
+                    </a>
+
+                    <!-- Carrinho -->
+                    <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md ring-2 ring-brasil-terracota">
+                        <i class="fa-solid fa-bag-shopping text-sm"></i>
+                        <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                    </a>
+
+                    <!-- HAMBÚRGUER (mobile) -->
+                    <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
                 </div>
-            </a>
-
-            <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
-                <a href="index.html#destaques" class="hover:text-brasil-terracota transition-colors">Destaque</a>
-                <a href="produtos.html" class="hover:text-brasil-terracota transition-colors">Livro</a>
-                <a href="index.html#manifesto" class="hover:text-brasil-terracota transition-colors">Manifesto</a>
-            </nav>
-
-            <div class="flex items-center gap-3 sm:gap-5">
-                <a href="login.html" title="Área do Usuário" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
-                    <i class="fa-regular fa-user text-sm"></i>
-                </a>
-                <a href="clube.html" title="Clube" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
-                    <i class="fa-solid fa-crown text-brasil-terracota"></i>
-                    <span>Clube</span>
-                </a>
-                <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md ring-2 ring-brasil-terracota">
-                    <i class="fa-solid fa-bag-shopping text-sm"></i>
-                    <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
-                </a>
-                <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia">
-                    <i class="fa-solid fa-bars text-lg"></i>
-                </button>
             </div>
-        </div>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-brasil-creme border-b border-brasil-areia px-6 py-4 space-y-3 shadow-xl">
-            <a href="index.html#destaques" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Destaque</a>
-            <a href="produtos.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Livro</a>
-            <a href="index.html#manifesto" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Manifesto</a>
-            <a href="login.html" class="block font-medium text-brasil-escuro hover:text-brasil-terracota py-1">Área do Cliente / Login</a>
-        </div>
-    </header>
+            <!-- ===== MENU MOBILE ===== -->
+            <aside id="mobile-menu" class="mobile-menu md:hidden" aria-hidden="true">
+                <a href="index.html#destaques" class="mobile-link">Destaques</a>
+                <a href="produtos.html" class="mobile-link">Livros</a>
+                <a href="pagamento.html" class="mobile-link">Formas de Pagamento</a>
+                <a href="login.html" class="mobile-link">Minha Conta</a>
+                <a href="carrinho.html" class="mobile-link">Carrinho</a>
+
+                <a href="clube.html" class="mobile-club-cta">
+                    <i class="fa-solid fa-crown"></i>
+                    <span>Assinar o Club</span>
+                </a>
+            </aside>
+
+            <!-- Overlay -->
+            <div id="menu-overlay" class="menu-overlay md:hidden"></div>
+        </header>
 
     <!-- ============== CONTEÚDO ============== -->
     <main class="pt-32 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -523,6 +548,72 @@
             </div>
         </div>
     </div>
+
+  <!-- ============== MODAL DE CHECKOUT (métodos salvos) ============== -->
+<div id="checkout-modal" class="fixed inset-0 z-[60] bg-brasil-escuro/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-brasil-creme rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border border-brasil-areia">
+
+        <!-- Cabeçalho -->
+        <div class="sticky top-0 bg-brasil-creme z-10 px-6 pt-6 pb-4 border-b border-brasil-areia rounded-t-3xl">
+            <button id="btn-fechar-checkout" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-brasil-areia flex items-center justify-center text-brasil-escuro hover:bg-brasil-terracota hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brasil-verde text-brasil-amarelo flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-serif font-bold text-brasil-verde leading-none">Escolha o pagamento</h3>
+                    <p class="text-[11px] text-brasil-escuro/60 mt-1">Ambiente seguro (simulado)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Corpo -->
+        <div class="px-6 py-5 space-y-4">
+
+            <!-- Total -->
+            <div class="bg-brasil-verde/5 border border-brasil-verde/20 rounded-xl p-3 flex justify-between items-center">
+                <span class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">Total a pagar</span>
+                <span id="checkout-total" class="text-lg font-bold text-brasil-verde">R$ 0,00</span>
+            </div>
+
+            <!-- Loading -->
+            <div id="checkout-loading" class="text-center py-6">
+                <i class="fa-solid fa-spinner fa-spin text-2xl text-brasil-verde"></i>
+                <p class="text-xs text-brasil-escuro/60 mt-2">Carregando seus métodos...</p>
+            </div>
+
+            <!-- Vazio -->
+            <div id="checkout-vazio" class="hidden text-center py-6 space-y-3">
+                <div class="w-14 h-14 rounded-full bg-brasil-areia text-brasil-verde flex items-center justify-center mx-auto text-xl">
+                    <i class="fa-solid fa-credit-card"></i>
+                </div>
+                <p class="text-sm text-brasil-escuro/70 font-medium">Você ainda não tem métodos de pagamento salvos.</p>
+                <a href="pagamento.html" class="inline-flex items-center gap-2 px-5 py-2.5 bg-brasil-verde text-brasil-amarelo rounded-xl text-xs font-bold hover:bg-brasil-terracota hover:text-white transition-colors">
+                    <i class="fa-solid fa-plus"></i> Cadastrar método
+                </a>
+            </div>
+
+            <!-- Lista de métodos -->
+            <div id="checkout-lista" class="hidden space-y-3">
+                <div id="checkout-cartoes" class="space-y-2"></div>
+                <div id="checkout-pix" class="space-y-2"></div>
+                <div id="checkout-boletos" class="space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- Rodapé -->
+        <div class="sticky bottom-0 bg-brasil-creme px-6 py-4 border-t border-brasil-areia rounded-b-3xl">
+            <button id="btn-pagar-checkout" disabled
+                    class="w-full py-3.5 rounded-xl bg-brasil-amarelo text-brasil-escuro font-bold hover:bg-brasil-verde hover:text-brasil-amarelo transition-all duration-300 shadow-lg disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                <i class="fa-solid fa-lock"></i>
+                <span id="btn-pagar-text">Pagar</span>
+            </button>
+        </div>
+    </div>
+</div>
+
     <!-- ============== BLOQUEIO DE LOGIN (carrinho deslogado) ============== -->
     <div id="overlay-login" class="hidden">
         <div class="caixa-login">

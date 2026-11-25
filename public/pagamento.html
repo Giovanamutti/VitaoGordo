@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formas de Pagamento | Livraria Multicultural</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brasil: {
+                            verde: '#1B4D3E', amarelo: '#F4D03F', terracota: '#C0392B',
+                            madeira: '#8D5524', creme: '#FDFBF7', areia: '#F4ECE1', escuro: '#1A1818'
+                        },
+                        mfs: '#80c0d8'
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FDFBF7;
+            color: #1A1818;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4, .font-serif { font-family: 'Playfair Display', serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F4ECE1; }
+        ::-webkit-scrollbar-thumb { background: #1B4D3E; border-radius: 4px; }
+
+        .glass-nav {
+            background: rgba(253, 251, 247, 0.30);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        #site-header.scrolled {
+            background: rgba(253, 251, 247, 0.85);
+            box-shadow: 0 6px 24px -12px rgba(26, 24, 24, 0.25);
+            backdrop-filter: blur(16px) saturate(160%);
+            -webkit-backdrop-filter: blur(16px) saturate(160%);
+        }
+        .nav-link { color: #1A1818; position: relative; padding: 6px 0; transition: color .25s; white-space: nowrap; }
+        .nav-link::after { content:''; position:absolute; left:0; bottom:0; height:2px; width:0; background:#C0392B; transition: width .3s; }
+        .nav-link:hover { color: #C0392B; }
+        .nav-link:hover::after { width: 100%; }
+
+        .mobile-menu {
+            position: fixed; top: 0; right: 0; height: 100vh; width: 82%; max-width: 340px;
+            background: rgba(253, 251, 247, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid #F4ECE1;
+            padding: 100px 28px 40px;
+            display: flex; flex-direction: column; gap: 4px;
+            transform: translateX(100%);
+            transition: transform .4s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 60; overflow-y: auto;
+            box-shadow: -20px 0 40px -20px rgba(0,0,0,0.15);
+        }
+        .mobile-menu.open { transform: translateX(0); }
+        .mobile-link {
+            display: block; padding: 14px 8px; font-size: 1.05rem; font-weight: 600;
+            color: #1B4D3E; text-decoration: none; border-bottom: 1px solid #F4ECE1;
+            transition: color .2s, padding-left .25s;
+        }
+        .mobile-link:hover { color: #C0392B; padding-left: 16px; }
+        .mobile-club-cta {
+            margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #F4D03F 0%, #e9b800 100%);
+            color: #1B4D3E; font-weight: 800; font-size: .85rem; letter-spacing: .5px;
+            border-radius: 12px; text-decoration: none;
+            box-shadow: 0 6px 16px -6px rgba(244, 208, 63, 0.5);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .mobile-club-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -8px rgba(244,208,63,.6); }
+        .mobile-club-cta i { color: #C0392B; }
+        .menu-overlay {
+            position: fixed; inset: 0; background: rgba(26,24,24,.5);
+            backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+            opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 55;
+        }
+        .menu-overlay.open { opacity: 1; pointer-events: auto; }
+        body.menu-open { overflow: hidden; }
+        #menu-btn.is-open i::before { content: "\f00d"; }
+
+        /* Cartão visual */
+        .cartao-visual {
+            background: linear-gradient(135deg, #1B4D3E 0%, #245C4A 50%, #1B4D3E 100%);
+            color: #FDFBF7;
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 16px 40px -16px rgba(27,77,62,.5);
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .cartao-visual::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(244,208,63,.25) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .cartao-visual::after {
+            content: '';
+            position: absolute;
+            bottom: -80px; left: -40px;
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, rgba(192,57,43,.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .cartao-chip {
+            width: 40px; height: 30px;
+            background: linear-gradient(135deg, #F4D03F 0%, #b8941a 100%);
+            border-radius: 6px;
+            position: relative;
+        }
+        .cartao-chip::before {
+            content: ''; position: absolute; inset: 6px;
+            border: 1px solid rgba(27,77,62,.4);
+            border-radius: 3px;
+        }
+        .cartao-numero { font-family: 'Courier New', monospace; letter-spacing: 2px; font-size: 1.1rem; }
+        .cartao-bandeira { position: absolute; top: 1.5rem; right: 1.5rem; font-size: 1.6rem; }
+
+        /* Overlay de bloqueio */
+        body.bloqueado > header,
+        body.bloqueado > main,
+        body.bloqueado > footer {
+            filter: blur(6px); pointer-events: none; user-select: none;
+            transition: filter .3s;
+        }
+        #overlay-login {
+            position: fixed; inset: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: center; padding: 1rem;
+            background: rgba(26,24,24,.55); backdrop-filter: blur(2px);
+        }
+        #overlay-login.hidden { display: none; }
+        #overlay-login .caixa-login {
+            background: #FDFBF7; border-radius: 24px; border: 1px solid #F4ECE1;
+            box-shadow: 0 24px 60px -20px rgba(0,0,0,.35);
+            max-width: 440px; width: 100%; padding: 2rem 1.75rem;
+            text-align: center; position: relative;
+        }
+        #overlay-login .icone-cadeado {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: linear-gradient(135deg, #1B4D3E 0%, #245C4A 100%);
+            color: #F4D03F; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin: 0 auto 1.25rem;
+            box-shadow: 0 8px 20px -8px rgba(27,77,62,.5);
+        }
+        #overlay-login h2 { font-family: 'Playfair Display', serif; font-size: 1.75rem; color: #1B4D3E; margin-bottom: .5rem; }
+        #overlay-login p { font-size: .9rem; color: #6b625a; line-height: 1.5; margin-bottom: 1.5rem; }
+        #overlay-login .botoes { display: flex; flex-direction: column; gap: .6rem; }
+        #overlay-login .btn-entrar {
+            background: linear-gradient(135deg, #1B4D3E 0%, #245C4A 100%);
+            color: #F4D03F; font-weight: 700; padding: .85rem 1rem;
+            border-radius: 12px; border: none; cursor: pointer; font-size: .95rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+        }
+        #overlay-login .btn-entrar:hover { background: linear-gradient(135deg, #C0392B 0%, #8D5524 100%); color: #FDFBF7; }
+        #overlay-login .btn-criar {
+            background: transparent; color: #1B4D3E; font-weight: 700; padding: .85rem 1rem;
+            border-radius: 12px; border: 2px solid #1B4D3E; cursor: pointer; font-size: .95rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+        }
+        #overlay-login .btn-criar:hover { background: #1B4D3E; color: #F4D03F; }
+        #overlay-login .link-voltar { margin-top: 1rem; display: inline-block; font-size: .8rem; color: #8a817a; text-decoration: none; }
+
+        /* Toast */
+        #toast-pag { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: #1B4D3E; color: #F4D03F; padding: 12px 24px; border-radius: 12px;
+            font-weight: 600; font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+            z-index: 9999; opacity: 0; transition: opacity .3s; pointer-events: none; }
+        #toast-pag.show { opacity: 1; }
+    </style>
+</head>
+<body class="bg-brasil-creme text-brasil-escuro antialiased selection:bg-brasil-amarelo selection:text-brasil-escuro">
+
+<!-- ============== HEADER ============== -->
+<header id="site-header" class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-brasil-areia transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+        <a href="index.html" class="flex items-center gap-3 group shrink-0">
+            <img src="logo/logo.png" alt="Multicultural" class="w-14 h-14 sm:w-16 sm:h-16 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-md">
+            <div class="hidden sm:block">
+                <span class="text-xl sm:text-2xl font-serif font-bold tracking-wide text-brasil-verde block leading-none">Multicultural</span>
+                <span class="text-[10px] tracking-widest uppercase text-brasil-terracota font-semibold">Livraria & Cultura</span>
+            </div>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-8 font-medium text-sm">
+            <a href="index.html#destaques" class="nav-link">Destaques</a>
+            <a href="produtos.html" class="nav-link">Livros</a>
+            <a href="pagamento.html" class="nav-link">Formas de Pagamento</a>
+        </nav>
+
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+            <a href="login.html" title="Área do Usuário" class="p-2.5 rounded-full bg-brasil-areia hover:bg-brasil-verde hover:text-white transition-all text-brasil-escuro flex items-center justify-center shadow-sm">
+                <i class="fa-regular fa-user text-sm"></i>
+            </a>
+            <a href="clube.html" title="Clube de Leitura" class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-brasil-amarelo/20 border border-brasil-amarelo text-brasil-verde text-xs font-bold hover:bg-brasil-amarelo/40 transition-all">
+                <i class="fa-solid fa-crown text-brasil-terracota"></i>
+                <span>Club</span>
+            </a>
+            <a href="carrinho.html" title="Carrinho" class="relative p-2.5 rounded-full bg-brasil-verde text-brasil-amarelo transition-all flex items-center justify-center shadow-md ring-2 ring-brasil-terracota">
+                <i class="fa-solid fa-bag-shopping text-sm"></i>
+                <span id="badge-count" class="absolute -top-1 -right-1 bg-brasil-terracota text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">0</span>
+            </a>
+            <button id="menu-btn" class="md:hidden p-2.5 rounded-lg text-brasil-escuro hover:bg-brasil-areia" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+        </div>
+    </div>
+
+    <aside id="mobile-menu" class="mobile-menu md:hidden" aria-hidden="true">
+        <a href="index.html#destaques" class="mobile-link">Destaques</a>
+        <a href="produtos.html" class="mobile-link">Livros</a>
+        <a href="pagamento.html" class="mobile-link">Formas de Pagamento</a>
+        <a href="login.html" class="mobile-link">Minha Conta</a>
+        <a href="carrinho.html" class="mobile-link">Carrinho</a>
+        <a href="clube.html" class="mobile-club-cta">
+            <i class="fa-solid fa-crown"></i>
+            <span>Assinar o Club</span>
+        </a>
+    </aside>
+
+    <div id="menu-overlay" class="menu-overlay md:hidden"></div>
+</header>
+
+<!-- ============== CONTEÚDO ============== -->
+<main class="pt-32 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <div class="mb-10 text-center sm:text-left">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brasil-verde/10 text-brasil-verde text-xs font-bold uppercase tracking-wider mb-3">
+            <i class="fa-solid fa-credit-card"></i> Minhas Formas de Pagamento
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-serif font-extrabold text-brasil-verde tracking-tight">Formas de Pagamento</h1>
+        <p class="text-brasil-escuro/70 mt-2 font-light max-w-2xl">
+            Cadastre cartões, chaves Pix e boletos fictícios para suas compras. Os dados ficam salvos na sua conta.
+            <strong class="text-brasil-terracota">Ambiente simulado — não use dados reais.</strong>
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+        <!-- ===== COLUNA ESQUERDA: CADASTRO ===== -->
+        <div class="lg:col-span-5 space-y-6">
+
+            <!-- TABS -->
+            <div class="bg-white rounded-2xl shadow-sm border border-brasil-areia p-2 flex gap-1">
+                <button data-tab="cartao" class="tab-btn flex-1 px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-brasil-verde text-brasil-amarelo">
+                    <i class="fa-solid fa-credit-card mr-1"></i> Cartão
+                </button>
+                <button data-tab="pix" class="tab-btn flex-1 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-brasil-escuro/70 hover:bg-brasil-areia">
+                    <i class="fa-solid fa-pix mr-1"></i> Pix
+                </button>
+                <button data-tab="boleto" class="tab-btn flex-1 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-brasil-escuro/70 hover:bg-brasil-areia">
+                    <i class="fa-solid fa-barcode mr-1"></i> Boleto
+                </button>
+            </div>
+
+            <!-- FORM CARTÃO -->
+            <div id="tab-cartao" class="tab-panel bg-white rounded-2xl shadow-sm border border-brasil-areia p-6 space-y-4">
+                <h3 class="font-serif font-bold text-xl text-brasil-verde flex items-center gap-2">
+                    <i class="fa-solid fa-credit-card text-brasil-terracota"></i> Novo Cartão
+                </h3>
+
+                <!-- Visual do cartão -->
+                <div class="cartao-visual">
+                    <div class="flex justify-between items-start relative z-10">
+                        <div class="cartao-chip"></div>
+                        <i id="cartao-bandeira-icon" class="cartao-bandeira fa-solid fa-credit-card text-brasil-amarelo"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div id="cartao-numero-preview" class="cartao-numero">•••• •••• •••• ••••</div>
+                        <div class="flex justify-between items-end mt-4">
+                            <div>
+                                <div class="text-[9px] uppercase tracking-widest text-brasil-amarelo/70 font-bold">Titular</div>
+                                <div id="cartao-titular-preview" class="text-sm font-semibold">NOME NO CARTÃO</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[9px] uppercase tracking-widest text-brasil-amarelo/70 font-bold">Validade</div>
+                                <div id="cartao-validade-preview" class="text-sm font-semibold">MM/AA</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="form-cartao" class="space-y-3">
+                    <label class="block">
+                        <span class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">Número do cartão</span>
+                        <input type="text" name="numero" id="input-numero" inputmode="numeric" maxlength="19"
+                               placeholder="0000 0000 0000 0000" autocomplete="off"
+                               class="w-full mt-1 px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde">
+                    </label>
+
+                    <label class="block">
+                        <span class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">Nome do titular</span>
+                        <input type="text" name="nome_titular" id="input-titular" maxlength="40"
+                               placeholder="Como está no cartão" autocomplete="off"
+                               class="w-full mt-1 px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde uppercase">
+                    </label>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="block">
+                            <span class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">Validade</span>
+                            <input type="text" name="validade" id="input-validade" maxlength="5" inputmode="numeric"
+                                   placeholder="MM/AA" autocomplete="off"
+                                   class="w-full mt-1 px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde">
+                        </label>
+                        <label class="block">
+                            <span class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">CVV</span>
+                            <input type="text" name="cvv" id="input-cvv" maxlength="4" inputmode="numeric"
+                                   placeholder="123" autocomplete="off"
+                                   class="w-full mt-1 px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde">
+                        </label>
+                    </div>
+
+                    <label class="block">
+                        <span class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">Apelido (opcional)</span>
+                        <input type="text" name="apelido" maxlength="30" placeholder="Ex: Cartão do dia a dia"
+                               class="w-full mt-1 px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde">
+                    </label>
+
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="padrao" class="w-4 h-4 accent-brasil-verde">
+                        <span class="text-xs text-brasil-escuro/70">Definir como cartão padrão</span>
+                    </label>
+
+                    <button type="submit" class="w-full py-3 rounded-xl bg-brasil-verde text-brasil-amarelo font-bold text-sm hover:bg-brasil-terracota hover:text-white transition-colors">
+                        <i class="fa-solid fa-plus mr-1"></i> Salvar cartão
+                    </button>
+                    <p id="aviso-cartao" class="text-xs font-semibold text-center hidden"></p>
+                </form>
+            </div>
+
+            <!-- FORM PIX -->
+            <div id="tab-pix" class="tab-panel hidden bg-white rounded-2xl shadow-sm border border-brasil-areia p-6 space-y-4">
+                <h3 class="font-serif font-bold text-xl text-brasil-verde flex items-center gap-2">
+                    <i class="fa-solid fa-pix text-brasil-terracota"></i> Chave Pix
+                </h3>
+                <p class="text-xs text-brasil-escuro/60">
+                    Cadastre uma chave fictícia (email, CPF, telefone ou aleatória) para receber os boletos simulados.
+                </p>
+                <form id="form-pix" class="space-y-3">
+                    <label class="block">
+                        <span class="text-xs font-bold uppercase tracking-wider text-brasil-escuro/70">Chave Pix</span>
+                        <input type="text" name="chave" id="input-chave-pix" maxlength="60"
+                               placeholder="email@exemplo.com" autocomplete="off"
+                               class="w-full mt-1 px-4 py-2.5 rounded-xl border border-brasil-areia bg-brasil-creme text-sm focus:outline-none focus:border-brasil-verde">
+                    </label>
+                    <button type="submit" class="w-full py-3 rounded-xl bg-brasil-verde text-brasil-amarelo font-bold text-sm hover:bg-brasil-terracota hover:text-white transition-colors">
+                        <i class="fa-solid fa-plus mr-1"></i> Salvar chave Pix
+                    </button>
+                    <p id="aviso-pix" class="text-xs font-semibold text-center hidden"></p>
+                </form>
+            </div>
+
+            <!-- FORM BOLETO -->
+            <div id="tab-boleto" class="tab-panel hidden bg-white rounded-2xl shadow-sm border border-brasil-areia p-6 space-y-4">
+                <h3 class="font-serif font-bold text-xl text-brasil-verde flex items-center gap-2">
+                    <i class="fa-solid fa-barcode text-brasil-terracota"></i> Boleto
+                </h3>
+                <p class="text-xs text-brasil-escuro/60">
+                    Geraremos uma linha digitável fictícia vinculada à sua conta. Nenhum valor real será cobrado.
+                </p>
+                <form id="form-boleto" class="space-y-3">
+                    <button type="submit" class="w-full py-3 rounded-xl bg-brasil-verde text-brasil-amarelo font-bold text-sm hover:bg-brasil-terracota hover:text-white transition-colors">
+                        <i class="fa-solid fa-plus mr-1"></i> Gerar boleto fictício
+                    </button>
+                    <p id="aviso-boleto" class="text-xs font-semibold text-center hidden"></p>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== COLUNA DIREITA: LISTA ===== -->
+        <div class="lg:col-span-7 space-y-6">
+
+            <!-- CARTÕES SALVOS -->
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-serif font-bold text-2xl text-brasil-verde flex items-center gap-2">
+                        <i class="fa-solid fa-credit-card text-brasil-terracota"></i> Cartões salvos
+                    </h2>
+                    <span id="count-cartoes" class="text-xs font-bold text-brasil-escuro/50 uppercase tracking-wider">0</span>
+                </div>
+                <div id="lista-cartoes" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="col-span-full bg-white rounded-2xl p-8 text-center border border-dashed border-brasil-areia">
+                        <i class="fa-solid fa-credit-card text-3xl text-brasil-verde/30 mb-2"></i>
+                        <p class="text-sm text-brasil-escuro/50">Nenhum cartão salvo ainda.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PIX SALVOS -->
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-serif font-bold text-2xl text-brasil-verde flex items-center gap-2">
+                        <i class="fa-solid fa-pix text-brasil-terracota"></i> Chaves Pix
+                    </h2>
+                    <span id="count-pix" class="text-xs font-bold text-brasil-escuro/50 uppercase tracking-wider">0</span>
+                </div>
+                <div id="lista-pix" class="space-y-3"></div>
+            </section>
+
+            <!-- BOLETOS SALVOS -->
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-serif font-bold text-2xl text-brasil-verde flex items-center gap-2">
+                        <i class="fa-solid fa-barcode text-brasil-terracota"></i> Boletos
+                    </h2>
+                    <span id="count-boleto" class="text-xs font-bold text-brasil-escuro/50 uppercase tracking-wider">0</span>
+                </div>
+                <div id="lista-boleto" class="space-y-3"></div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<!-- ============== FOOTER ============== -->
+<footer class="bg-brasil-escuro text-brasil-creme pt-16 pb-12 border-t border-brasil-areia/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <img src="logo/logo.png" alt="Multicultural" class="w-12 h-12 object-contain">
+                    <span class="text-xl font-serif font-bold text-white">Multicultural</span>
+                </div>
+                <p class="text-xs text-brasil-creme/70 leading-relaxed">
+                    Muito mais que uma livraria, um santuário de preservação e celebração da nossa diversidade cultural e literária.
+                </p>
+            </div>
+            <div class="space-y-3">
+                <h4 class="font-serif font-bold text-brasil-amarelo text-sm tracking-wider uppercase">Navegação</h4>
+                <ul class="space-y-2 text-xs text-brasil-creme/70">
+                    <li><a href="index.html#destaques" class="hover:text-brasil-amarelo transition-colors">Acervo de Livros</a></li>
+                    <li><a href="clube.html" class="hover:text-brasil-amarelo transition-colors">Clube de Leitura</a></li>
+                    <li><a href="carrinho.html" class="hover:text-brasil-amarelo transition-colors">Meu Carrinho</a></li>
+                    <li><a href="login.html" class="hover:text-brasil-amarelo transition-colors">Área do Cliente</a></li>
+                </ul>
+            </div>
+            <div class="space-y-3 lg:col-span-2 bg-white/5 p-6 rounded-2xl border border-white/10">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center font-extrabold shadow-md overflow-hidden">
+                        <img src="logo/mutti.png" alt="Mutti Full Stack">
+                    </div>
+                    <div>
+                        <h4 class="font-serif font-bold text-white text-base">Mutti Full Stack</h4>
+                        <span class="text-[10px] uppercase tracking-widest font-semibold text-mfs">Engenharia de Software & Inovação</span>
+                    </div>
+                </div>
+                <p class="text-xs text-brasil-creme/80 leading-relaxed font-light">
+                    A <strong class="text-mfs">Mutti Full Stack</strong> é uma empresa de software focada em desenvolver arquiteturas digitais modernas, inovadoras e de alto desempenho.
+                </p>
+            </div>
+        </div>
+        <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-brasil-creme/50 gap-4">
+            <p>&copy; 2026 Livraria Multicultural. Todos os direitos reservados.</p>
+            <p class="flex items-center gap-1">
+                Desenvolvido com <i class="fa-solid fa-heart text-brasil-terracota"></i> por <span class="text-mfs font-semibold">Mutti Full Stack (MFS)</span>.
+            </p>
+        </div>
+    </div>
+</footer>
+
+<!-- ============== OVERLAY DE LOGIN ============== -->
+<div id="overlay-login" class="hidden">
+    <div class="caixa-login">
+        <div class="icone-cadeado">
+            <i class="fa-solid fa-lock"></i>
+        </div>
+        <h2>Entre para continuar</h2>
+        <p>Para cadastrar e gerenciar suas formas de pagamento, você precisa estar logado na sua conta.</p>
+        <div class="botoes">
+            <button type="button" class="btn-entrar" id="btn-overlay-entrar">
+                <i class="fa-solid fa-right-to-bracket"></i> Entrar na minha conta
+            </button>
+            <button type="button" class="btn-criar" id="btn-overlay-criar">
+                <i class="fa-solid fa-user-plus"></i> Criar uma conta gratuita
+            </button>
+        </div>
+        <a href="index.html" class="link-voltar">
+            <i class="fa-solid fa-arrow-left text-[10px]"></i> Continuar navegando sem login
+        </a>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-pag"></div>
+
+<script src="js/auth.js"></script>
+<script src="js/script.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    // ====== ESTADO ======
+    const Estado = { cartoes: [], pix: [], boletos: [], abaAtual: 'cartao' };
+
+    // ====== HELPERS ======
+    function $(s, c = document) { return c.querySelector(s); }
+    function toast(msg) {
+        const t = $('#toast-pag');
+        if (!t) return;
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+    }
+    function usuario() {
+        return window.Auth && window.Auth.obterUsuario ? window.Auth.obterUsuario() : null;
+    }
+
+    // ====== BLOQUEIO DE LOGIN ======
+    function aplicarBloqueio() {
+        const usr = usuario();
+        if (usr) {
+            document.body.classList.remove('bloqueado');
+            $('#overlay-login').classList.add('hidden');
+            carregarTudo();
+            return;
+        }
+        document.body.classList.add('bloqueado');
+        $('#overlay-login').classList.remove('hidden');
+    }
+    function irParaLogin() {
+        window.location.href = 'login.html?redirect=pagamento.html';
+    }
+
+    // ====== MÁSCARAS ======
+    function mascaraNumero(v) {
+        const d = v.replace(/\D/g, '').slice(0, 19);
+        return d.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+    }
+    function mascaraValidade(v) {
+        const d = v.replace(/\D/g, '').slice(0, 4);
+        if (d.length <= 2) return d;
+        return d.slice(0, 2) + '/' + d.slice(2);
+    }
+
+    // ====== DETECTAR BANDEIRA ======
+    function detectarBandeira(numero) {
+        const d = numero.replace(/\D/g, '');
+        if (/^4/.test(d)) return { nome: 'visa', icone: 'fa-brands fa-cc-visa', cor: '#1A1F71' };
+        if (/^5[1-5]/.test(d) || /^2[2-7]/.test(d)) return { nome: 'mastercard', icone: 'fa-brands fa-cc-mastercard', cor: '#EB001B' };
+        if (/^3[47]/.test(d)) return { nome: 'amex', icone: 'fa-brands fa-cc-amex', cor: '#006FCF' };
+        if (/^6(011|5)/.test(d)) return { nome: 'elo', icone: 'fa-solid fa-credit-card', cor: '#000' };
+        if (/^(38|60)/.test(d)) return { nome: 'hipercard', icone: 'fa-solid fa-credit-card', cor: '#B3131B' };
+        return { nome: 'desconhecida', icone: 'fa-solid fa-credit-card', cor: '#F4D03F' };
+    }
+
+    // ====== PREVIEW DO CARTÃO ======
+    function atualizarPreview() {
+        const num = $('#input-numero').value;
+        const tit = $('#input-titular').value;
+        const val = $('#input-validade').value;
+        const b = detectarBandeira(num);
+
+        $('#cartao-numero-preview').textContent = num || '•••• •••• •••• ••••';
+        $('#cartao-titular-preview').textContent = (tit || 'NOME NO CARTÃO').toUpperCase();
+        $('#cartao-validade-preview').textContent = val || 'MM/AA';
+
+        const icon = $('#cartao-bandeira-icon');
+        icon.className = 'cartao-bandeira ' + b.icone;
+        icon.style.color = b.cor;
+    }
+
+    // ====== ABAS ======
+    function trocarAba(aba) {
+        Estado.abaAtual = aba;
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            const ativo = b.dataset.tab === aba;
+            b.className = 'tab-btn flex-1 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ' +
+                (ativo ? 'bg-brasil-verde text-brasil-amarelo' : 'text-brasil-escuro/70 hover:bg-brasil-areia');
+        });
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+        const panel = document.getElementById('tab-' + aba);
+        if (panel) panel.classList.remove('hidden');
+    }
+
+    // ====== CARREGAR CARTÕES ======
+    function carregarCartoes() {
+        const usr = usuario();
+        if (!usr) return;
+        fetch('/api/cartao/' + usr.id)
+            .then(r => r.json())
+            .then(lista => {
+                Estado.cartoes = Array.isArray(lista) ? lista : [];
+                renderizarCartoes();
+            })
+            .catch(e => console.error(e));
+    }
+    function renderizarCartoes() {
+        const cont = $('#lista-cartoes');
+        const count = $('#count-cartoes');
+        if (!cont) return;
+        count.textContent = Estado.cartoes.length;
+
+        if (!Estado.cartoes.length) {
+            cont.innerHTML = `
+              <div class="col-span-full bg-white rounded-2xl p-8 text-center border border-dashed border-brasil-areia">
+                <i class="fa-solid fa-credit-card text-3xl text-brasil-verde/30 mb-2"></i>
+                <p class="text-sm text-brasil-escuro/50">Nenhum cartão salvo ainda.</p>
+              </div>`;
+            return;
+        }
+
+        cont.innerHTML = Estado.cartoes.map(c => {
+            const b = detectarBandeira('000000000000' + c.ultimos4);
+            return `
+              <div class="cartao-visual relative">
+                <div class="flex justify-between items-start relative z-10">
+                    <div class="cartao-chip"></div>
+                    <i class="${b.icone} cartao-bandeira" style="color:${b.cor === '#F4D03F' ? '#F4D03F' : '#F4D03F'};"></i>
+                </div>
+                <div class="relative z-10">
+                    <div class="cartao-numero">•••• •••• •••• ${c.ultimos4}</div>
+                    <div class="flex justify-between items-end mt-4">
+                        <div class="min-w-0 flex-1 pr-2">
+                            <div class="text-[9px] uppercase tracking-widest text-brasil-amarelo/70 font-bold">Titular</div>
+                            <div class="text-xs font-semibold truncate">${(c.nome_titular || '').toUpperCase()}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[9px] uppercase tracking-widest text-brasil-amarelo/70 font-bold">Validade</div>
+                            <div class="text-xs font-semibold">${c.validade}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-3 relative z-10">
+                    <div class="flex items-center gap-2">
+                        ${c.padrao ? '<span class="text-[9px] bg-brasil-amarelo text-brasil-verde px-2 py-0.5 rounded font-bold uppercase">Padrão</span>' : ''}
+                        ${c.apelido ? `<span class="text-[10px] text-brasil-amarelo/80 italic">${c.apelido}</span>` : ''}
+                    </div>
+                    <div class="flex gap-1">
+                        ${!c.padrao ? `<button data-acao="padrao" data-id="${c.id}" class="text-[10px] text-brasil-amarelo hover:text-white px-2 py-1 rounded border border-brasil-amarelo/40" title="Tornar padrão"><i class="fa-solid fa-star"></i></button>` : ''}
+                        <button data-acao="remover" data-id="${c.id}" class="text-[10px] text-brasil-amarelo hover:text-white px-2 py-1 rounded border border-brasil-amarelo/40" title="Remover"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+              </div>`;
+        }).join('');
+
+        cont.querySelectorAll('button[data-acao]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = Number(btn.dataset.id);
+                if (btn.dataset.acao === 'remover') removerCartao(id);
+                if (btn.dataset.acao === 'padrao') definirPadrao(id);
+            });
+        });
+    }
+
+    function removerCartao(id) {
+        const usr = usuario();
+        if (!usr || !confirm('Remover este cartão?')) return;
+        fetch('/api/cartao/' + usr.id + '/' + id, { method: 'DELETE' })
+            .then(r => r.json())
+            .then(() => { toast('Cartão removido.'); carregarCartoes(); })
+            .catch(() => toast('Erro ao remover.'));
+    }
+    function definirPadrao(id) {
+        const usr = usuario();
+        if (!usr) return;
+        fetch('/api/cartao/' + usr.id + '/' + id + '/padrao', { method: 'POST' })
+            .then(r => r.json())
+            .then(lista => {
+                Estado.cartoes = Array.isArray(lista) ? lista : [];
+                renderizarCartoes();
+                toast('Cartão padrão atualizado.');
+            })
+            .catch(() => toast('Erro ao atualizar.'));
+    }
+
+    // ====== SALVAR CARTÃO ======
+    function salvarCartao(e) {
+        e.preventDefault();
+        const usr = usuario();
+        if (!usr) return;
+
+        const num = $('#input-numero').value.replace(/\s/g, '');
+        const nome = $('#input-titular').value.trim();
+        const val = $('#input-validade').value.trim();
+        const apelido = e.target.apelido.value.trim();
+        const padrao = e.target.padrao.checked;
+        const aviso = $('#aviso-cartao');
+
+        if (num.length < 13) { aviso.textContent = 'Número do cartão inválido.'; aviso.className = 'text-xs font-semibold text-center text-brasil-terracota'; return; }
+        if (!nome) { aviso.textContent = 'Informe o nome do titular.'; aviso.className = 'text-xs font-semibold text-center text-brasil-terracota'; return; }
+        if (!/^\d{2}\/\d{2}$/.test(val)) { aviso.textContent = 'Validade deve ser MM/AA.'; aviso.className = 'text-xs font-semibold text-center text-brasil-terracota'; return; }
+
+        const b = detectarBandeira(num);
+        const fd = { numero: num, nome_titular: nome, validade: val, apelido, padrao, bandeira: b.nome };
+
+        fetch('/api/cartao/' + usr.id, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fd)
+        })
+            .then(r => r.json().then(c => ({ ok: r.ok, c })))
+            .then(({ ok, c }) => {
+                if (!ok) {
+                    aviso.textContent = c.erro || 'Erro ao salvar.';
+                    aviso.className = 'text-xs font-semibold text-center text-brasil-terracota';
+                    return;
+                }
+                aviso.textContent = 'Cartão salvo com sucesso!';
+                aviso.className = 'text-xs font-semibold text-center text-brasil-verde';
+                e.target.reset();
+                atualizarPreview();
+                carregarCartoes();
+                setTimeout(() => aviso.classList.add('hidden'), 2500);
+            })
+            .catch(() => {
+                aviso.textContent = 'Falha de comunicação.';
+                aviso.className = 'text-xs font-semibold text-center text-brasil-terracota';
+            });
+    }
+
+    // ====== PIX ======
+    function carregarPix() {
+        const usr = usuario();
+        if (!usr) return;
+        fetch('/api/metodo/' + usr.id)
+            .then(r => r.json())
+            .then(lista => {
+                Estado.pix = (lista || []).filter(m => m.tipo === 'pix');
+                Estado.boletos = (lista || []).filter(m => m.tipo === 'boleto');
+                renderizarPix();
+                renderizarBoletos();
+            })
+            .catch(e => console.error(e));
+    }
+    function renderizarPix() {
+        const cont = $('#lista-pix');
+        const count = $('#count-pix');
+        if (!cont) return;
+        count.textContent = Estado.pix.length;
+
+        if (!Estado.pix.length) {
+            cont.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center border border-dashed border-brasil-areia">
+                <i class="fa-solid fa-pix text-2xl text-brasil-verde/30 mb-1"></i>
+                <p class="text-xs text-brasil-escuro/50">Nenhuma chave Pix cadastrada.</p></div>`;
+            return;
+        }
+        cont.innerHTML = Estado.pix.map(p => `
+          <div class="bg-white rounded-2xl p-4 border border-brasil-areia flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-brasil-verde text-brasil-amarelo flex items-center justify-center flex-shrink-0">
+              <i class="fa-solid fa-pix"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-bold text-brasil-terracota uppercase tracking-wider">Pix</div>
+              <div class="text-sm font-semibold text-brasil-verde truncate">${p.chave || '—'}</div>
+            </div>
+            <button data-id="${p.id}" data-tipo="pix" class="btn-remover-metodo text-brasil-terracota hover:bg-brasil-terracota/10 p-2 rounded-lg transition">
+              <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
+          </div>`).join('');
+
+        cont.querySelectorAll('.btn-remover-metodo').forEach(btn => {
+            btn.addEventListener('click', () => removerMetodo(Number(btn.dataset.id), btn.dataset.tipo));
+        });
+    }
+    function renderizarBoletos() {
+        const cont = $('#lista-boleto');
+        const count = $('#count-boleto');
+        if (!cont) return;
+        count.textContent = Estado.boletos.length;
+
+        if (!Estado.boletos.length) {
+            cont.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center border border-dashed border-brasil-areia">
+                <i class="fa-solid fa-barcode text-2xl text-brasil-verde/30 mb-1"></i>
+                <p class="text-xs text-brasil-escuro/50">Nenhum boleto cadastrado.</p></div>`;
+            return;
+        }
+        cont.innerHTML = Estado.boletos.map(b => `
+          <div class="bg-white rounded-2xl p-4 border border-brasil-areia flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-brasil-madeira text-white flex items-center justify-center flex-shrink-0">
+              <i class="fa-solid fa-barcode"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-bold text-brasil-terracota uppercase tracking-wider">Boleto</div>
+              <div class="text-[11px] font-mono text-brasil-escuro/70 truncate">${b.codigo || '—'}</div>
+            </div>
+            <button data-id="${b.id}" data-tipo="boleto" class="btn-remover-metodo text-brasil-terracota hover:bg-brasil-terracota/10 p-2 rounded-lg transition">
+              <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
+          </div>`).join('');
+
+        cont.querySelectorAll('.btn-remover-metodo').forEach(btn => {
+            btn.addEventListener('click', () => removerMetodo(Number(btn.dataset.id), btn.dataset.tipo));
+        });
+    }
+
+    function salvarPix(e) {
+        e.preventDefault();
+        const usr = usuario();
+        if (!usr) return;
+        const chave = $('#input-chave-pix').value.trim();
+        const aviso = $('#aviso-pix');
+        if (!chave) {
+            aviso.textContent = 'Informe a chave Pix.';
+            aviso.className = 'text-xs font-semibold text-center text-brasil-terracota'; return;
+        }
+        fetch('/api/metodo/' + usr.id, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tipo: 'pix', chave })
+        })
+            .then(r => r.json().then(c => ({ ok: r.ok, c })))
+            .then(({ ok, c }) => {
+                if (!ok) { aviso.textContent = c.erro; aviso.className = 'text-xs font-semibold text-center text-brasil-terracota'; return; }
+                aviso.textContent = 'Chave Pix salva!'; aviso.className = 'text-xs font-semibold text-center text-brasil-verde';
+                e.target.reset(); carregarPix();
+                setTimeout(() => aviso.classList.add('hidden'), 2500);
+            })
+            .catch(() => toast('Falha de comunicação.'));
+    }
+
+    function salvarBoleto(e) {
+        e.preventDefault();
+        const usr = usuario();
+        if (!usr) return;
+        const aviso = $('#aviso-boleto');
+        fetch('/api/metodo/' + usr.id, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tipo: 'boleto' })
+        })
+            .then(r => r.json().then(c => ({ ok: r.ok, c })))
+            .then(({ ok, c }) => {
+                if (!ok) { aviso.textContent = c.erro; aviso.className = 'text-xs font-semibold text-center text-brasil-terracota'; return; }
+                aviso.textContent = 'Boleto gerado!'; aviso.className = 'text-xs font-semibold text-center text-brasil-verde';
+                carregarPix();
+                setTimeout(() => aviso.classList.add('hidden'), 2500);
+            })
+            .catch(() => toast('Falha de comunicação.'));
+    }
+
+    function removerMetodo(id, tipo) {
+        const usr = usuario();
+        if (!usr || !confirm('Remover este método?')) return;
+        fetch('/api/metodo/' + usr.id + '/' + id, { method: 'DELETE' })
+            .then(r => r.json())
+            .then(() => { toast('Removido.'); carregarPix(); })
+            .catch(() => toast('Erro ao remover.'));
+    }
+
+    function carregarTudo() {
+        carregarCartoes();
+        carregarPix();
+    }
+
+    // ====== INIT ======
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(aplicarBloqueio, 0);
+
+        $('#btn-overlay-entrar').addEventListener('click', irParaLogin);
+        $('#btn-overlay-criar').addEventListener('click', irParaLogin);
+
+        // Máscaras + preview
+        $('#input-numero').addEventListener('input', e => {
+            e.target.value = mascaraNumero(e.target.value);
+            atualizarPreview();
+        });
+        $('#input-validade').addEventListener('input', e => {
+            e.target.value = mascaraValidade(e.target.value);
+            atualizarPreview();
+        });
+        $('#input-titular').addEventListener('input', atualizarPreview);
+        $('#input-cvv').addEventListener('input', e => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+        });
+
+        // Abas
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.addEventListener('click', () => trocarAba(b.dataset.tab));
+        });
+
+        // Forms
+        $('#form-cartao').addEventListener('submit', salvarCartao);
+        $('#form-pix').addEventListener('submit', salvarPix);
+        $('#form-boleto').addEventListener('submit', salvarBoleto);
+    });
+})();
+</script>
+</body>
+</html>

@@ -896,6 +896,203 @@ var servidor = http.createServer(function (req, res) {
       return responderJson(res, 500, { erro: e.message });
     }
   }
+  // ============ API CARTÕES ============
+
+// GET /api/cartao/:usuarioId — lista cartões salvos
+if (req.method === 'GET' && /^\/api\/cartao\/\d+$/.test(caminho)) {
+  const idUsr = Number(caminho.split('/')[3]);
+  try {
+    const cartoes = db.prepare(
+      'SELECT id, apelido, bandeira, ultimos4, nome_titular, validade, padrao, criado_em FROM cartao WHERE usuario_id = ? ORDER BY padrao DESC, id DESC'
+    ).all(idUsr);
+    return responderJson(res, 200, cartoes);
+  } catch (e) {
+    return responderJson(res, 500, { erro: e.message });
+  }
+}
+
+// POST /api/cartao/:usuarioId — cadastra cartão
+if (req.method === 'POST' && /^\/api\/cartao\/\d+$/.test(caminho)) {
+  const idUsr = Number(caminho.split('/')[3]);
+  const usuarioAlvo = stmtBuscarUsuarioPorId.get(idUsr);
+  if (!usuarioAlvo) return responderJson(res, 404, { erro: 'Usuario nao encontrado.' });
+
+  lerCorpoJson(req, function (erro, dados) {
+    if (erro) return responderJson(res, 400, { erro: erro.message });
+
+    const numero = String(dados.numero || '').replace(/\D/g, '');
+    const nomeTitular = String(dados.nome_titular || '').trim();
+    const validade = String(dados.validade || '').trim();
+    const apelido = String(dados.apelido || '').trim() || null;
+    const bandeira = String(dados.bandeira || '').trim().toLowerCase() || null;
+    const padrao = dados.padrao === true || dados.padrao === 1 ? 1 : 0;
+
+    if (numero.length < 13 || numero.length > 19) {
+      return responderJson(res, 400, { erro: 'Numero do cartao invalido.' });
+    }
+    if (!nomeTitular) return responderJson(res, 400, { erro: 'Nome do titular obrigatorio.' });
+    if (!/^\d{2}\/\d{2}$/.test(validade)) {
+      return responderJson(res, 400, { erro: 'Validade deve estar no formato MM/AA.' });
+    }
+
+    // Validação de Luhn (cartão real)
+       // (Luhn removido — aceita qualquer sequência de 13 a 19 dígitos)
+
+    const ultimos4 = numero.slice(-4);
+    const numeroHash = crypto.createHash('sha256').update(numero).digest('hex');
+
+    const inserir = db.transaction(() => {
+      if (padrao) {
+        db.prepare('UPDATE cartao SET padrao = 0 WHERE usuario_id = ?').run(idUsr);
+      }
+      const r = db.prepare(`
+        INSERT INTO cartao (usuario_id, apelido, bandeira, ultimos4, nome_titular, validade, numero_hash, padrao)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(idUsr, apelido, bandeira, ultimos4, nomeTitular, validade, numeroHash, padrao);
+      return Number(r.lastInsertRowid);
+    });
+
+    try {
+      const novoId = inserir();
+      const novo = db.prepare(
+        'SELECT id, apelido, bandeira, ultimos4, nome_titular, validade, padrao, criado_em FROM cartao WHERE id = ?'
+      ).get(novoId);
+      return responderJson(res, 201, novo);
+    } catch (e) {
+      return responderJson(res, 500, { erro: e.message });
+    }
+  });
+  return;
+}
+
+  // DELETE /api/cartao/:usuarioId/:cartaoId — remove cartão
+  if (req.method === 'DELETE' && /^\/api\/cartao\/\d+\/\d+$/.test(caminho)) {
+    const partes = caminho.split('/');
+    const idUsr = Number(partes[3]);
+    const idCartao = Number(partes[4]);
+    try {
+      const r = db.prepare('DELETE FROM cartao WHERE id = ? AND usuario_id = ?').run(idCartao, idUsr);
+      if (r.changes === 0) return responderJson(res, 404, { erro: 'Cartao nao encontrado.' });
+      return responderJson(res, 200, { removido: idCartao });
+    } catch (e) {
+      return responderJson(res, 500, { erro: e.message });
+    }
+  }
+
+  // POST /api/cartao/:usuarioId/:cartaoId/padrao — define como padrão
+  if (req.method === 'POST' && /^\/api\/cartao\/\d+\/\d+\/padrao$/.test(caminho)) {
+    const partes = caminho.split('/');
+    const idUsr = Number(partes[3]);
+    const idCartao = Number(partes[4]);
+    try {
+      const cartao = db.prepare('SELECT id FROM cartao WHERE id = ? AND usuario_id = ?').get(idCartao, idUsr);
+      if (!cartao) return responderJson(res, 404, { erro: 'Cartao nao encontrado.' });
+      db.transaction(() => {
+        db.prepare('UPDATE cartao SET padrao = 0 WHERE usuario_id = ?').run(idUsr);
+        db.prepare('UPDATE cartao SET padrao = 1 WHERE id = ?').run(idCartao);
+      })();
+      const lista = db.prepare(
+        'SELECT id, apelido, bandeira, ultimos4, nome_titular, validade, padrao, criado_em FROM cartao WHERE usuario_id = ? ORDER BY padrao DESC, id DESC'
+      ).all(idUsr);
+      return responderJson(res, 200, lista);
+    } catch (e) {
+      return responderJson(res, 500, { erro: e.message });
+    }
+  }
+
+  // ============ API MÉTODOS ALTERNATIVOS (PIX / BOLETO) ============
+
+  // GET /api/metodo/:usuarioId
+  if (req.method === 'GET' && /^\/api\/metodo\/\d+$/.test(caminho)) {
+    const idUsr = Number(caminho.split('/')[3]);
+    try {
+      const lista = db.prepare(
+        'SELECT * FROM metodo_pagamento WHERE usuario_id = ? ORDER BY padrao DESC, id DESC'
+      ).all(idUsr);
+      return responderJson(res, 200, lista);
+    } catch (e) {
+      return responderJson(res, 500, { erro: e.message });
+    }
+  }
+
+  // POST /api/metodo/:usuarioId — cadastra pix/boleto fictício
+  if (req.method === 'POST' && /^\/api\/metodo\/\d+$/.test(caminho)) {
+    const idUsr = Number(caminho.split('/')[3]);
+    const usuarioAlvo = stmtBuscarUsuarioPorId.get(idUsr);
+    if (!usuarioAlvo) return responderJson(res, 404, { erro: 'Usuario nao encontrado.' });
+
+    lerCorpoJson(req, function (erro, dados) {
+      if (erro) return responderJson(res, 400, { erro: erro.message });
+
+      const tipo = String(dados.tipo || '').toLowerCase();
+      if (['pix', 'boleto'].indexOf(tipo) === -1) {
+        return responderJson(res, 400, { erro: 'Tipo deve ser "pix" ou "boleto".' });
+      }
+
+      // Gera dados fictícios se não vierem
+      let chave = String(dados.chave || '').trim();
+      let codigo = String(dados.codigo || '').trim();
+
+      if (tipo === 'pix' && !chave) {
+        chave = (usuarioAlvo.email || ('user' + idUsr + '@multicultural.com')).toLowerCase();
+      }
+      if (tipo === 'boleto' && !codigo) {
+        // Gera linha digitável fictícia de 47 dígitos
+        let d = '23793';
+        while (d.length < 47) d += Math.floor(Math.random() * 10);
+        codigo = d.replace(/^(\d{5})(\d{5})(\d{5})(\d{6})(\d{5})(\d{6})(\d{1})(\d{14})$/, '$1.$2 $3.$4 $5.$6 $7 $8');
+      }
+
+      try {
+        const r = db.prepare(`
+          INSERT INTO metodo_pagamento (usuario_id, tipo, chave, codigo, padrao)
+          VALUES (?, ?, ?, ?, 0)
+        `).run(idUsr, tipo, chave || null, codigo || null);
+        const novo = db.prepare('SELECT * FROM metodo_pagamento WHERE id = ?').get(Number(r.lastInsertRowid));
+        return responderJson(res, 201, novo);
+      } catch (e) {
+        return responderJson(res, 500, { erro: e.message });
+      }
+    });
+    return;
+  }
+
+  // DELETE /api/metodo/:usuarioId/:metodoId
+  if (req.method === 'DELETE' && /^\/api\/metodo\/\d+\/\d+$/.test(caminho)) {
+    const partes = caminho.split('/');
+    const idUsr = Number(partes[3]);
+    const idMet = Number(partes[4]);
+    try {
+      const r = db.prepare('DELETE FROM metodo_pagamento WHERE id = ? AND usuario_id = ?').run(idMet, idUsr);
+      if (r.changes === 0) return responderJson(res, 404, { erro: 'Metodo nao encontrado.' });
+      return responderJson(res, 200, { removido: idMet });
+    } catch (e) {
+      return responderJson(res, 500, { erro: e.message });
+    }
+  }
+  // ============ API CHECKOUT — métodos de pagamento do usuário ============
+
+if (req.method === 'GET' && /^\/api\/checkout\/\d+$/.test(caminho)) {
+  const idUsr = Number(caminho.split('/')[3]);
+  const usuarioAlvo = stmtBuscarUsuarioPorId.get(idUsr);
+  if (!usuarioAlvo) return responderJson(res, 404, { erro: 'Usuario nao encontrado.' });
+
+  try {
+    const cartoes = db.prepare(
+      'SELECT id, apelido, bandeira, ultimos4, nome_titular, validade, padrao FROM cartao WHERE usuario_id = ? ORDER BY padrao DESC, id DESC'
+    ).all(idUsr);
+    const metodos = db.prepare(
+      'SELECT id, tipo, chave, codigo, padrao FROM metodo_pagamento WHERE usuario_id = ? ORDER BY id DESC'
+    ).all(idUsr);
+    return responderJson(res, 200, {
+      cartoes,
+      pix: metodos.filter(m => m.tipo === 'pix'),
+      boletos: metodos.filter(m => m.tipo === 'boleto')
+    });
+  } catch (e) {
+    return responderJson(res, 500, { erro: e.message });
+  }
+}
 
   // ============ ARQUIVOS ESTÁTICOS ============
 

@@ -171,7 +171,7 @@
           ${livro.editora ? `<p class="text-[11px] text-brasil-escuro/40">
             <i class="fa-solid fa-building mr-1"></i>${livro.editora}
           </p>` : ''}
-          <div class="pt-1">${renderEstrelas(livro.avaliacao)}</div>
+       
         </div>
       </div>
 

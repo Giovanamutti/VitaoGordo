@@ -1,12 +1,22 @@
 /* =========================================================================
-   Livraria Multicultural - script.js (v8)
-   - Seleção de itens no carrinho
-   - Frete via ViaCEP com nome da rua
-   - CEP do perfil + último CEP usado (localStorage)
-   - Parcelamento 1x-3x sem juros / 4x-6x com juros (3%, 5%, 7%)
-   - Checkout simulado em 3s + confirmação "Compra aprovada!"
-   - Upload de imagem de livro no add_livros.html (com preview)
-   - DESCONTO CLUBE: 10% automático para membros (não acumula com cupom)
+   Livraria Multicultural - script.js (v9 - reconstruído)
+   -------------------------------------------------------------------------
+   O que mudou em relação ao v8 que você mandou (que estava truncado):
+   ✔ Fechamento do IIFE e do initCadastroLivros()
+   ✔ Funções globais expostas:
+       - window.abrirModalLoginGlobal(paginaRetorno)
+       - window.adicionarAoCarrinhoGlobal(id, preco, qty, extras)
+       - window.mesclarCarrinhoLocalNoServidor()
+       - window.abrirModal / window.fecharModal / window.abrirModalLogin
+   ✔ Bootstrap no DOMContentLoaded:
+       - initMenuMobile()
+       - initCadastroLivros()
+       - initPaginaCarrinho()
+       - delegateComprarBtn(document)
+       - carregarCarrinho()
+   ✔ abrirModal() reutilizável (info-modal)
+   ✔ abrirModalLogin() usa #overlay-login quando existir; senão redireciona
+   ✔ Bloqueio do checkout quando deslogado
    ========================================================================= */
 
 (function () {
@@ -21,8 +31,7 @@
     'BRASILIDADE10': 0.10
   };
 
-  const DESCONTO_CLUBE = 0.10; // 10% para membros do clube
-
+  const DESCONTO_CLUBE = 0.10;
   const JUROS_PARCELAS = { 1: 0, 2: 0, 3: 0, 4: 3, 5: 5, 6: 7 };
 
   const PRODUTOS = {
@@ -64,13 +73,51 @@
   }
 
   // =======================================================================
-  // MENU MOBILE
+  // MENU MOBILE + HEADER SCROLL
   // =======================================================================
   function initMenuMobile() {
-    const btn = $('#menu-btn');
-    const menu = $('#mobile-menu');
+    const btn = document.getElementById('menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    const overlay = document.getElementById('menu-overlay');
+    const header = document.getElementById('site-header');
     if (!btn || !menu) return;
-    btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+
+    function abrir() {
+      menu.classList.add('open');
+      menu.setAttribute('aria-hidden', 'false');
+      if (overlay) overlay.classList.add('open');
+      btn.classList.add('is-open');
+      btn.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('menu-open');
+    }
+    function fechar() {
+      menu.classList.remove('open');
+      menu.setAttribute('aria-hidden', 'true');
+      if (overlay) overlay.classList.remove('open');
+      btn.classList.remove('is-open');
+      btn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('menu-open');
+    }
+
+    btn.addEventListener('click', function () {
+      if (menu.classList.contains('open')) fechar();
+      else abrir();
+    });
+    if (overlay) overlay.addEventListener('click', fechar);
+    menu.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', fechar);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menu.classList.contains('open')) fechar();
+    });
+
+    if (header) {
+      const aplicarScrolled = function () {
+        header.classList.toggle('scrolled', window.scrollY > 40);
+      };
+      window.addEventListener('scroll', aplicarScrolled, { passive: true });
+      aplicarScrolled();
+    }
   }
 
   // =======================================================================
@@ -82,6 +129,80 @@
       return s ? JSON.parse(s) : null;
     } catch (e) { return null; }
   }
+
+  // =======================================================================
+  // MODAIS
+  // =======================================================================
+
+  // Modal de informação (já existente no carrinho.html: #info-modal)
+  function abrirModal(titulo, descricao, icone) {
+    const modal = document.getElementById('info-modal');
+    if (!modal) {
+      // fallback se o modal não estiver no HTML
+      alert(titulo + '\n\n' + descricao);
+      return;
+    }
+    const icon = document.getElementById('modal-icon');
+    const title = document.getElementById('modal-title');
+    const desc = document.getElementById('modal-desc');
+    if (icon) {
+      icon.className = 'w-12 h-12 rounded-2xl bg-brasil-amarelo/40 text-brasil-verde flex items-center justify-center text-xl';
+      icon.innerHTML = `<i class="${icone || 'fa-solid fa-circle-info'}"></i>`;
+    }
+    if (title) title.textContent = titulo;
+    if (desc) desc.innerHTML = descricao;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function fecharModal() {
+    const modal = document.getElementById('info-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  }
+
+  // Modal de login (overlay em carrinho.html) — se não existir, redireciona
+  function abrirModalLogin(paginaRetorno) {
+    const overlay = document.getElementById('overlay-login');
+    if (!overlay) {
+      // Sem overlay → manda pra login.html com ?redirect=
+      const destino = 'login.html' + (paginaRetorno ? ('?redirect=' + encodeURIComponent(paginaRetorno)) : '');
+      window.location.href = destino;
+      return Promise.resolve();
+    }
+    overlay.classList.remove('hidden');
+    document.body.classList.add('bloqueado');
+
+    // Botão "Voltar"
+    const linkVoltar = overlay.querySelector('.link-voltar');
+    if (linkVoltar) {
+      linkVoltar.onclick = (e) => {
+        e.preventDefault();
+        overlay.classList.add('hidden');
+        document.body.classList.remove('bloqueado');
+      };
+    }
+
+    // Botões Entrar/Criar conta levam pra login.html
+    const btnEntrar = overlay.querySelector('.btn-entrar');
+    const btnCriar = overlay.querySelector('.btn-criar');
+    const irParaLogin = () => {
+      const destino = 'login.html' + (paginaRetorno ? ('?redirect=' + encodeURIComponent(paginaRetorno)) : '');
+      window.location.href = destino;
+    };
+    if (btnEntrar) btnEntrar.onclick = irParaLogin;
+    if (btnCriar) btnCriar.onclick = irParaLogin;
+
+    return Promise.resolve();
+  }
+
+  // Expõe globalmente (usado por livro.js e script.js)
+  window.abrirModal = abrirModal;
+  window.fecharModal = fecharModal;
+  window.abrirModalLogin = abrirModalLogin;
+  window.abrirModalLoginGlobal = abrirModalLogin;
 
   // =======================================================================
   // ESTADO DO CARRINHO
@@ -196,9 +317,6 @@
   // ADICIONAR AO CARRINHO
   // =======================================================================
   function adicionarAoCarrinho(id, preco, quantidade = 1, extras = {}) {
-
-    // ===== BLOQUEIO: só permite adicionar se estiver logado =====
-
     const usuario = usuarioAtual();
     if (!usuario) {
       const paginaAtual = (location.pathname.split('/').pop() || 'index.html') + location.search;
@@ -227,6 +345,7 @@
       return persistirCarrinho().then(() => Carrinho.dados);
     });
   }
+  window.adicionarAoCarrinhoGlobal = adicionarAoCarrinho;
 
   function atualizarBadgeGlobal() {
     const badge = $('#badge-count');
@@ -271,6 +390,7 @@
       })
       .catch(err => console.warn('Falha ao mesclar carrinho:', err));
   }
+  window.mesclarCarrinhoLocalNoServidor = mesclarCarrinhoLocalNoServidor;
 
   // =======================================================================
   // CATÁLOGO — botões "Comprar"
@@ -288,7 +408,6 @@
       const preco = parseFloat(btn.dataset.preco);
       if (!id || !isFinite(preco)) return;
 
-      // ===== BLOQUEIO: deslogado → modal "faça login" =====
       const usuario = usuarioAtual();
       if (!usuario) {
         const paginaAtual = (location.pathname.split('/').pop() || 'index.html') + location.search;
@@ -311,7 +430,6 @@
         .then(() => mostrarToast((extras.nome || 'Item') + ' adicionado ao carrinho!'))
         .catch(err => {
           if (err && err.message === 'LOGIN_NECESSARIO') {
-            // O modal já foi aberto pelo adicionarAoCarrinho — só reseta o botão
             btn.innerHTML = original;
             btn.disabled = false;
             btn.classList.remove('bg-brasil-terracota', 'text-white');
@@ -407,7 +525,6 @@
       }
     }
 
-    // ===== SELO DO CLUBE =====
     const seloClube = $('#selo-clube');
     if (seloClube) {
       const usuario = usuarioAtual();
@@ -473,6 +590,28 @@
         if (e.target === modal) fecharModal();
       });
     }
+
+    // ===== CHECKOUT MODAL =====
+    const btnFecharCheckout = document.getElementById('btn-fechar-checkout');
+    if (btnFecharCheckout) {
+      btnFecharCheckout.addEventListener('click', () => {
+        const m = document.getElementById('checkout-modal');
+        if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+      });
+    }
+
+    const modalCheckout = document.getElementById('checkout-modal');
+    if (modalCheckout) {
+      modalCheckout.addEventListener('click', (e) => {
+        if (e.target === modalCheckout) {
+          modalCheckout.classList.add('hidden');
+          modalCheckout.classList.remove('flex');
+        }
+      });
+    }
+
+    const btnPagar = document.getElementById('btn-pagar-checkout');
+    if (btnPagar) btnPagar.addEventListener('click', confirmarPagamentoCheckout);
   }
 
   function renderizarLista() {
@@ -766,7 +905,7 @@
   }
 
   // =======================================================================
-  // TOTAIS (só itens selecionados) + CUPOM + CLUBE
+  // TOTAIS
   // =======================================================================
   function atualizarTotais() {
     let subtotal = 0;
@@ -775,14 +914,11 @@
       if (it) subtotal += (it.price || 0) * (it.qty || 0);
     });
 
-    // ===== DESCONTOS: cupom (manual) e clube (automático) =====
     const usuario = usuarioAtual();
     const ehMembro = usuario && Number(usuario.clube_ativo) === 1;
 
     const descontoCupom = subtotal * EstadoCarrinho.descontoPct;
     const descontoClube = ehMembro ? subtotal * DESCONTO_CLUBE : 0;
-
-    // Aplica o MAIOR dos dois (não acumula)
     const desconto = Math.max(descontoCupom, descontoClube);
 
     const frete = EstadoCarrinho.selecionados.size > 0 ? EstadoCarrinho.frete : 0;
@@ -805,7 +941,6 @@
       else discountRow.classList.add('hidden');
     }
 
-    // Avisa se o cupom não está sendo aplicado porque o clube é maior
     const msgCupom = $('#coupon-msg');
     if (msgCupom && !msgCupom.classList.contains('hidden')) {
       if (ehMembro && descontoClube > descontoCupom) {
@@ -858,69 +993,234 @@
   }
 
   // =======================================================================
-  // FINALIZAR
+  // CHECKOUT
   // =======================================================================
+  const Checkout = { metodos: null, selecionado: null, processando: false, totais: null };
+
   function finalizarCompra() {
     if (EstadoCarrinho.processando) return;
-    if (Object.keys(Carrinho.dados).length === 0) {
-      abrirModal('Sacola vazia', 'Adicione itens ao carrinho antes de prosseguir.', 'fa-solid fa-triangle-exclamation');
-      return;
-    }
-    if (EstadoCarrinho.selecionados.size === 0) {
-      abrirModal('Nenhum item selecionado', 'Marque ao menos um livro para finalizar a compra.', 'fa-solid fa-triangle-exclamation');
-      return;
-    }
-    if (EstadoCarrinho.frete === 0) {
-      abrirModal('Calcule o frete', 'Informe seu CEP e clique em "OK" antes de finalizar.', 'fa-solid fa-truck-fast');
-      return;
+
+    const usuario = usuarioAtual();
+    if (!usuario) {
+      return abrirModalLogin('carrinho.html');
     }
 
+    if (Object.keys(Carrinho.dados).length === 0) {
+      return abrirModal('Sacola vazia', 'Adicione itens ao carrinho antes de prosseguir.', 'fa-solid fa-triangle-exclamation');
+    }
+    if (EstadoCarrinho.selecionados.size === 0) {
+      return abrirModal('Nenhum item selecionado', 'Marque ao menos um livro para finalizar a compra.', 'fa-solid fa-triangle-exclamation');
+    }
+    if (EstadoCarrinho.frete === 0) {
+      return abrirModal('Calcule o frete', 'Informe seu CEP e clique em "OK" antes de finalizar.', 'fa-solid fa-truck-fast');
+    }
+
+    Checkout.totais = calcularTotaisFinal();
+    const modal = document.getElementById('checkout-modal');
+    const totalEl = document.getElementById('checkout-total');
+    if (!modal) {
+      // fallback se o modal não estiver no HTML
+      return abrirModal('Checkout', 'Modal de checkout não encontrado no HTML.', 'fa-solid fa-triangle-exclamation');
+    }
+    if (totalEl) totalEl.textContent = formatarReais(Checkout.totais.totalComJuros);
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+
+    const loading = document.getElementById('checkout-loading');
+    const vazio = document.getElementById('checkout-vazio');
+    const lista = document.getElementById('checkout-lista');
+    if (loading) loading.classList.remove('hidden');
+    if (vazio) vazio.classList.add('hidden');
+    if (lista) lista.classList.add('hidden');
+
+    Checkout.selecionado = null;
+    atualizarBotaoPagar();
+    carregarMetodosCheckout();
+  }
+
+  function calcularTotaisFinal() {
     let subtotal = 0;
     EstadoCarrinho.selecionados.forEach(id => {
       const it = Carrinho.dados[id];
       if (it) subtotal += (it.price || 0) * (it.qty || 0);
     });
-
-    // ===== MESMA LÓGICA DO CLUBE =====
     const usuario = usuarioAtual();
     const ehMembro = usuario && Number(usuario.clube_ativo) === 1;
     const descontoCupom = subtotal * EstadoCarrinho.descontoPct;
     const descontoClube = ehMembro ? subtotal * DESCONTO_CLUBE : 0;
     const desconto = Math.max(descontoCupom, descontoClube);
-
     const frete = EstadoCarrinho.frete;
     const totalBase = subtotal - desconto + frete;
     const parcelas = EstadoCarrinho.parcelas || 1;
     const jurosPct = EstadoCarrinho.jurosPct || 0;
     const totalComJuros = totalBase * (1 + jurosPct / 100);
     const valorParcela = parcelas > 0 ? totalComJuros / parcelas : totalComJuros;
+    return { subtotal, desconto, frete, totalBase, parcelas, jurosPct, totalComJuros, valorParcela };
+  }
 
+  function carregarMetodosCheckout() {
+    const usuario = usuarioAtual();
+    if (!usuario) return mostrarCheckoutVazio();
+
+    fetch('/api/checkout/' + usuario.id)
+      .then(r => r.json())
+      .then(dados => {
+        Checkout.metodos = dados;
+        const temAlgum = (dados.cartoes && dados.cartoes.length) ||
+                         (dados.pix && dados.pix.length) ||
+                         (dados.boletos && dados.boletos.length);
+
+        const loading = document.getElementById('checkout-loading');
+        if (loading) loading.classList.add('hidden');
+
+        if (!temAlgum) return mostrarCheckoutVazio();
+
+        const lista = document.getElementById('checkout-lista');
+        if (lista) lista.classList.remove('hidden');
+        renderizarMetodosCheckout();
+      })
+      .catch(err => {
+        console.error(err);
+        const loading = document.getElementById('checkout-loading');
+        if (loading) loading.classList.add('hidden');
+        mostrarCheckoutVazio();
+      });
+  }
+
+  function mostrarCheckoutVazio() {
+    const loading = document.getElementById('checkout-loading');
+    const lista = document.getElementById('checkout-lista');
+    const vazio = document.getElementById('checkout-vazio');
+    if (loading) loading.classList.add('hidden');
+    if (lista) lista.classList.add('hidden');
+    if (vazio) vazio.classList.remove('hidden');
+  }
+
+  function renderizarMetodosCheckout() {
+    const { cartoes = [], pix = [], boletos = [] } = Checkout.metodos || {};
+
+    const contCartoes = document.getElementById('checkout-cartoes');
+    if (contCartoes) {
+      if (cartoes.length) {
+        contCartoes.innerHTML = `
+          <div class="text-[11px] font-bold uppercase tracking-wider text-brasil-escuro/60 px-1">Cartões</div>
+          ${cartoes.map(c => {
+            const icone = iconeBandeira(c.bandeira);
+            return `
+              <label class="flex items-center gap-3 p-3 rounded-xl border-2 border-brasil-areia hover:border-brasil-verde cursor-pointer transition-all has-[:checked]:border-brasil-verde has-[:checked]:bg-brasil-verde/5">
+                <input type="radio" name="checkout-metodo" value="cartao:${c.id}" class="w-4 h-4 accent-brasil-verde" ${c.padrao ? 'checked' : ''}>
+                <div class="w-10 h-10 rounded-lg bg-brasil-verde text-brasil-amarelo flex items-center justify-center flex-shrink-0">
+                  <i class="fa-solid fa-credit-card"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs font-bold text-brasil-escuro truncate">${icone} •••• ${c.ultimos4} ${c.padrao ? '<span class="ml-1 text-[9px] bg-brasil-amarelo text-brasil-verde px-1.5 py-0.5 rounded uppercase">padrão</span>' : ''}</div>
+                  <div class="text-[10px] text-brasil-escuro/60 truncate">${c.nome_titular} · ${c.validade}${c.apelido ? ' · ' + c.apelido : ''}</div>
+                </div>
+              </label>`;
+          }).join('')}
+        `;
+      } else {
+        contCartoes.innerHTML = '';
+      }
+    }
+
+    const contPix = document.getElementById('checkout-pix');
+    if (contPix) {
+      if (pix.length) {
+        contPix.innerHTML = `
+          <div class="text-[11px] font-bold uppercase tracking-wider text-brasil-escuro/60 px-1 mt-2">Pix</div>
+          ${pix.map(p => `
+            <label class="flex items-center gap-3 p-3 rounded-xl border-2 border-brasil-areia hover:border-brasil-verde cursor-pointer transition-all has-[:checked]:border-brasil-verde has-[:checked]:bg-brasil-verde/5">
+              <input type="radio" name="checkout-metodo" value="pix:${p.id}" class="w-4 h-4 accent-brasil-verde">
+              <div class="w-10 h-10 rounded-lg bg-brasil-verde text-brasil-amarelo flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-pix"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-xs font-bold text-brasil-escuro">Pix</div>
+                <div class="text-[10px] text-brasil-escuro/60 truncate">${p.chave || 'Chave cadastrada'}</div>
+              </div>
+            </label>`).join('')}
+        `;
+      } else {
+        contPix.innerHTML = '';
+      }
+    }
+
+    const contBoletos = document.getElementById('checkout-boletos');
+    if (contBoletos) {
+      if (boletos.length) {
+        contBoletos.innerHTML = `
+          <div class="text-[11px] font-bold uppercase tracking-wider text-brasil-escuro/60 px-1 mt-2">Boletos</div>
+          ${boletos.map(b => `
+            <label class="flex items-center gap-3 p-3 rounded-xl border-2 border-brasil-areia hover:border-brasil-verde cursor-pointer transition-all has-[:checked]:border-brasil-verde has-[:checked]:bg-brasil-verde/5">
+              <input type="radio" name="checkout-metodo" value="boleto:${b.id}" class="w-4 h-4 accent-brasil-verde">
+              <div class="w-10 h-10 rounded-lg bg-brasil-madeira text-white flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-barcode"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-xs font-bold text-brasil-escuro">Boleto</div>
+                <div class="text-[10px] text-brasil-escuro/60 font-mono truncate">${(b.codigo || '').slice(0, 30)}...</div>
+              </div>
+            </label>`).join('')}
+        `;
+      } else {
+        contBoletos.innerHTML = '';
+      }
+    }
+
+    document.querySelectorAll('input[name="checkout-metodo"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const [tipo, id] = radio.value.split(':');
+        Checkout.selecionado = { tipo, id: Number(id) };
+        atualizarBotaoPagar();
+      });
+      if (radio.checked) {
+        const [tipo, id] = radio.value.split(':');
+        Checkout.selecionado = { tipo, id: Number(id) };
+      }
+    });
+
+    atualizarBotaoPagar();
+  }
+
+  function iconeBandeira(b) {
+    const nome = String(b || '').toLowerCase();
+    if (nome === 'visa') return 'Visa';
+    if (nome === 'mastercard') return 'Master';
+    if (nome === 'amex') return 'Amex';
+    if (nome === 'elo') return 'Elo';
+    if (nome === 'hipercard') return 'Hiper';
+    return 'Cartão';
+  }
+
+  function atualizarBotaoPagar() {
+    const btn = document.getElementById('btn-pagar-checkout');
+    const txt = document.getElementById('btn-pagar-text');
+    if (!btn || !txt) return;
+
+    if (!Checkout.selecionado) {
+      btn.disabled = true;
+      txt.textContent = 'Pagar';
+      return;
+    }
+    btn.disabled = false;
+    const nomes = { cartao: 'Pagar com cartão', pix: 'Pagar com Pix', boleto: 'Gerar boleto' };
+    txt.textContent = nomes[Checkout.selecionado.tipo] || 'Pagar';
+  }
+
+  function confirmarPagamentoCheckout() {
+    if (!Checkout.selecionado || Checkout.processando) return;
+    Checkout.processando = true;
+    const btn = document.getElementById('btn-pagar-checkout');
+    const txt = document.getElementById('btn-pagar-text');
+    if (!btn || !txt) { Checkout.processando = false; return; }
+    const original = txt.textContent;
+    btn.disabled = true;
+    txt.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
+
+    const t = Checkout.totais;
     const end = EstadoCarrinho.endereco;
-    const linhaEndereco = end
-      ? `<br><span class="text-xs">Entrega em: <strong>${end.logradouro}</strong> — ${end.bairro || ''} ${end.cidade}/${end.uf}</span>`
-      : '';
-    const linhaParcelas = parcelas > 1
-      ? `<br><span class="text-xs">Pagamento: <strong>${parcelas}x de ${formatarReais(valorParcela)}</strong>${jurosPct > 0 ? ' (com ' + jurosPct + '% de juros)' : ' (sem juros)'}</span>`
-      : `<br><span class="text-xs">Pagamento: <strong>à vista</strong></span>`;
-
-    EstadoCarrinho.processando = true;
-
-    abrirModal(
-      'Checkout seguro (MFS)',
-      `Total a pagar: <strong>${formatarReais(totalComJuros)}</strong>.${linhaParcelas}${linhaEndereco}
-       <br><br>
-       <span class="inline-flex items-center gap-2">
-         <i class="fa-solid fa-spinner fa-spin text-brasil-terracota"></i>
-         Redirecionando para o ambiente seguro de pagamento...
-       </span>`,
-      'fa-solid fa-shield-halved'
-    );
-
-    const modalEl = $('#info-modal');
-    const btnFechar = $('#btn-fechar-modal');
-    const btnConfirmarOriginal = modalEl ? modalEl.querySelector('button[onclick]') : null;
-    if (btnFechar) btnFechar.style.display = 'none';
-    if (btnConfirmarOriginal) btnConfirmarOriginal.style.display = 'none';
 
     setTimeout(() => {
       EstadoCarrinho.selecionados.forEach(id => { delete Carrinho.dados[id]; });
@@ -930,98 +1230,69 @@
       EstadoCarrinho.endereco = null;
       EstadoCarrinho.parcelas = 1;
       EstadoCarrinho.jurosPct = 0;
-      EstadoCarrinho.processando = false;
+      Checkout.processando = false;
 
       notificar();
       persistirCarrinho();
 
-      const icon = $('#modal-icon');
-      const title = $('#modal-title');
-      const desc = $('#modal-desc');
+      const modal = document.getElementById('checkout-modal');
+      if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+
+      const tipo = Checkout.selecionado.tipo;
+      const icon = document.getElementById('modal-icon');
+      const title = document.getElementById('modal-title');
+      const desc = document.getElementById('modal-desc');
+      const infoModal = document.getElementById('info-modal');
+
       if (icon) {
         icon.className = 'w-12 h-12 rounded-2xl bg-green-100 text-green-700 flex items-center justify-center text-xl';
         icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
       }
       if (title) title.innerText = 'Compra aprovada! 🎉';
       if (desc) {
+        let msgExtra = '';
+        if (tipo === 'pix') {
+          msgExtra = '<span class="block mt-2 text-xs text-brasil-escuro/70">Pagamento via Pix confirmado. O comprovante será enviado por email.</span>';
+        } else if (tipo === 'boleto') {
+          msgExtra = '<span class="block mt-2 text-xs text-brasil-escuro/70">Boleto gerado! Você tem até 3 dias úteis para pagar. Enviaremos por email.</span>';
+        } else {
+          msgExtra = '<span class="block mt-2 text-xs text-brasil-escuro/70">Cartão aprovado. Você receberá um email com os detalhes.</span>';
+        }
         desc.innerHTML = `
           Seu pedido foi confirmado com sucesso.<br>
-          <span class="block mt-2 text-base font-bold text-brasil-verde">Total pago: ${formatarReais(totalComJuros)}</span>
-          ${parcelas > 1 ? `<span class="block mt-1 text-xs text-brasil-escuro/70">Pagamento: <strong>${parcelas}x de ${formatarReais(valorParcela)}</strong>${jurosPct > 0 ? ' (com ' + jurosPct + '% de juros)' : ' (sem juros)'}</span>` : ''}
+          <span class="block mt-2 text-base font-bold text-brasil-verde">Total pago: ${formatarReais(t.totalComJuros)}</span>
+          ${t.parcelas > 1 ? `<span class="block mt-1 text-xs text-brasil-escuro/70">Pagamento: <strong>${t.parcelas}x de ${formatarReais(t.valorParcela)}</strong></span>` : ''}
           ${end ? `<span class="block mt-1 text-xs text-brasil-escuro/70">Entrega em: <strong>${end.logradouro}</strong> — ${end.bairro || ''} ${end.cidade}/${end.uf}</span>` : ''}
-          <span class="block mt-3 text-xs text-brasil-escuro/60">Você receberá um e-mail com os detalhes da entrega.</span>
+          ${msgExtra}
         `;
       }
 
-      if (btnFechar) btnFechar.style.display = '';
-      if (btnConfirmarOriginal && btnConfirmarOriginal.parentNode) {
-        const novoBotao = document.createElement('button');
-        novoBotao.className = btnConfirmarOriginal.className;
-        novoBotao.textContent = 'Voltar ao início';
-        novoBotao.addEventListener('click', () => {
-          window.location.href = 'index.html';
-        });
-        btnConfirmarOriginal.parentNode.replaceChild(novoBotao, btnConfirmarOriginal);
-        novoBotao.style.display = '';
+      if (infoModal) {
+        infoModal.classList.remove('hidden');
+        infoModal.classList.add('flex');
+      }
+
+      const btnFecharInfo = document.getElementById('btn-fechar-modal');
+      if (btnFecharInfo) {
+        btnFecharInfo.style.display = 'none';
+        const pai = btnFecharInfo.parentNode;
+        const btnEntendido = pai.querySelector('button[onclick]');
+        if (btnEntendido) {
+          const novo = document.createElement('button');
+          novo.className = btnEntendido.className;
+          novo.textContent = 'Voltar ao início';
+          novo.addEventListener('click', () => { window.location.href = 'index.html'; });
+          pai.replaceChild(novo, btnEntendido);
+        }
       }
 
       renderizarLista();
       atualizarTotais();
       verificarCarrinhoVazio();
-    }, 3000);
-  }
 
-  function abrirModal(titulo, descricao, icone = 'fa-solid fa-circle-check') {
-    const modal = $('#info-modal');
-    if (!modal) return;
-    const t = $('#modal-title'); const d = $('#modal-desc'); const i = $('#modal-icon');
-    if (t) t.innerText = titulo;
-    if (d) d.innerHTML = descricao;
-    if (i) i.innerHTML = `<i class="${icone}"></i>`;
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-  }
-  // Abre o modal padrão do site com CTA pra fazer login
-  function abrirModalLogin(paginaRetorno) {
-    const urlLogin = 'login.html?redirect=' + encodeURIComponent(paginaRetorno);
-
-    const modal = $('#info-modal');
-    if (!modal) {
-      // Fallback: se o modal não existir, redireciona direto
-      window.location.href = urlLogin;
-      return;
-    }
-
-    const icon = $('#modal-icon');
-    const title = $('#modal-title');
-    const desc = $('#modal-desc');
-
-    if (icon) {
-      icon.className = 'w-12 h-12 rounded-2xl bg-brasil-amarelo text-brasil-verde flex items-center justify-center text-xl';
-      icon.innerHTML = '<i class="fa-solid fa-lock"></i>';
-    }
-    if (title) title.innerText = 'Entre para comprar';
-    if (desc) {
-      desc.innerHTML = `
-        Para adicionar livros ao carrinho, você precisa estar logado na sua conta.
-        <br><br>
-        <a href="${urlLogin}"
-          class="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-brasil-verde text-brasil-amarelo font-bold rounded-xl text-sm hover:bg-brasil-terracota hover:text-white transition-colors">
-          <i class="fa-solid fa-right-to-bracket"></i>
-          Entrar na minha conta
-        </a>
-      `;
-    }
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-  }
-
-  function fecharModal() {
-    const modal = $('#info-modal');
-    if (!modal) return;
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
+      txt.textContent = original;
+      btn.disabled = false;
+    }, 2500);
   }
 
   // =======================================================================
@@ -1056,7 +1327,7 @@
       return html;
     }
 
-        function desenharTabelaLivros(lista) {
+    function desenharTabelaLivros(lista) {
       if (!corpoTabela) return;
       corpoTabela.innerHTML = '';
 
@@ -1076,12 +1347,10 @@
       lista.forEach(livro => {
         const tr = document.createElement('tr');
 
-        // 1. ID
         const tdId = document.createElement('td');
         tdId.textContent = livro.id;
         tr.appendChild(tdId);
 
-        // 2. Capa
         const tdImg = document.createElement('td');
         if (livro.imagem) {
           const img = document.createElement('img');
@@ -1095,12 +1364,10 @@
         }
         tr.appendChild(tdImg);
 
-        // 3. Título
         const tdTitulo = document.createElement('td');
         tdTitulo.textContent = livro.titulo;
         tr.appendChild(tdTitulo);
 
-        // 4. Categoria  ← ANTES DO AUTOR
         const tdCategoria = document.createElement('td');
         const badgeCat = document.createElement('span');
         const nomesCat = { hq: 'HQ', livro: 'Livro', manga: 'Mangá', kit: 'Kit' };
@@ -1117,22 +1384,18 @@
         tdCategoria.appendChild(badgeCat);
         tr.appendChild(tdCategoria);
 
-        // 5. Autor
         const tdAutor = document.createElement('td');
         tdAutor.textContent = livro.autor;
         tr.appendChild(tdAutor);
 
-        // 6. Editora
         const tdEditora = document.createElement('td');
         tdEditora.textContent = livro.editora || '—';
         tr.appendChild(tdEditora);
 
-        // 7. Páginas
         const tdPaginas = document.createElement('td');
         tdPaginas.textContent = livro.paginas || '—';
         tr.appendChild(tdPaginas);
 
-        // 8. Origem
         const tdOrigem = document.createElement('td');
         const badge = document.createElement('span');
         badge.textContent = livro.origem || 'Nacional';
@@ -1144,32 +1407,26 @@
         tdOrigem.appendChild(badge);
         tr.appendChild(tdOrigem);
 
-        // 9. Gênero
         const tdGenero = document.createElement('td');
         tdGenero.textContent = livro.genero || '—';
         tr.appendChild(tdGenero);
 
-        // 10. Preço
         const tdPreco = document.createElement('td');
         tdPreco.textContent = formatarPreco(livro.preco);
         tr.appendChild(tdPreco);
 
-        // 11. Estoque
         const tdEstoque = document.createElement('td');
         tdEstoque.textContent = livro.estoque;
         tr.appendChild(tdEstoque);
 
-        // 12. ISBN
         const tdIsbn = document.createElement('td');
         tdIsbn.textContent = livro.isbn || '—';
         tr.appendChild(tdIsbn);
 
-        // 13. Avaliação
         const tdAval = document.createElement('td');
         tdAval.innerHTML = renderEstrelas(livro.avaliacao);
         tr.appendChild(tdAval);
 
-        // 14. Ações — Excluir
         const tdBotao = document.createElement('td');
         const botao = document.createElement('button');
         botao.type = 'button';
@@ -1178,7 +1435,6 @@
         tdBotao.appendChild(botao);
         tr.appendChild(tdBotao);
 
-        // 15. Editar
         const tdEditar = document.createElement('td');
         const botaoEditar = document.createElement('button');
         botaoEditar.type = 'button';
@@ -1188,7 +1444,6 @@
         tdEditar.appendChild(botaoEditar);
         tr.appendChild(tdEditar);
 
-        // Adiciona a linha à tabela
         corpoTabela.appendChild(tr);
       });
     }
@@ -1211,7 +1466,8 @@
         })
         .catch(erro => mostrarAviso('Falha ao remover: ' + erro.message, true));
     }
-        // ============ EDIÇÃO DE LIVROS ============
+
+    // ============ EDIÇÃO ============
     const modalEdicao = document.getElementById('modalEdicao');
     const formEdicao = document.getElementById('formEdicao');
     const editInputImagem = document.getElementById('editInputImagem');
@@ -1241,7 +1497,6 @@
       range.value = livro.avaliacao || 0;
       txt.textContent = (livro.avaliacao > 0) ? Number(livro.avaliacao).toFixed(1) + ' ★' : 'Sem avaliação';
 
-      // Preview da imagem atual
       if (livro.imagem) {
         editPreview.src = 'imagens/' + livro.imagem;
         editPreviewWrap.style.display = 'block';
@@ -1252,12 +1507,14 @@
       editInputImagem.value = '';
       document.getElementById('avisoEdicao').textContent = '';
 
-      modalEdicao.style.display = 'block';
-      document.body.style.overflow = 'hidden';
+      if (modalEdicao) {
+        modalEdicao.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+      }
     }
 
     function fecharModalEdicao() {
-      modalEdicao.style.display = 'none';
+      if (modalEdicao) modalEdicao.style.display = 'none';
       document.body.style.overflow = '';
       livroEmEdicao = null;
       imagemNovaSelecionada = null;
@@ -1270,10 +1527,8 @@
         .catch(erro => alert('Falha ao carregar livro: ' + erro.message));
     }
 
-    // Expor para o escopo da tabela
     window.abrirEdicaoLivro = abrirEdicaoLivro;
 
-    // Preview ao selecionar nova imagem
     if (editInputImagem) {
       editInputImagem.addEventListener('change', () => {
         const arq = editInputImagem.files[0];
@@ -1296,7 +1551,6 @@
       });
     }
 
-    // Fechar modal
     const btnFecharEdicao = document.getElementById('btnFecharEdicao');
     if (btnFecharEdicao) btnFecharEdicao.addEventListener('click', fecharModalEdicao);
 
@@ -1309,15 +1563,14 @@
       });
     }
 
-    // Submit da edição
     if (formEdicao) {
       formEdicao.addEventListener('submit', function (e) {
         e.preventDefault();
         if (!livroEmEdicao) return;
 
-        const aviso = document.getElementById('avisoEdicao');
-        aviso.textContent = 'Salvando...';
-        aviso.style.color = '#8b4513';
+        const avisoEd = document.getElementById('avisoEdicao');
+        avisoEd.textContent = 'Salvando...';
+        avisoEd.style.color = '#8b4513';
 
         const dados = {
           titulo: document.getElementById('editTitulo').value.trim(),
@@ -1333,7 +1586,6 @@
           avaliacao: document.getElementById('editAvaliacaoRange').value
         };
 
-        // Se tem imagem nova, faz upload primeiro
         function enviarEdicao(nomeImagem) {
           if (nomeImagem !== undefined) dados.imagem = nomeImagem;
 
@@ -1345,18 +1597,18 @@
             .then(r => r.json().then(c => ({ ok: r.ok, c })))
             .then(({ ok, c }) => {
               if (!ok) {
-                aviso.textContent = c.erro || 'Erro ao salvar.';
-                aviso.style.color = '#c0392b';
+                avisoEd.textContent = c.erro || 'Erro ao salvar.';
+                avisoEd.style.color = '#c0392b';
                 return;
               }
-              aviso.textContent = 'Livro atualizado com sucesso!';
-              aviso.style.color = '#2f855a';
+              avisoEd.textContent = 'Livro atualizado com sucesso!';
+              avisoEd.style.color = '#2f855a';
               carregarLivros();
               setTimeout(fecharModalEdicao, 900);
             })
             .catch(erro => {
-              aviso.textContent = 'Erro de comunicação: ' + erro.message;
-              aviso.style.color = '#c0392b';
+              avisoEd.textContent = 'Erro de comunicação: ' + erro.message;
+              avisoEd.style.color = '#c0392b';
             });
         }
 
@@ -1367,15 +1619,15 @@
             .then(r => r.json().then(c => ({ ok: r.ok, c })))
             .then(({ ok, c }) => {
               if (!ok) {
-                aviso.textContent = c.erro || 'Falha no upload da imagem.';
-                aviso.style.color = '#c0392b';
+                avisoEd.textContent = c.erro || 'Falha no upload da imagem.';
+                avisoEd.style.color = '#c0392b';
                 return;
               }
               enviarEdicao(c.imagem);
             })
             .catch(erro => {
-              aviso.textContent = 'Erro no upload: ' + erro.message;
-              aviso.style.color = '#c0392b';
+              avisoEd.textContent = 'Erro no upload: ' + erro.message;
+              avisoEd.style.color = '#c0392b';
             });
         } else {
           enviarEdicao(undefined);
@@ -1383,6 +1635,7 @@
       });
     }
 
+    // ============ FORM NOVO LIVRO ============
     if (form) {
       const inputImagem = document.getElementById('inputImagem');
       const previewWrap = document.getElementById('previewImagemWrap');
@@ -1474,7 +1727,8 @@
       });
     }
 
-    carregarLivros();
+    // Carrega a tabela se estiver na página de cadastro
+    if (corpoTabela) carregarLivros();
   }
 
   // =======================================================================
@@ -1482,19 +1736,21 @@
   // =======================================================================
   document.addEventListener('DOMContentLoaded', function () {
     initMenuMobile();
-    carregarCarrinho();
-    atualizarBadgeGlobal();
-    delegateComprarBtn();
-    initPaginaCarrinho();
     initCadastroLivros();
+    initPaginaCarrinho();
+
+    // Delegação dos botões "Comprar" (catálogo)
+    delegateComprarBtn(document);
+
+    // Carrega o carrinho (para atualizar o badge e preparar a página)
+    carregarCarrinho().then(() => {
+      atualizarBadgeGlobal();
+    });
+
+    // Atualiza cabeçalho de sessão (Auth cuida disso, mas por garantia)
+    if (window.Auth && typeof window.Auth.atualizarCabecalho === 'function') {
+      window.Auth.atualizarCabecalho();
+    }
   });
 
-  window.adicionarAoCarrinhoGlobal = adicionarAoCarrinho;
-  window.atualizarBadgeGlobal = atualizarBadgeGlobal;
-  window.mesclarCarrinhoLocalNoServidor = mesclarCarrinhoLocalNoServidor;
-  window.lerCarrinhoGlobal = carregarCarrinho;
-  window.obterCarrinhoGlobal = () => Carrinho.dados;
-  window.abrirModalLoginGlobal = abrirModalLogin;
-   
-  
 })();

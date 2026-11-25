@@ -106,7 +106,7 @@
             <i class="fa-solid fa-pen-nib mr-1 text-brasil-terracota/60"></i>
             ${livro.autor}
           </p>
-          <div class="pt-1">${renderEstrelas(livro.avaliacao)}</div>
+          
         </div>
       </div>
       <div class="p-5 pt-0 flex items-center justify-between border-t border-brasil-areia/40 mt-2">

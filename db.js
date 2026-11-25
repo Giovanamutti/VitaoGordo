@@ -112,5 +112,41 @@ db.exec(`
     UNIQUE(usuario_id, livro_id),
     FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
   )
+`); 
+
+// ---- Tabela de cartões salvos ----
+db.exec(`
+  CREATE TABLE IF NOT EXISTS cartao (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL,
+    apelido TEXT,
+    bandeira TEXT,
+    ultimos4 TEXT NOT NULL,
+    nome_titular TEXT NOT NULL,
+    validade TEXT NOT NULL,
+    numero_hash TEXT NOT NULL,
+    padrao INTEGER NOT NULL DEFAULT 0,
+    criado_em TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
+  )
 `);
+
+// ---- Tabela de métodos de pagamento alternativos (pix/boleto) ----
+db.exec(`
+  CREATE TABLE IF NOT EXISTS metodo_pagamento (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL,
+    tipo TEXT NOT NULL,              -- 'pix' | 'boleto'
+    chave TEXT,                      -- chave pix
+    codigo TEXT,                     -- código de barras / copia-e-cola
+    padrao INTEGER NOT NULL DEFAULT 0,
+    criado_em TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
+  )
+`);
+
+// Índices para busca rápida
+db.exec(`CREATE INDEX IF NOT EXISTS idx_cartao_usuario ON cartao(usuario_id)`);
+db.exec(`CREATE INDEX IF NOT EXISTS idx_metodo_usuario ON metodo_pagamento(usuario_id)`);
+
 module.exports = db;
